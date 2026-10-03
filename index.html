@@ -136,6 +136,15 @@ button{font:inherit;color:inherit}
 .lbm .lb.f{font:500 10.5px/14px var(--f-mono);color:var(--muted)}
 .lbm .lb.dim{color:var(--muted);font-weight:400}
 .lbm .lb.bk{font-weight:700;color:var(--c)}
+/* 交通：线路号标签（列表和地图共用），颜色按交通方式 */
+.ln{display:inline-flex;align-items:center;justify-content:center;min-width:26px;height:20px;padding:0 6px;border-radius:5px;font:600 11.5px/1 var(--f-mono);color:#fff;background:var(--lc,#4B5563);white-space:nowrap}
+.ln.train{--lc:#C2571A} .ln.metro{--lc:#0B6E74} .ln.tram{--lc:#2F7D32} .ln.lrt{--lc:#B3122B} .ln.bus{--lc:#1D63A6} .ln.ferry{--lc:#0A7A70} .ln.taxi,.ln.car{--lc:#4B5563}
+.ln.walk{background:transparent;color:var(--muted);border:1px solid var(--line);font:500 11.5px/1 var(--f-body)}
+.lnbm{cursor:pointer}
+.lnbm .ln{width:100%;height:100%;padding:0;box-shadow:0 0 0 2px var(--surface),0 1px 4px rgba(0,0,0,.3)}
+.lnbm.opt{opacity:.6}
+.lnbm.sel .ln{box-shadow:0 0 0 2px var(--surface),0 0 0 4px var(--ink)}
+.xdot{fill:var(--surface);stroke:var(--ink);stroke-width:2}
 .lbm .lb.syd{--c:var(--syd)} .lbm .lb.mel{--c:var(--mel)} .lbm .lb.gc{--c:var(--gc)} .lbm .lb.bne{--c:var(--bne)}
 .legend{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:12px;color:var(--muted);padding:8px 2px 0}
 .legend span{display:inline-flex;align-items:center;gap:6px}
@@ -191,6 +200,18 @@ h3.sec::after{content:"";flex:1;height:1px;background:var(--line)}
 .stop .via{display:inline-block;font-size:11.5px;color:var(--muted);border:1px solid var(--line);border-radius:5px;padding:0 6px;margin-bottom:4px;background:var(--surface)}
 .stop .note{margin:4px 0 0;font-size:13.5px;color:var(--ink);max-width:60ch}
 .stop .links{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.tx{display:grid;gap:8px;margin:6px 0 4px;padding:9px 10px;border-radius:10px;background:var(--surface);border:1px solid var(--line)}
+.txr{display:grid;grid-template-columns:auto minmax(0,1fr);column-gap:9px;align-items:start;font-size:13px;line-height:1.45}
+.txr>.ln{grid-row:span 4;margin-top:1px}
+.txr>span:not(.ln){grid-column:2;min-width:0}
+.txr .tk{font-weight:600}
+.txr .tm{font-size:12.5px;color:var(--muted);font-variant-numeric:tabular-nums}
+.txr .tn{font-size:12.5px;color:var(--muted)}
+.txr.walk{align-items:center}
+.tx .txl{justify-self:start}
+.txsum{display:flex;flex-wrap:wrap;gap:5px 6px;align-items:center;margin-top:10px;font-size:12.5px;color:var(--muted)}
+.txsum span:first-child{margin-right:2px}
+.tips.pay li{list-style:none;margin-left:-1.1em}
 .lk{display:inline-flex;align-items:center;gap:4px;font-size:12.5px;text-decoration:none;border:1px solid var(--line);border-radius:7px;padding:2px 9px;background:var(--surface);color:var(--ink);white-space:nowrap}
 .lk:hover{border-color:var(--muted)}
 .lk.pri{background:var(--ink);border-color:var(--ink);color:var(--bg)}
@@ -296,6 +317,7 @@ function proj(ll){ return [ll[1], -Math.log(Math.tan(Math.PI/4 + ll[0]*D2R/2))/D
 function unprojY(y){ return (2*Math.atan(Math.exp(-y*D2R)) - Math.PI/2)/D2R; }
 function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
 
+/* @data-begin（tools/fetch-routes.mjs 会读取这段，到 @data-end 为止） */
 /* ---------- 城市 ---------- */
 var CITY = {
   syd:{name:'悉尼', en:'Sydney', baseQ:'Museum Station Sydney', tz:11, sun:[-33.8688,151.2093], base:[-33.8775,151.2095], anchor:{n:'Circular Quay', ll:[-33.8614,151.2109]}, cin:'2026-10-24', cout:'2026-10-27', nights:3},
@@ -303,15 +325,14 @@ var CITY = {
   gc:{name:'黄金海岸', en:'Gold Coast', baseQ:'Cavill Avenue Surfers Paradise', tz:10, sun:[-28.0167,153.4000], base:[-28.0040,153.4300], anchor:{n:'Cavill Ave 海滩', ll:[-28.0024,153.4315]}, cin:'2026-10-31', cout:'2026-11-02', nights:2},
   bne:{name:'布里斯班', en:'Brisbane', baseQ:'Roma Street Station Brisbane', tz:10, sun:[-27.4698,153.0251], base:[-27.4690,153.0215], anchor:{n:'Roma St 站', ll:[-27.4659,153.0193]}, cin:'2026-11-02', cout:'2026-11-03', nights:1}
 };
-var MODE = { walk:'步行', train:'火车', tram:'电车 / 轻轨', bus:'巴士', taxi:'打车', ferry:'渡轮', tour:'旅行团', car:'自驾或参团', flight:'飞机' };
-var MCLS = { walk:'m-walk', train:'m-transit', tram:'m-transit', bus:'m-transit', taxi:'m-transit', ferry:'m-ferry', tour:'m-tour', car:'m-tour', flight:'m-flight' };
+var MODE = { walk:'步行', train:'火车', metro:'地铁', tram:'电车 / 轻轨', lrt:'轻轨', bus:'巴士', taxi:'打车', ferry:'渡轮', tour:'旅行团', car:'自驾或参团', flight:'飞机' };
+var MCLS = { walk:'m-walk', train:'m-transit', metro:'m-transit', tram:'m-transit', lrt:'m-transit', bus:'m-transit', taxi:'m-transit', ferry:'m-ferry', tour:'m-tour', car:'m-tour', flight:'m-flight' };
+var TXMODE = { walk:'步行', train:'火车', metro:'地铁', tram:'电车', lrt:'轻轨', bus:'巴士', ferry:'渡轮', taxi:'打车', car:'自驾', tour:'旅行团', flight:'飞机' };
 
 /* ---------- 地图左上角的说明 ---------- */
 var REGION = {
   au:{note:'航线弧线是示意。点城市进入当天行程。'},
-  gor:{note:'大洋路按途经点连线，是示意，不是真实道路。'},
-  gc:{note:'路线按顺序直线连接，是示意；导航请点每站的「地图」。'},
-  plain:{note:'路线按顺序直线连接，是示意；导航请点每站的「地图」。', ferry:'路线按顺序直线连接，渡轮按大致航线画，都是示意；导航请点每站的「地图」。'}
+  gor:{note:'大洋路按途经点画，实际路线以旅行团为准。'}
 };
 
 /* ---------- 候选酒店 ----------
@@ -349,6 +370,94 @@ var FERRY_MANLY = [[-33.8555,151.2140],[-33.8545,151.2330],[-33.8505,151.2560],[
 var FERRY_WATSONS = [[-33.8555,151.2140],[-33.8550,151.2255],[-33.8545,151.2520],[-33.8500,151.2700],[-33.8455,151.2790]];
 var CITYCAT = [[-27.4745,153.0185],[-27.4785,153.0225],[-27.4800,153.0285],[-27.4745,153.0325],[-27.4680,153.0315],[-27.4640,153.0345]];
 
+/* ---------- 车站和码头（交通段的上下车点，坐标 [纬度, 经度]） ---------- */
+var STN = {
+  sydIntl:[-33.9350,151.1664], sydDom:[-33.9334,151.1810], museum:[-33.8764,151.2097], cqStn:[-33.8613,151.2107],
+  cqW2:[-33.8604,151.2113], cqW3:[-33.8606,151.2121], barangarooM:[-33.8630,151.2032], gadigal:[-33.8745,151.2078],
+  museumBus:[-33.8762,151.2099], coogeeBus:[-33.9205,151.2565], bondiBus:[-33.8906,151.2750], bondiJn:[-33.8915,151.2477], townHall:[-33.8731,151.2068],
+  melCentral:[-37.8100,144.9646], latrobeEliz:[-37.8095,144.9612], latrobeSwan:[-37.8101,144.9640], nicholsonVic:[-37.8089,144.9733], nicholsonJohnston:[-37.7985,144.9738],
+  acland96:[-37.8679,144.9792], lunaPark:[-37.8680,144.9772], fitzroyEsp:[-37.8622,144.9747],
+  spencerLatrobe:[-37.8135,144.9516], spencerBourke:[-37.8167,144.9538], swanstonBourke:[-37.8136,144.9658],
+  cavill:[-28.0010,153.4285], surfersBus:[-28.0005,153.4270], burleighLR:[-28.0921,153.4521], cwsBus:[-28.1365,153.4860], currumbinN:[-28.1345,153.4872],
+  bbNorth:[-28.0275,153.4310], bbSouth:[-28.0347,153.4292], helensvale:[-27.9217,153.3337],
+  romaSt:[-27.4659,153.0193]
+};
+
+/* ---------- 交通段 ----------
+   DAYS 里每一站可以写 tx:TX.xxx，说明「从上一站怎么到这一站」；几段连着坐就写成数组。
+   字段：mode 方式（walk 步行 / train 火车 / metro 地铁 / tram 电车 / lrt 轻轨 / bus 巴士 / ferry 渡轮 / taxi 打车），
+   line 线路号，dir 方向，on / off 上车 / 下车站，a / b 上车 / 下车点坐标，time 时间，freq 班次，note 补充，
+   osm 让 tools/fetch-routes.mjs 去 OpenStreetMap 找这条线的走向。线路号和班次是 2026 年 10 月查的。 */
+var TX = {
+  // 悉尼：火车、地铁、巴士、渡轮都刷银行卡或手机（Opal）
+  sydIntlDom:{mode:'train', line:'T8', dir:'机场线 · 往 City', on:'International 站', off:'Domestic 站', a:STN.sydIntl, b:STN.sydDom, time:'约 2 分钟（1 站）', freq:'约每 10 分钟', note:'只坐 1 站也要付机场站点费。', osm:{route:'train', ref:'T8'}},
+  sydDomCity:{mode:'train', line:'T8', dir:'往 City', on:'Domestic 站', off:'Museum 站', a:STN.sydDom, b:STN.museum, time:'约 15 分钟', freq:'约每 10 分钟', note:'过 Central 后下一站就是 Museum。出机场站加收站点费。', osm:{route:'train', ref:'T8'}},
+  sydMuseumCQ:{mode:'train', line:'T2/T3/T8', dir:'City Circle · 往 St James', on:'Museum 站 1 号站台', off:'Circular Quay 站', a:STN.museum, b:STN.cqStn, time:'约 5 分钟（2 站）', note:'1 号站台来的车都绕 City Circle，任意一班都行。', osm:{route:'train', ref:'T8'}},
+  sydCQMuseum:{mode:'train', line:'T2/T3/T8', dir:'City Circle · 往 St James', on:'Circular Quay 站 2 号站台', off:'Museum 站', a:STN.cqStn, b:STN.museum, time:'约 5 分钟（2 站）', osm:{route:'train', ref:'T8'}},
+  sydMuseumDom:{mode:'train', line:'T8', dir:'往机场', on:'Museum 站 2 号站台', off:'Domestic 站', a:STN.museum, b:STN.sydDom, time:'约 15 分钟', freq:'约每 10 分钟', note:'看清车头写经机场（via Airport），有的 T8 不经过机场。出机场站加收站点费。', osm:{route:'train', ref:'T8'}},
+  watsons:{mode:'ferry', line:'F9', dir:'往 Watsons Bay', on:'Circular Quay 2 号码头', off:'Watsons Bay', a:STN.cqW2, time:'约 25 分钟', note:'部分班次经停 Double Bay、Rose Bay。', osm:{route:'ferry', ref:'F9'}},
+  barangarooHome:[
+    {mode:'walk', time:'步行约 5 分钟到地铁站'},
+    {mode:'metro', line:'M1', dir:'往 Sydenham', on:'Barangaroo 站', off:'Gadigal 站', a:STN.barangarooM, b:STN.gadigal, time:'约 5 分钟（2 站）', note:'Sydney Metro，刷卡和火车一样。Gadigal 站在 Pitt St，出站步行约 8 分钟到 Hyde Park 南端。', osm:{route:'subway|train', ref:'M1'}}],
+  coogee:{mode:'bus', line:'373', dir:'往 Coogee', on:'Museum Station（Elizabeth St）', off:'Coogee Beach', a:STN.museumBus, b:STN.coogeeBus, time:'约 35–40 分钟', freq:'白天约每 10 分钟', note:'上车、下车都要刷卡。', osm:{route:'bus', ref:'373'}},
+  bondiHome:[
+    {mode:'bus', line:'333', dir:'往 City（经 Bondi Junction）', on:'Bondi Beach（Campbell Pde）', off:'Bondi Junction', a:STN.bondiBus, b:STN.bondiJn, time:'约 10 分钟', freq:'很频繁', note:'380、381 也到 Bondi Junction。333 本身也直达城里，不想换车可以一直坐。', osm:{route:'bus', ref:'333'}},
+    {mode:'train', line:'T4', dir:'往 City', on:'Bondi Junction 站', off:'Town Hall 站', a:STN.bondiJn, b:STN.townHall, time:'约 15 分钟', note:'出站步行约 10 分钟到 Hyde Park 南端。', osm:{route:'train', ref:'T4'}}],
+  manly:{mode:'ferry', line:'F1', dir:'往 Manly', on:'Circular Quay 3 号码头', off:'Manly', a:STN.cqW3, time:'约 30 分钟', note:'另有私营的 Manly Fast Ferry，更快但更贵。', osm:{route:'ferry', ref:'F1'}},
+  manlyBack:{mode:'ferry', line:'F1', dir:'往 Circular Quay', on:'Manly', off:'Circular Quay 3 号码头', b:STN.cqW3, time:'约 30 分钟', osm:{route:'ferry', ref:'F1'}},
+
+  // 墨尔本：市中心免费电车区不用刷卡，出了区要刷 myki 或银行卡
+  reb:[
+    {mode:'walk', time:'步行约 5 分钟到 La Trobe St'},
+    {mode:'tram', line:'30', dir:"往 St Vincent's Plaza", on:'Elizabeth St / La Trobe St', off:'Nicholson St / Victoria Pde', a:STN.latrobeEliz, b:STN.nicholsonVic, time:'约 10 分钟', note:'下车的站在免费电车区外，上车要刷卡。也可以直接走过去，约 20 分钟。', osm:{route:'tram', ref:'30'}}],
+  stkilda96:[
+    {mode:'walk', time:'步行约 8 分钟到 Nicholson St'},
+    {mode:'tram', line:'96', dir:'往 St Kilda Beach', on:'Nicholson St / Johnston St', off:'St Kilda Beach（Acland St 终点）', a:STN.nicholsonJohnston, b:STN.acland96, time:'约 45 分钟', note:'一车直达，不用换乘。', osm:{route:'tram', ref:'96'}}],
+  stkildaHome:{mode:'tram', line:'16', dir:'往 Melbourne University', on:'Luna Park（The Esplanade）', off:'Melbourne Central（Swanston St）', a:STN.lunaPark, b:STN.melCentral, time:'约 35 分钟', osm:{route:'tram', ref:'16'}},
+  stkildaPier:{mode:'tram', line:'16', dir:'往 Kew（经 St Kilda Beach）', on:'Melbourne Central（Swanston St）', off:'Fitzroy St / The Esplanade', a:STN.melCentral, b:STN.fitzroyEsp, time:'约 30 分钟', note:'出了免费电车区要刷卡。', osm:{route:'tram', ref:'16'}},
+  aclandHome:[
+    {mode:'walk', time:'步行约 5 分钟到 Luna Park'},
+    {mode:'tram', line:'16', dir:'往 Melbourne University', on:'Luna Park（The Esplanade）', off:'Melbourne Central（Swanston St）', a:STN.lunaPark, b:STN.melCentral, time:'约 35 分钟', osm:{route:'tram', ref:'16'}}],
+  dfoHome:[
+    {mode:'walk', time:'步行约 10 分钟到 Spencer St'},
+    {mode:'tram', line:'86/96', dir:'Bourke St 往东', on:'Spencer St / Bourke St', off:'Swanston St / Bourke St', a:STN.spencerBourke, b:STN.swanstonBourke, time:'约 10 分钟', note:'整段在免费电车区内，不用刷卡。', osm:{route:'tram', ref:'96'}}],
+  carlton:{mode:'tram', line:'30', dir:"往 St Vincent's Plaza", on:'Swanston St / La Trobe St', off:'Nicholson St / Victoria Pde', a:STN.latrobeSwan, b:STN.nicholsonVic, time:'约 6 分钟', osm:{route:'tram', ref:'30'}},
+  fitzroyHome:[
+    {mode:'walk', time:'步行约 8 分钟到 Nicholson St'},
+    {mode:'tram', line:'96', dir:'往 St Kilda Beach', on:'Nicholson St / Johnston St', off:'Swanston St / Bourke St', a:STN.nicholsonJohnston, b:STN.swanstonBourke, time:'约 15 分钟', osm:{route:'tram', ref:'96'}}],
+  toSouthernCross:[
+    {mode:'tram', line:'30/35', dir:'La Trobe St 往西', on:'Swanston St / La Trobe St', off:'Spencer St / La Trobe St', a:STN.latrobeSwan, b:STN.spencerLatrobe, time:'约 10 分钟', note:'免费电车区内，不用刷卡。拖行李嫌麻烦就打车，约 10 分钟。', osm:{route:'tram', ref:'30'}},
+    {mode:'walk', time:'步行约 5 分钟到 Southern Cross'}],
+  skybus:{mode:'bus', line:'SkyBus', dir:'Melbourne City Express', on:'Southern Cross 站', off:'墨尔本机场', time:'约 30–40 分钟', freq:'约每 10–15 分钟', note:'私营机场大巴，单独买票，不能用 myki。', osm:{route:'bus', name:'SkyBus'}},
+
+  // 黄金海岸 · 布里斯班：Translink 一程 50 分（Airtrain 除外），刷 go card 或银行卡
+  currumbin:[
+    {mode:'lrt', line:'G:link', dir:'往 Burleigh Heads', on:'Cavill Avenue 站', off:'Burleigh Heads 站', a:STN.cavill, b:STN.burleighLR, time:'约 30 分钟', note:'轻轨 2026 年 8 月起通到 Burleigh Heads。', osm:{route:'light_rail|tram'}},
+    {mode:'bus', line:'700', dir:'往 Tweed Heads', on:'Burleigh Heads 站', off:'Currumbin Wildlife Sanctuary', a:STN.burleighLR, b:STN.cwsBus, time:'约 15 分钟', freq:'白天约每 10 分钟', note:'下车就是保护区门口。700 路不到 Surfers，所以先坐轻轨。', osm:{route:'bus', ref:'700'}}],
+  burleigh:{mode:'bus', line:'700', dir:'往 Broadbeach', on:'Currumbin（Gold Coast Hwy）', off:'Burleigh Heads 站', a:STN.currumbinN, b:STN.burleighLR, time:'约 15 分钟', freq:'白天约每 10 分钟', note:'车站就在国家公园入口旁边。', osm:{route:'bus', ref:'700'}},
+  burleighHome:[
+    {mode:'walk', time:'从国家公园走回车站约 5 分钟'},
+    {mode:'lrt', line:'G:link', dir:'往 Helensvale', on:'Burleigh Heads 站', off:'Cavill Avenue 站', a:STN.burleighLR, b:STN.cavill, time:'约 30 分钟', osm:{route:'light_rail|tram'}}],
+  broadbeach:[
+    {mode:'walk', time:'步行约 5 分钟到 Cavill Avenue 站'},
+    {mode:'lrt', line:'G:link', dir:'往 Burleigh Heads', on:'Cavill Avenue 站', off:'Broadbeach North 站', a:STN.cavill, b:STN.bbNorth, time:'约 10 分钟', osm:{route:'light_rail|tram'}}],
+  pacificFairHome:{mode:'lrt', line:'G:link', dir:'往 Helensvale', on:'Broadbeach South 站', off:'Cavill Avenue 站', a:STN.bbSouth, b:STN.cavill, time:'约 12 分钟', osm:{route:'light_rail|tram'}},
+  seaworld:{mode:'bus', line:'705', dir:'往 Sea World', on:'Surfers Paradise', off:'Sea World', a:STN.surfersBus, time:'约 20 分钟', note:'出发前点「实时查询」核对班次。', osm:{route:'bus', ref:'705'}},
+  seaworldHome:{mode:'bus', line:'705', dir:'往 Surfers Paradise', on:'Sea World', off:'Surfers Paradise', b:STN.surfersBus, time:'约 20 分钟', osm:{route:'bus', ref:'705'}},
+  movieworld:[
+    {mode:'lrt', line:'G:link', dir:'往 Helensvale', on:'Cavill Avenue 站', off:'Helensvale 站', a:STN.cavill, b:STN.helensvale, time:'约 40 分钟', osm:{route:'light_rail|tram'}},
+    {mode:'bus', line:'TX7', dir:'往 Coomera', on:'Helensvale 站', off:'Movie World', a:STN.helensvale, time:'约 10 分钟', freq:'约每 30 分钟', note:'主题公园专线。', osm:{route:'bus', ref:'TX7'}}],
+  movieworldHome:[
+    {mode:'bus', line:'TX7', dir:'往 Helensvale', on:'Movie World', off:'Helensvale 站', b:STN.helensvale, time:'约 10 分钟', freq:'约每 30 分钟', osm:{route:'bus', ref:'TX7'}},
+    {mode:'lrt', line:'G:link', dir:'往 Burleigh Heads', on:'Helensvale 站', off:'Cavill Avenue 站', a:STN.helensvale, b:STN.cavill, time:'约 40 分钟', osm:{route:'light_rail|tram'}}],
+  toHelensvale:[
+    {mode:'walk', time:'拖行李步行约 5 分钟到 Cavill Avenue 站'},
+    {mode:'lrt', line:'G:link', dir:'往 Helensvale', on:'Cavill Avenue 站', off:'Helensvale 站（终点）', a:STN.cavill, b:STN.helensvale, time:'约 40 分钟', osm:{route:'light_rail|tram'}}],
+  citycat:{mode:'ferry', line:'CityCat', dir:'往 Northshore Hamilton', on:'North Quay', off:'Howard Smith Wharves', time:'约 15–20 分钟', note:'一程 50 分，刷 go card 或银行卡。', osm:{route:'ferry', name:'CityCat'}},
+  kpTaxi:{mode:'taxi', line:'打车', on:'Kangaroo Point', off:'酒店', time:'约 10 分钟', note:'晚上拖行李打车最省事，也可以叫 Uber。'},
+  airtrain:{mode:'train', line:'Airtrain', dir:'往机场', on:'Roma St 站', off:'International 站', a:STN.romaSt, time:'约 25 分钟', freq:'约每 15–30 分钟', note:'私营机场快线，单程约 A$23，不在 50 分票价内；末班约 22:00。', osm:{route:'train', name:'Airport|Airtrain'}}
+};
+
 /* ---------- 每日行程 ---------- */
 var DAYS = [
  {id:'d1024', date:'2026-10-24', wd:'周六', city:'syd', night:'syd', tag:'悉尼 · 第 1 天', title:'悉尼海港',
@@ -358,22 +467,22 @@ var DAYS = [
     {who:'我', code:'JQ403', dep:'OOL 07:10', arr:'SYD 09:40', note:'到国内航站楼'}],
   stops:[
     {n:'悉尼机场 T1 国际', en:'Sydney Airport T1', ll:[-33.9366,151.1658], t:'09:00', kind:'air', note:'朋友入境、取行李，大约 1 小时。', q:'Sydney International Airport T1'},
-    {n:'国内航站楼 T2', en:'Domestic Terminal T2', ll:[-33.9331,151.1796], t:'09:40', kind:'air', mode:'train', note:'我落地。两个航站楼之间坐机场线火车 1 站，或坐航站楼摆渡巴士会合。', q:'Sydney Airport T2 Domestic'},
-    {n:'酒店放行李', en:'Hotel · Hyde Park 一带', ll:[-33.8775,151.2095], t:'约 10:30', kind:'stay', mode:'train', note:'机场线火车到 Museum 或 Central 站约 15 分钟；机场两站进出会加收站点费。', q:'Museum Station Sydney'},
-    {n:'环形码头', en:'Circular Quay', ll:[-33.8614,151.2109], t:'约 11:30', mode:'train', note:'火车 2 站，或穿过 Hyde Park 步行约 25 分钟。', q:'Circular Quay Sydney'},
+    {n:'国内航站楼 T2', en:'Domestic Terminal T2', ll:[-33.9331,151.1796], t:'09:40', kind:'air', mode:'train', tx:TX.sydIntlDom, note:'我落地。两个航站楼之间坐机场线火车 1 站，或坐航站楼摆渡巴士会合。', q:'Sydney Airport T2 Domestic'},
+    {n:'酒店放行李', en:'Hotel · Hyde Park 一带', ll:[-33.8775,151.2095], t:'约 10:30', kind:'stay', mode:'train', tx:TX.sydDomCity, note:'机场线火车到 Museum 或 Central 站约 15 分钟；机场两站进出会加收站点费。', q:'Museum Station Sydney'},
+    {n:'环形码头', en:'Circular Quay', ll:[-33.8614,151.2109], t:'约 11:30', mode:'train', tx:TX.sydMuseumCQ, note:'火车 2 站，或穿过 Hyde Park 步行约 25 分钟。', q:'Circular Quay Sydney'},
     {n:'悉尼歌剧院', en:'Sydney Opera House', ll:[-33.8568,151.2153], note:'外观、大台阶，以及和海港大桥同框的角度。想进内部可以订导览。', q:'Sydney Opera House'},
     {n:'皇家植物园', en:'Royal Botanic Garden', ll:[-33.8642,151.2166], note:'午后慢逛，累了就在草地上歇一会。', q:'Royal Botanic Garden Sydney'},
     {n:'麦考利夫人椅', en:"Mrs Macquarie's Chair", ll:[-33.8597,151.2228], note:'歌剧院和海港大桥同框的经典机位。', q:"Mrs Macquarie's Chair Sydney"},
     {n:'岩石区', en:'The Rocks', ll:[-33.8593,151.2085], note:'老街区，周末有 The Rocks Markets。晚饭可以在这里解决。', q:'The Rocks Sydney'},
     {n:'天文台山', en:'Observatory Hill', ll:[-33.8590,151.2045], sunset:true, note:'看海港大桥和日落。', q:'Observatory Hill Sydney'},
-    {n:'屈臣氏湾（可选）', en:'Watsons Bay', ll:[-33.8432,151.2810], opt:true, mode:'ferry', from:3, via:FERRY_WATSONS, note:'体力特别好再考虑。从 Circular Quay 坐渡轮约 20–25 分钟，第一天不强求。', q:'Watsons Bay Wharf'}
+    {n:'屈臣氏湾（可选）', en:'Watsons Bay', ll:[-33.8432,151.2810], opt:true, mode:'ferry', tx:TX.watsons, from:3, via:FERRY_WATSONS, note:'体力特别好再考虑。从 Circular Quay 坐渡轮约 20–25 分钟，第一天不强求。', q:'Watsons Bay Wharf'}
   ],
   gm:{mode:'walking', list:[3,4,5,6,7,8]},
   tips:['悉尼的火车、渡轮、巴士都可以直接刷信用卡或手机进出站，不用专门买卡。','第一天别暴走，晚饭后早点回酒店倒时差。']},
 
  {id:'d1025', date:'2026-10-25', wd:'周日', city:'syd', night:'syd', tag:'悉尼 · 第 2 天', title:'CBD 城市漫步',
   lede:'从唐人街一路往北走到海边，中间穿插两个馆，各控制在 1–1.5 小时。',
-  start:true, end:{mode:'train'},
+  start:true, end:{mode:'train', tx:TX.barangarooHome},
   stops:[
     {n:'唐人街', en:'Chinatown · Dixon St', ll:[-33.8786,151.2041], t:'10:00', note:'早午饭可以在这里吃。', q:'Dixon Street Chinatown Sydney'},
     {n:'维多利亚女王大厦 · 市政厅', en:'QVB · Town Hall', ll:[-33.8718,151.2067], q:'Queen Victoria Building Sydney'},
@@ -389,9 +498,9 @@ var DAYS = [
 
  {id:'d1026', date:'2026-10-26', wd:'周一', city:'syd', night:'syd', tag:'悉尼 · 第 3 天', title:'Coogee 到 Bondi 海岸步道',
   lede:'约 6 km 的悬崖步道，一路经过五个海滩。',
-  start:true, end:{mode:'bus'},
+  start:true, end:{mode:'bus', tx:TX.bondiHome},
   stops:[
-    {n:'库吉海滩', en:'Coogee Beach', ll:[-33.9205,151.2577], t:'约 09:30', mode:'bus', note:'从市区坐巴士约 30–40 分钟，步道从这里往北走。', q:'Coogee Beach Sydney'},
+    {n:'库吉海滩', en:'Coogee Beach', ll:[-33.9205,151.2577], t:'约 09:30', mode:'bus', tx:TX.coogee, note:'从市区坐巴士约 30–40 分钟，步道从这里往北走。', q:'Coogee Beach Sydney'},
     {n:'克洛夫利', en:'Clovelly Beach', ll:[-33.9140,151.2680], q:'Clovelly Beach Sydney'},
     {n:'勃朗特海滩', en:'Bronte Beach', ll:[-33.9036,151.2683], q:'Bronte Beach Sydney'},
     {n:'塔玛拉玛', en:'Tamarama Beach', ll:[-33.8990,151.2710], note:'Sculpture by the Sea 如果今年照常举办，展品主要在 Tamarama 到 Bondi 这一段。', q:'Tamarama Beach Sydney'},
@@ -404,13 +513,13 @@ var DAYS = [
   lede:'早上退房寄存行李，坐渡轮去 Manly，下午回来取行李飞墨尔本。',
   start:true,
   stops:[
-    {n:'环形码头', en:'Circular Quay', ll:[-33.8605,151.2112], t:'约 09:30', mode:'train', q:'Circular Quay Sydney'},
-    {n:'曼利码头', en:'Manly Wharf', ll:[-33.8000,151.2845], mode:'ferry', via:FERRY_MANLY, note:'渡轮约 30 分钟，坐露天甲板看海港和歌剧院。', q:'Manly Wharf'},
+    {n:'环形码头', en:'Circular Quay', ll:[-33.8605,151.2112], t:'约 09:30', mode:'train', tx:TX.sydMuseumCQ, q:'Circular Quay Sydney'},
+    {n:'曼利码头', en:'Manly Wharf', ll:[-33.8000,151.2845], mode:'ferry', tx:TX.manly, via:FERRY_MANLY, note:'渡轮约 30 分钟，坐露天甲板看海港和歌剧院。', q:'Manly Wharf'},
     {n:'曼利海滩', en:'Manly Beach · The Corso', ll:[-33.7969,151.2878], q:'Manly Beach'},
     {n:'雪莉海滩', en:'Shelly Beach', ll:[-33.7998,151.2973], note:'沿海边步道走过去约 15–20 分钟，海水很清。午饭在 Manly 吃。', q:'Shelly Beach Manly'},
-    {n:'回环形码头', en:'Circular Quay', ll:[-33.8615,151.2105], t:'约 14:30', mode:'ferry', fromLL:[-33.8000,151.2845], via:FERRY_MANLY.slice().reverse(), q:'Circular Quay Sydney'},
-    {n:'酒店取行李', en:'Hotel', ll:[-33.8775,151.2095], t:'约 15:30', kind:'stay', mode:'train', q:'Museum Station Sydney'},
-    {n:'国内航站楼 T2', en:'Sydney Domestic T2', ll:[-33.9331,151.1796], t:'约 16:45', kind:'air', mode:'train', note:'国内线建议起飞前约 1 小时到。', q:'Sydney Airport T2 Domestic'}
+    {n:'回环形码头', en:'Circular Quay', ll:[-33.8615,151.2105], t:'约 14:30', mode:'ferry', tx:TX.manlyBack, fromLL:[-33.8000,151.2845], via:FERRY_MANLY.slice().reverse(), q:'Circular Quay Sydney'},
+    {n:'酒店取行李', en:'Hotel', ll:[-33.8775,151.2095], t:'约 15:30', kind:'stay', mode:'train', tx:TX.sydCQMuseum, q:'Museum Station Sydney'},
+    {n:'国内航站楼 T2', en:'Sydney Domestic T2', ll:[-33.9331,151.1796], t:'约 16:45', kind:'air', mode:'train', tx:TX.sydMuseumDom, note:'国内线建议起飞前约 1 小时到。', q:'Sydney Airport T2 Domestic'}
   ],
   after:[
     {who:'两人', code:'JQ533', dep:'SYD 18:25', arr:'MEL 20:05', note:'目标价 ≤ A$95/人'},
@@ -439,13 +548,13 @@ var DAYS = [
 
  {id:'d1029', date:'2026-10-29', wd:'周四', city:'mel', night:'mel', tag:'墨尔本 · 第 2 天', title:'市场 + 街区',
   lede:'早上逛市场，下午走 Carlton 和 Fitzroy，傍晚去 St Kilda 看海。按体力删减。',
-  start:true, end:{mode:'tram'},
+  start:true, end:{mode:'tram', tx:TX.stkildaHome},
   stops:[
     {n:'维多利亚女王市场', en:'Queen Victoria Market', ll:[-37.8076,144.9568], t:'约 09:00', note:'早上去，早午饭在市场里解决。营业时间出发前再核对。', q:'Queen Victoria Market'},
-    {n:'皇家展览馆 · 卡尔顿花园', en:'Royal Exhibition Building', ll:[-37.8047,144.9717], mode:'tram', q:'Royal Exhibition Building'},
+    {n:'皇家展览馆 · 卡尔顿花园', en:'Royal Exhibition Building', ll:[-37.8047,144.9717], mode:'tram', tx:TX.reb, q:'Royal Exhibition Building'},
     {n:'Lygon St 意大利街', en:'Lygon Street, Carlton', ll:[-37.7985,144.9668], q:'Lygon Street Carlton'},
     {n:'Brunswick St', en:'Brunswick Street, Fitzroy', ll:[-37.7985,144.9785], note:'咖啡、古着店、街头涂鸦。', q:'Brunswick Street Fitzroy'},
-    {n:'圣基尔达', en:'St Kilda · Luna Park', ll:[-37.8676,144.9760], mode:'tram', sunset:true, note:'电车约 40 分钟，可能要换乘。海边看日落；防波堤傍晚可能看到小企鹅，遵守现场观看规定。', q:'St Kilda Beach'}
+    {n:'圣基尔达', en:'St Kilda · Luna Park', ll:[-37.8676,144.9760], mode:'tram', tx:TX.stkilda96, sunset:true, note:'96 路电车直达，约 45 分钟。海边看日落；防波堤傍晚可能看到小企鹅，遵守现场观看规定。', q:'St Kilda Beach'}
   ],
   gm:{mode:'walking', list:[0,1,2,3]},
   tips:['St Kilda 在免费电车区外，坐电车要刷卡。']},
@@ -468,22 +577,22 @@ var DAYS = [
   start:true,
   options:[
     {label:'St Kilda 海边', stops:[
-      {n:'St Kilda 海滩 · 栈桥', en:'St Kilda Pier', ll:[-37.8650,144.9730], mode:'tram', t:'上午', note:'如果 10/29 没来得及去。', q:'St Kilda Pier'},
-      {n:'Acland St', en:'Acland Street', ll:[-37.8685,144.9800], note:'蛋糕店一条街，午饭。', q:'Acland Street St Kilda'}]},
+      {n:'St Kilda 海滩 · 栈桥', en:'St Kilda Pier', ll:[-37.8650,144.9730], mode:'tram', tx:TX.stkildaPier, t:'上午', note:'如果 10/29 没来得及去。', q:'St Kilda Pier'},
+      {n:'Acland St', en:'Acland Street', ll:[-37.8685,144.9800], note:'蛋糕店一条街，午饭。', q:'Acland Street St Kilda'}], back:{tx:TX.aclandHome}},
     {label:'CBD 购物', stops:[
       {n:'Bourke St Mall', en:'Bourke Street Mall', ll:[-37.8136,144.9645], t:'上午', q:'Bourke Street Mall'},
       {n:'Emporium', en:'Emporium Melbourne', ll:[-37.8122,144.9638], q:'Emporium Melbourne'},
       {n:'Block Arcade', en:'The Block Arcade', ll:[-37.8159,144.9649], q:'Block Arcade Melbourne'},
-      {n:'DFO South Wharf', en:'DFO South Wharf', ll:[-37.8255,144.9525], note:'折扣店，离 Southern Cross 不远。', q:'DFO South Wharf'}]},
+      {n:'DFO South Wharf', en:'DFO South Wharf', ll:[-37.8255,144.9525], note:'折扣店，离 Southern Cross 不远。', q:'DFO South Wharf'}], back:{tx:TX.dfoHome}},
     {label:'Carlton / Fitzroy', stops:[
-      {n:'卡尔顿花园', en:'Carlton Gardens', ll:[-37.8047,144.9717], mode:'tram', t:'上午', note:'如果 10/29 走得太赶。', q:'Carlton Gardens'},
+      {n:'卡尔顿花园', en:'Carlton Gardens', ll:[-37.8047,144.9717], mode:'tram', tx:TX.carlton, t:'上午', note:'如果 10/29 走得太赶。', q:'Carlton Gardens'},
       {n:'Lygon St', en:'Lygon Street', ll:[-37.7985,144.9668], q:'Lygon Street Carlton'},
-      {n:'Brunswick St', en:'Brunswick Street', ll:[-37.7985,144.9785], q:'Brunswick Street Fitzroy'}]}
+      {n:'Brunswick St', en:'Brunswick Street', ll:[-37.7985,144.9785], q:'Brunswick Street Fitzroy'}], back:{tx:TX.fitzroyHome}}
   ],
   tail:[
     {n:'酒店取行李', en:'Hotel', ll:[-37.8120,144.9620], t:'约 18:00', kind:'stay', mode:'tram', q:'Melbourne Central'},
-    {n:'Southern Cross 站', en:'SkyBus · Southern Cross', ll:[-37.8183,144.9526], t:'约 18:15', mode:'tram', note:'坐 SkyBus 去机场约 30–40 分钟。', q:'Southern Cross Station'},
-    {n:'墨尔本机场', en:'Melbourne Airport', ll:[-37.6698,144.8422], t:'约 19:00', kind:'air', mode:'bus', nofit:true, q:'Melbourne Airport'}
+    {n:'Southern Cross 站', en:'SkyBus · Southern Cross', ll:[-37.8183,144.9526], t:'约 18:15', mode:'tram', tx:TX.toSouthernCross, note:'坐 SkyBus 去机场约 30–40 分钟。', q:'Southern Cross Station'},
+    {n:'墨尔本机场', en:'Melbourne Airport', ll:[-37.6698,144.8422], t:'约 19:00', kind:'air', mode:'bus', tx:TX.skybus, nofit:true, q:'Melbourne Airport'}
   ],
   after:[
     {who:'两人', code:'Jetstar', dep:'MEL 21:10', arr:'OOL 22:15', note:'实际飞约 2h05；墨尔本比黄金海岸快 1 小时'},
@@ -492,14 +601,14 @@ var DAYS = [
 
  {id:'d1101', date:'2026-11-01', wd:'周日', city:'gc', region:'gc', night:'gc', tag:'黄金海岸 · 第 1 天', title:'Currumbin 看考拉',
   lede:'上午去野生动物保护区，下午沿海往北，傍晚在 Burleigh Heads 看海。',
-  start:true, end:{mode:'bus'},
+  start:true, end:{mode:'tram', tx:TX.burleighHome},
   stops:[
-    {n:'Currumbin 野生动物保护区', en:'Currumbin Wildlife Sanctuary', ll:[-28.1360,153.4870], t:'约 09:00', mode:'bus', note:'考拉合影可选树上合影或抱考拉；抱考拉要求身高 140cm 以上、能托住考拉。门票和合影分开买，出发前在官网确认价格和时段。', q:'Currumbin Wildlife Sanctuary', link:{l:'合影官网', u:'https://book.currumbinsanctuary.com.au/location/currumbin-sanctuary/book/encounters/tree-kangaroo-encounter'}},
+    {n:'Currumbin 野生动物保护区', en:'Currumbin Wildlife Sanctuary', ll:[-28.1360,153.4870], t:'约 09:00', mode:'bus', tx:TX.currumbin, note:'考拉合影可选树上合影或抱考拉；抱考拉要求身高 140cm 以上、能托住考拉。门票和合影分开买，出发前在官网确认价格和时段。', q:'Currumbin Wildlife Sanctuary', link:{l:'合影官网', u:'https://book.currumbinsanctuary.com.au/location/currumbin-sanctuary/book/encounters/tree-kangaroo-encounter'}},
     {n:'象岩 · Currumbin 海滩', en:'Elephant Rock', ll:[-28.1327,153.4906], q:'Elephant Rock Currumbin'},
-    {n:'伯利角', en:'Burleigh Heads', ll:[-28.0890,153.4555], mode:'bus', sunset:true, note:'国家公园海岬步道，看冲浪和 Surfers 天际线。', q:'Burleigh Head National Park'}
+    {n:'伯利角', en:'Burleigh Heads', ll:[-28.0890,153.4555], mode:'bus', tx:TX.burleigh, sunset:true, note:'国家公园海岬步道，看冲浪和 Surfers 天际线。', q:'Burleigh Head National Park'}
   ],
   gm:{mode:'driving', list:['start',0,1,2,'end']},
-  tips:['沿 Gold Coast Hwy 有公交南下到 Currumbin，或打车约 25 分钟。','11 月阳光很强，带帽子和防晒。']},
+  tips:['先坐 G:link 轻轨到 Burleigh Heads，再换 700 路到 Currumbin；打车约 25 分钟。','11 月阳光很强，带帽子和防晒。']},
 
  {id:'d1102', date:'2026-11-02', wd:'周一', city:'gc', region:'gc', night:'bne', tag:'黄金海岸 → 布里斯班', title:'白天三选一，晚上去布里斯班',
   lede:'退房寄存行李，白天选一个方向玩，傍晚坐轻轨转火车北上。',
@@ -508,21 +617,21 @@ var DAYS = [
     {label:'海岸城市', stops:[
       {n:'SkyPoint 观景台', en:'SkyPoint · Q1', ll:[-28.0063,153.4296], t:'上午', q:'SkyPoint Observation Deck'},
       {n:'Surfers Paradise 海滩', en:'Surfers Paradise Beach', ll:[-28.0024,153.4315], q:'Surfers Paradise Beach'},
-      {n:'Broadbeach', en:'Broadbeach · Kurrawa', ll:[-28.0310,153.4325], mode:'tram', q:'Kurrawa Beach Broadbeach'},
+      {n:'Broadbeach', en:'Broadbeach · Kurrawa', ll:[-28.0310,153.4325], mode:'tram', tx:TX.broadbeach, q:'Kurrawa Beach Broadbeach'},
       {n:'Pacific Fair', en:'Pacific Fair', ll:[-28.0355,153.4268], note:'大型商场，午饭和购物。', q:'Pacific Fair Shopping Centre'}],
-     gm:{mode:'walking', list:[0,1,2,3]}},
+     gm:{mode:'walking', list:[0,1,2,3]}, back:{tx:TX.pacificFairHome}},
     {label:'Springbrook 自然', stops:[
       {n:'Purling Brook 瀑布', en:'Purling Brook Falls', ll:[-28.1690,153.2715], t:'上午', mode:'car', note:'没有公共交通，需要自驾或参团；单程约 1 小时。', q:'Purling Brook Falls'},
       {n:'Best of All 观景台', en:'Best of All Lookout', ll:[-28.2400,153.2650], mode:'car', q:'Best of All Lookout Springbrook'}],
-     gm:{mode:'driving', list:['start',0,1]}},
+     gm:{mode:'driving', list:['start',0,1]}, back:{mode:'car'}},
     {label:'Sea World', stops:[
-      {n:'Sea World', en:'Sea World', ll:[-27.9570,153.4252], t:'全天', mode:'bus', q:'Sea World Gold Coast'}]},
+      {n:'Sea World', en:'Sea World', ll:[-27.9570,153.4252], t:'全天', mode:'bus', tx:TX.seaworld, q:'Sea World Gold Coast'}], back:{tx:TX.seaworldHome}},
     {label:'Movie World', stops:[
-      {n:'Movie World', en:'Warner Bros. Movie World', ll:[-27.9077,153.3122], t:'全天', mode:'bus', note:'旁边就是 Wet\'n\'Wild，一天只选一个园区。', q:'Warner Bros. Movie World'}]}
+      {n:'Movie World', en:'Warner Bros. Movie World', ll:[-27.9077,153.3122], t:'全天', mode:'bus', tx:TX.movieworld, note:'旁边就是 Wet\'n\'Wild，一天只选一个园区。', q:'Warner Bros. Movie World'}], back:{tx:TX.movieworldHome}}
   ],
   tail:[
     {n:'酒店取行李', en:'Hotel', ll:[-28.0040,153.4300], t:'约 17:00', kind:'stay', mode:'bus', q:'Cavill Avenue Surfers Paradise'},
-    {n:'Helensvale 站', en:'Helensvale Station', ll:[-27.9217,153.3337], t:'约 18:00', mode:'tram', note:'G:link 轻轨坐到终点 Helensvale，约 40 分钟，换火车去布里斯班。', q:'Helensvale Station'}
+    {n:'Helensvale 站', en:'Helensvale Station', ll:[-27.9217,153.3337], t:'约 18:00', mode:'tram', tx:TX.toHelensvale, note:'G:link 轻轨坐到终点 Helensvale，约 40 分钟，换火车去布里斯班。', q:'Helensvale Station'}
   ],
   after:[{who:'', code:'火车', dep:'Helensvale', arr:'Roma St / Central', note:'约 1 小时，到布里斯班后入住'}],
   tips:['退房后行李寄存在酒店前台，傍晚回来取。']},
@@ -535,11 +644,11 @@ var DAYS = [
     {n:'昆士兰美术馆 · 现代美术馆', en:'QAGOMA', ll:[-27.4703,153.0170], note:'常设展免费，控制在 1–1.5 小时。', q:'Gallery of Modern Art Brisbane'},
     {n:'Queen St Mall', en:'Queen Street Mall', ll:[-27.4688,153.0255], note:'过 Victoria Bridge 进市中心，午饭。', q:'Queen Street Mall Brisbane'},
     {n:'CityCat 码头', en:'North Quay ferry terminal', ll:[-27.4712,153.0196], q:'North Quay ferry terminal Brisbane'},
-    {n:'Howard Smith Wharves', en:'Howard Smith Wharves', ll:[-27.4616,153.0358], mode:'ferry', via:CITYCAT, note:'Story Bridge 下的餐厅酒吧区，坐 CityCat 沿河过来。', q:'Howard Smith Wharves'},
+    {n:'Howard Smith Wharves', en:'Howard Smith Wharves', ll:[-27.4616,153.0358], mode:'ferry', tx:TX.citycat, via:CITYCAT, note:'Story Bridge 下的餐厅酒吧区，坐 CityCat 沿河过来。', q:'Howard Smith Wharves'},
     {n:'袋鼠角悬崖', en:'Kangaroo Point Cliffs', ll:[-27.4785,153.0350], sunset:true, note:'步行过 Story Bridge 约 25–30 分钟。傍晚看城市天际线，18:00 左右吃晚饭。', q:'Kangaroo Point Cliffs'},
-    {n:'酒店取行李', en:'Hotel', ll:[-27.4690,153.0215], t:'约 18:45', kind:'stay', mode:'taxi', q:'Roma Street Station Brisbane'},
+    {n:'酒店取行李', en:'Hotel', ll:[-27.4690,153.0215], t:'约 18:45', kind:'stay', mode:'taxi', tx:TX.kpTaxi, q:'Roma Street Station Brisbane'},
     {n:'Roma St 站', en:'Roma Street · Airtrain', ll:[-27.4659,153.0193], t:'约 19:15', note:'Airtrain 也停 Central 站。', q:'Roma Street Station Brisbane'},
-    {n:'布里斯班机场国际', en:'BNE International', ll:[-27.3842,153.1175], t:'19:30–20:00', kind:'air', mode:'train', nofit:true, note:'Airtrain 约 20–25 分钟。国际航班建议提前 3 小时到。', q:'Brisbane International Airport'}
+    {n:'布里斯班机场国际', en:'BNE International', ll:[-27.3842,153.1175], t:'19:30–20:00', kind:'air', mode:'train', tx:TX.airtrain, nofit:true, note:'Airtrain 约 20–25 分钟。国际航班建议提前 3 小时到。', q:'Brisbane International Airport'}
   ],
   after:[{who:'朋友', code:'南航', dep:'BNE 23:00', arr:'TNA 11/4 11:30', note:'广州转机 2h45m'}],
   gm:{mode:'walking', list:[0,1,2]},
@@ -565,6 +674,61 @@ var OV_LEGS = [
   {a:[-28.0024,153.4315], b:[-27.4698,153.0251], mode:'train', lb:'11/2 火车', bend:0}
 ];
 var JINAN = [36.857,117.216];
+
+/* ---------- 当地交通怎么付钱（总览页） ---------- */
+var PAY = [
+  {c:'syd', t:'悉尼：火车、地铁、巴士、渡轮、轻轨都直接刷银行卡或手机（Opal 系统），进出站、上下车都要刷，每天自动封顶。机场两站进出另收站点费。'},
+  {c:'mel', t:'墨尔本：2026 年起火车和电车也能直接刷银行卡或手机，但海外卡不一定每个读卡器都认，稳妥起见买张 myki 卡。市中心免费电车区内坐电车不用刷。SkyBus 单独买票。'},
+  {c:'gc', t:'黄金海岸 · 布里斯班：Translink 全网一程 50 分（巴士、G:link 轻轨、火车、CityCat），刷 go card 或银行卡、手机都行。机场快线 Airtrain 不在内，单程约 A$23。'},
+  {c:'', t:'坐车前点每段交通下面的「实时查询」，用 Google 地图看实时班次。'}
+];
+
+/* ---------- 每段路怎么走（列表、地图和 tools/fetch-routes.mjs 共用） ---------- */
+function bookedHotel(city){ var hs=HOTELS[city]||[]; for(var i=0;i<hs.length;i++){ if(hs[i].booked && !hs[i].areaOnly) return hs[i]; } return null; }
+// 住处：订了酒店就用酒店的位置，否则用城市的默认落脚点
+function home(city){ var c=CITY[city], b=bookedHotel(city); return b ? {en:b.n, ll:b.ll, q:b.q, booked:true} : {en:'Hotel', ll:c.base, q:c.baseQ}; }
+// 某天（第 oi 个白天方案）的站点；方案里的 back 会替换「回酒店」那一站的交通
+function stopsFor(d, oi){
+  var op = d.options ? d.options[Math.min(oi||0, d.options.length-1)] : null, tail = (d.tail||[]).slice();
+  if(op && op.back && tail.length) tail[0] = Object.assign({}, tail[0], op.back);
+  var all = (op ? op.stops : d.stops).concat(tail), b = bookedHotel(d.city);
+  return b ? all.map(function(s){ return s.kind==='stay' ? Object.assign({}, s, {en:b.n, ll:b.ll, q:b.q}) : s; }) : all;
+}
+function startPt(d){ if(!d.start) return null; return d.start===true ? Object.assign({n:'住处出发', base:true}, home(d.city)) : Object.assign({base:true}, d.start); }
+function endPt(d){ if(!d.end) return null; return d.end.ll ? Object.assign({base:true}, d.end) : Object.assign({n:'回住处', base:true}, home(d.city), d.end); }
+// 一天里的每一段路：from → to；s 是这段到达的站（或终点），i 是站的序号或 'end'
+function legsFor(d, oi){
+  var stops=stopsFor(d, oi), st=startPt(d), en=endPt(d), prev=st?st.ll:null, out=[];
+  stops.forEach(function(s,i){ var from = s.from!=null ? stops[s.from].ll : (s.fromLL || prev); if(from) out.push({from:from, to:s.ll, s:s, i:i}); if(!s.opt) prev=s.ll; });
+  if(en && prev) out.push({from:prev, to:en.ll, s:en, i:'end'});
+  return out;
+}
+function nearLL(a, b){ return Math.abs(a[0]-b[0])<3e-4 && Math.abs(a[1]-b[1])<3e-4; }
+// 把一段路拆成小段（步行、坐车、换乘……），补上每小段的起点 A、终点 B；没写的短距离步行自动补上（auto）
+function legSegs(leg){
+  var s=leg.s, tx = s.tx ? [].concat(s.tx) : [{mode:s.mode||'walk'}], out=[], cur=leg.from;
+  tx.forEach(function(t, k){
+    var A = t.a || cur, B = t.b || (k<tx.length-1 ? (tx[k+1].a || leg.to) : leg.to);
+    if(!nearLL(cur, A)) out.push({mode:'walk', A:cur, B:A, auto:true});
+    out.push(Object.assign({}, t, {A:A, B:B, via: t.via || (tx.length===1 ? s.via : null)}));
+    cur = B;
+  });
+  if(!nearLL(cur, leg.to)) out.push({mode:'walk', A:cur, B:leg.to, auto:true});
+  return out;
+}
+function segKey(g){ function r(p){ return p[0].toFixed(4)+','+p[1].toFixed(4); } return [g.mode, g.line||'', r(g.A), r(g.B), g.via?g.via.length:0].join('|'); }
+/* @data-end */
+
+/* ---------- 路线形状：tools/fetch-routes.mjs 从 OpenStreetMap 取来后写在这里，不要手改 ---------- */
+/* @geo-begin */var GEO = {};/* @geo-end */
+function decodePl(s){
+  var pts=[], i=0, lat=0, lng=0;
+  function next(){ var b, sh=0, r=0; do{ b=s.charCodeAt(i++)-63; r|=(b&31)<<sh; sh+=5; }while(b>=32); return (r&1) ? ~(r>>1) : (r>>1); }
+  while(i<s.length){ lat+=next(); lng+=next(); pts.push([lat/1e5, lng/1e5]); }
+  return pts;
+}
+// 有取到的形状就用，没有就按途经点连直线
+function geoPts(g){ var e=GEO[segKey(g)]; return e ? decodePl(e) : [g.A].concat(g.via||[]).concat([g.B]); }
 
 /* ---------- 日出日落（简化天文算法，约 ±2 分钟） ---------- */
 function sunTimes(dateStr, lat, lon, tz){
@@ -593,17 +757,9 @@ var byId = {}; DAYS.forEach(function(d){ byId[d.id]=d; });
 function todayStr(){ var d=new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
 var TODAY = todayStr();
 
-function bookedHotel(city){ var hs=HOTELS[city]||[]; for(var i=0;i<hs.length;i++){ if(hs[i].booked && !hs[i].areaOnly) return hs[i]; } return null; }
-// 住处：订了酒店就用酒店的位置，否则用城市的默认落脚点
-function home(city){ var c=CITY[city], b=bookedHotel(city); return b ? {en:b.n, ll:b.ll, q:b.q, booked:true} : {en:'Hotel', ll:c.base, q:c.baseQ}; }
-function dayStops(d){
-  var base = d.options ? d.options[Math.min(S.opt[d.id]||0, d.options.length-1)].stops : d.stops;
-  var all = base.concat(d.tail||[]), b = bookedHotel(d.city);
-  return b ? all.map(function(s){ return s.kind==='stay' ? Object.assign({}, s, {en:b.n, ll:b.ll, q:b.q}) : s; }) : all;
-}
+function dayStops(d){ return stopsFor(d, S.opt[d.id]||0); }
+function dayLegs(d){ return legsFor(d, S.opt[d.id]||0); }
 function dayGm(d){ return d.options ? d.options[Math.min(S.opt[d.id]||0, d.options.length-1)].gm : d.gm; }
-function startPt(d){ if(!d.start) return null; return d.start===true ? Object.assign({n:'住处出发', base:true}, home(d.city)) : Object.assign({base:true}, d.start); }
-function endPt(d){ if(!d.end) return null; return d.end.ll ? Object.assign({base:true}, d.end) : Object.assign({n:'回住处', base:true}, home(d.city), d.end); }
 
 /* ---------- 链接 ---------- */
 function gmSearch(q){ return 'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(q); }
@@ -732,9 +888,8 @@ function setNote(t){ mapnote.innerHTML = esc(t)+'<span class="tw">底图没加�
 function setTileWarn(on){ if(mapnote.classList.contains('warn')!==on){ mapnote.classList.toggle('warn', on); placeLabels(); } }
 function mapNote(d){
   if(!d) return REGION.au.note;
-  var reg = REGION[d.region || (d.city==='gc'?'gc':'plain')];
-  var ferry = dayStops(d).some(function(s){ return s.mode==='ferry'; });
-  return ferry && reg.ferry ? reg.ferry : reg.note;
+  if(d.region==='gor') return REGION.gor.note;
+  return (Object.keys(GEO).length ? '路线沿实际道路和公交线路画（OpenStreetMap 数据）' : '路线按顺序直线连接，是示意')+'；彩色小标签是线路号，点开看怎么坐。';
 }
 
 /* 图层 */
@@ -749,6 +904,26 @@ function onActivate(mk, fn){
   mk.on('keydown', function(e){ var k=e.originalEvent.key; if(k==='Enter'||k===' '){ e.originalEvent.preventDefault(); fn(); } });
 }
 function addRoute(pts, mode, extra){ LF.polyline(pts, {className:'rt '+MCLS[mode]+(extra?' '+extra:''), interactive:false}).addTo(scene.group); }
+// 线路号标签：放在这一小段路线的中点，点开看怎么坐；去程回程同一条线只放一个
+function midOf(pts){
+  var L=[0], i; for(i=1;i<pts.length;i++) L.push(L[i-1]+Math.hypot(pts[i][0]-pts[i-1][0], (pts[i][1]-pts[i-1][1])*Math.cos(pts[i][0]*D2R)));
+  var h=L[L.length-1]/2; for(i=1;i<pts.length;i++){ if(L[i]>=h){ var t=(h-L[i-1])/((L[i]-L[i-1])||1); return [pts[i-1][0]+(pts[i][0]-pts[i-1][0])*t, pts[i-1][1]+(pts[i][1]-pts[i-1][1])*t]; } }
+  return pts[0];
+}
+function addBadge(g, pts, dim){
+  var ll=midOf(pts), txt=g.line;
+  if(scene.marks.some(function(m){ return m.badge===txt && nearLL(m.ll, ll); })) return;
+  var w=Math.round(12+txt.length*7.2);
+  var mk=LF.marker(ll, {icon:LF.divIcon({className:'lnbm'+(dim?' opt':''), html:'<span class="ln '+g.mode+'">'+esc(txt)+'</span>', iconSize:[w,20]}), zIndexOffset:280, riseOnHover:true});
+  mk.on('add', function(){ var el=mk.getElement(); if(el) el.setAttribute('aria-label', txt+' '+TXMODE[g.mode]); });
+  mk.addTo(scene.group);
+  var m={mk:mk, ll:ll, r:w/2, badge:txt}; scene.marks.push(m);
+  onActivate(mk, function(){ openPop(segPop(g), ll, 10); markSel(m); S.sel={type:'t'}; });
+}
+function segPop(g){
+  return {n:(g.line?g.line+' ':'')+TXMODE[g.mode]+(g.dir?' · '+g.dir:''), en:(g.on||g.off)?(g.on||'')+' → '+(g.off||''):'',
+    note:[g.time, g.freq, g.note].filter(Boolean).join('；'), links:'<a class="lk" href="'+gmGo(g.A, g.B, g.mode)+'" target="_blank" rel="noopener">实时查询</a>'};
+}
 // 标签是挂在锚点上的零尺寸 marker，位置由 placeLabels 避让后再定
 function addLabel(text, cls, ll, r, prio, isHotel, dyn){
   var m = LF.marker(ll, {icon:LF.divIcon({className:'lbm', html:'<span class="lb'+(cls?' '+cls:'')+'">'+esc(text)+'</span>', iconSize:[0,0]}), pane:'lbl', interactive:false, keyboard:false});
@@ -800,13 +975,18 @@ function buildScene(){
         arr.forEach(function(s){ if(s.kind==='air'||s.kind==='stay') return; LF.circleMarker(s.ll, {radius:3.5, className:'ctx', interactive:false, stroke:false, fillOpacity:1}).addTo(sc.group); });
       });
     }
-    var prevLL = st ? st.ll : null;
-    stops.forEach(function(s){
-      var from = s.from!=null ? stops[s.from].ll : (s.fromLL || prevLL);
-      if(from) addRoute([from].concat(s.via||[]).concat([s.ll]), s.mode||'walk', city+(s.opt?' opt':''));
-      if(!s.opt) prevLL = s.ll;
+    // 每段路拆成小段画：步行、坐车各用自己的线型；换乘点画小圆点；坐车的段加线路号标签
+    var badges=[];
+    dayLegs(d).forEach(function(leg){
+      var dim = !!leg.s.opt;
+      legSegs(leg).forEach(function(g){
+        var pts=geoPts(g);
+        addRoute(pts, g.mode, city+(dim?' opt':''));
+        if(g.mode==='walk') return;
+        [g.A, g.B].forEach(function(p){ if(!nearLL(p, leg.from) && !nearLL(p, leg.to)) LF.circleMarker(p, {radius:3.5, className:'xdot', interactive:false}).addTo(sc.group); });
+        if(g.line) badges.push([g, pts, dim]);
+      });
     });
-    if(en) addRoute([prevLL].concat(en.via||[]).concat([en.ll]), en.mode||'walk', city);
     // 住处（订了酒店时由下面的已订酒店标记代替）
     if(st || en){
       var same = st && en && st.ll[0]===en.ll[0] && st.ll[1]===en.ll[1];
@@ -829,6 +1009,7 @@ function buildScene(){
       onActivate(mk, function(){ select(i, false); });
       addLabel(s.n, s.opt?'dim':'', s.ll, 12, 2);
     });
+    badges.forEach(function(b){ addBadge(b[0], b[1], b[2]); });
     // 酒店：已订的始终显示、样式醒目；候选的跟随「酒店」开关
     if(onMap){
       (HOTELS[city]||[]).forEach(function(h,hi){
@@ -932,6 +1113,10 @@ function focusOn(ll, show){
     map.setView(ll, Math.max(map.getZoom(), FITZ-.25), {animate:!reduce()});
   } else show();
 }
+function gmGo(A, B, mode){
+  var tm = mode==='walk' ? 'walking' : (/^(taxi|car|tour)$/.test(mode) ? 'driving' : 'transit');
+  return 'https://www.google.com/maps/dir/?api=1&origin='+A[0]+','+A[1]+'&destination='+B[0]+','+B[1]+'&travelmode='+tm;
+}
 function stopLinks(s){ var l=''; if(s.q) l+='<a class="lk" href="'+gmSearch(s.q)+'" target="_blank" rel="noopener">地图</a>'; if(s.link) l+='<a class="lk" href="'+esc(s.link.u)+'" target="_blank" rel="noopener">'+esc(s.link.l)+'</a>'; return l; }
 function hotelLinks(h, c){ return '<a class="lk" href="'+gmSearch(h.q)+'" target="_blank" rel="noopener">地图</a>'+(h.areaOnly?'':'<a class="lk" href="'+booking(h,c)+'" target="_blank" rel="noopener">Booking 按日期查价</a>'); }
 
@@ -962,8 +1147,22 @@ function xferHtml(list){
     return '<div class="xfer"><div class="who"><b>'+esc(x.code)+'</b>'+(x.who?'<span>'+esc(x.who)+'</span>':'')+'</div><div class="end">'+esc(x.dep)+'</div><div class="arrow">→</div><div class="end r">'+esc(x.arr)+'</div>'+(x.note?'<div class="nt">'+esc(x.note)+'</div>':'')+'</div>';
   }).join('')+'</div>';
 }
+// 一段路怎么坐：每小段一行（线路号、方向、上下车站、时间），最后是 Google 地图实时查询
+function txHtml(leg){
+  var segs=legSegs(leg).filter(function(g){ return !g.auto; }), drive=segs.every(function(g){ return /^(walk|taxi|car)$/.test(g.mode); });
+  return '<div class="tx">'+segs.map(function(g){
+    if(g.mode==='walk') return '<div class="txr walk"><span class="ln walk">步行</span><span class="tn">'+esc([g.time, g.note].filter(Boolean).join('，'))+'</span></div>';
+    var info=[g.time, g.freq].filter(Boolean).join(' · ');
+    return '<div class="txr"><span class="ln '+g.mode+'">'+esc(g.line||TXMODE[g.mode])+'</span>'+
+      '<span class="tk">'+esc(TXMODE[g.mode]+(g.dir?' · '+g.dir:''))+'</span>'+
+      (g.on||g.off ? '<span class="tw">'+esc((g.on||'')+' → '+(g.off||''))+'</span>' : '')+
+      (info ? '<span class="tm">'+esc(info)+'</span>' : '')+
+      (g.note ? '<span class="tn">'+esc(g.note)+'</span>' : '')+'</div>';
+  }).join('')+'<a class="lk txl" href="'+gmGo(leg.from, leg.to, drive?'car':'bus')+'" target="_blank" rel="noopener">'+(drive?'导航':'实时查询')+'</a></div>';
+}
 function renderDay(d){
-  var c=CITY[d.city], idx=DAYS.indexOf(d), stops=dayStops(d), st=startPt(d), en=endPt(d);
+  var c=CITY[d.city], idx=DAYS.indexOf(d), stops=dayStops(d), st=startPt(d), en=endPt(d), legs=dayLegs(d), legAt={};
+  legs.forEach(function(l){ legAt[l.i]=l; });
   var sunLL = c.sun, sun=sunTimes(d.date, sunLL[0], sunLL[1], c.tz);
   var md=d.date.slice(5).replace('-','/');
   var h='<div class="dayhead" style="--c:var(--'+d.city+')">'+
@@ -972,6 +1171,9 @@ function renderDay(d){
     '<h2>'+esc(d.title)+'</h2></div>';
   h+='<p class="lede">'+esc(d.lede)+'</p>';
   h+='<div class="meta"><span>'+c.name+'日出 <span class="mono">'+sun.rise+'</span></span><span>日落 <span class="mono">'+sun.set+'</span></span><span>'+(c.tz===11?'夏令时 UTC+11':'UTC+10，不用夏令时')+'</span></div>';
+  var seen={}, chips=[];
+  legs.forEach(function(l){ legSegs(l).forEach(function(g){ if(!g.line || g.mode==='walk' || seen[g.mode+g.line]) return; seen[g.mode+g.line]=1; chips.push('<span class="ln '+g.mode+'">'+esc(g.line)+'</span>'); }); });
+  if(chips.length) h+='<div class="txsum"><span>今天坐</span>'+chips.join('')+'</div>';
   h+='<div class="pager"><button class="pbtn" type="button" data-go="'+(idx>0?DAYS[idx-1].id:'overview')+'">‹ '+(idx>0?DAYS[idx-1].date.slice(5).replace('-','/'):'总览')+'</button><button class="pbtn" type="button" data-go="'+(idx<DAYS.length-1?DAYS[idx+1].id:'')+'"'+(idx<DAYS.length-1?'':' disabled')+'>'+(idx<DAYS.length-1?DAYS[idx+1].date.slice(5).replace('-','/'):'行程结束')+' ›</button></div>';
   if(d.options){
     var cur=Math.min(S.opt[d.id]||0, d.options.length-1);
@@ -983,13 +1185,17 @@ function renderDay(d){
   var num=0;
   stops.forEach(function(s,i){
     var lab = s.kind==='stay' ? '宿' : (s.kind==='air' ? '机' : String(++num));
-    var mode = s.mode && s.mode!=='walk' ? '<span class="via">'+MODE[s.mode]+'</span><br>' : '';
+    var tx = s.tx && legAt[i] ? txHtml(legAt[i]) : '';
+    var mode = !tx && s.mode && s.mode!=='walk' ? '<span class="via">'+MODE[s.mode]+'</span><br>' : '';
     h+='<li class="stop'+(s.opt?' opt':'')+(s.kind?' '+s.kind:'')+'" id="stop-'+i+'" data-i="'+i+'"><div class="n">'+lab+'</div><div class="body">'+mode+
       '<div class="ttl"><span class="nm">'+esc(s.n)+'</span>'+(s.t?'<span class="t">'+esc(s.t)+'</span>':'')+(s.sunset?'<span class="t">日落 '+sun.set+'</span>':'')+'</div>'+
-      '<div class="en">'+esc(s.en||'')+'</div>'+(s.note?'<p class="note">'+esc(s.note)+'</p>':'')+
+      '<div class="en">'+esc(s.en||'')+'</div>'+tx+(s.note?'<p class="note">'+esc(s.note)+'</p>':'')+
       '<div class="links">'+stopLinks(s)+'</div></div></li>';
   });
-  if(en && en.n!=='回住处'){ h+='<li class="stop stay"><div class="n" style="background:var(--muted)">终</div><div class="body">'+(en.mode&&en.mode!=='walk'?'<span class="via">'+MODE[en.mode]+'</span><br>':'')+'<div class="ttl"><span class="nm">'+esc(en.n)+'</span>'+(en.t?'<span class="t">'+esc(en.t)+'</span>':'')+'</div></div></li>'; }
+  if(en && (en.n!=='回住处' || en.tx)){
+    var etx = en.tx && legAt.end ? txHtml(legAt.end) : '';
+    h+='<li class="stop stay"><div class="n" style="background:var(--muted)">'+(en.n==='回住处'?'回':'终')+'</div><div class="body">'+(!etx && en.mode&&en.mode!=='walk'?'<span class="via">'+MODE[en.mode]+'</span><br>':'')+'<div class="ttl"><span class="nm">'+esc(en.n)+'</span>'+(en.t?'<span class="t">'+esc(en.t)+'</span>':'')+'</div>'+etx+'</div></li>';
+  }
   h+='</ol>';
   var gm=dayGm(d);
   if(gm){
@@ -1015,7 +1221,7 @@ function renderDay(d){
   } else {
     h+='<h3 class="sec">今晚</h3><p class="hstay">在飞机上。我回自己的住处。</p>';
   }
-  h+='<p class="fine">距离是直线距离；价格是估价或之前查到的参考价，营业时间和交通时刻出发前再核对一遍。</p>';
+  h+='<p class="fine">距离是直线距离；价格是估价或之前查到的参考价，营业时间和交通时刻出发前再核对一遍。线路号和班次是 2026 年 10 月查的，坐车前点「实时查询」确认。</p>';
   panel.innerHTML=h;
   panel.querySelectorAll('.pbtn').forEach(function(b){ b.addEventListener('click', function(){ var g=b.getAttribute('data-go'); if(g){ setView(g); window.scrollTo({top: isNarrow()? 0 : window.scrollY, behavior:'auto'}); } }); });
   panel.querySelectorAll('.obtn').forEach(function(b){ b.addEventListener('click', function(){ S.opt[d.id]=+b.getAttribute('data-opt'); store('opt',S.opt); render(); }); });
@@ -1034,8 +1240,9 @@ function renderOverview(){
   });
   h+='<li><div class="drow static"><span class="md">11/04</span><span class="wd">三</span><span class="tt"><b>11:30 到济南</b><span>11/5 上班</span></span><span class="nt">到家</span></div></li></ol>';
   h+='<h3 class="sec">交通</h3><div class="tblwrap"><table class="ftable"><tbody>'+FLIGHTS.map(function(f){ return '<tr><td>'+f.d+'</td><td><b>'+esc(f.code)+'</b> <span class="r">'+esc(f.r)+'</span><span class="sub">'+esc(f.who)+(f.sub?' · '+esc(f.sub):'')+'</span></td><td class="r" style="text-align:right;white-space:nowrap">'+esc(f.p)+'</td></tr>'; }).join('')+'</tbody></table></div>';
+  h+='<h3 class="sec">当地交通怎么付钱</h3><ul class="tips pay">'+PAY.map(function(p){ return '<li>'+(p.c?'<i class="dot-c" style="--c:var(--'+p.c+')"></i>':'')+esc(p.t)+'</li>'; }).join('')+'</ul>';
   h+='<h3 class="sec">住宿</h3><div class="stays">'+['syd','mel','gc','bne'].map(function(k){ var c=CITY[k]; return '<div style="border-top:3px solid var(--'+k+')"><b>'+c.name+'</b><span class="n">'+c.nights+'</span> <span>晚</span><br><span>'+c.cin.slice(5).replace('-','/')+' → '+c.cout.slice(5).replace('-','/')+'</span>'+(bookedHotel(k)?'<span class="bkd">已订 · '+esc(bookedHotel(k).s||bookedHotel(k).n)+'</span>':'')+'</div>'; }).join('')+'</div>';
-  h+='<p class="fine">底图来自 OpenStreetMap，景点和酒店按真实坐标放置；路线按顺序直线连接，渡轮和大洋路按途经点画，都是示意。实际导航请点每一站的「地图」，在 Google 地图里打开。机票价格是之前查到的参考价，购买前重新查。</p>';
+  h+='<p class="fine">底图和路线数据来自 OpenStreetMap，景点和酒店按真实坐标放置；线路走向仅供参考，坐车以站牌和实时查询为准。实际导航请点每一站的「地图」，在 Google 地图里打开。机票价格是之前查到的参考价，购买前重新查。</p>';
   panel.innerHTML=h;
   panel.querySelectorAll('[data-go]').forEach(function(b){ b.addEventListener('click', function(){ setView(b.getAttribute('data-go')); if(isNarrow()) window.scrollTo({top:0}); }); });
 }
