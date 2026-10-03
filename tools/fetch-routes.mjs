@@ -33,7 +33,8 @@ const BUDGET_MS = 18 * 60 * 1000;
 const T0 = Date.now();
 const elapsed = () => ((Date.now() - T0) / 1000).toFixed(0) + 's';
 // 上下车点离线路多远以内算「在这条线上」（米）
-const SNAP = { bus: 250, tram: 250, lrt: 300, train: 400, metro: 400, ferry: 450 };
+// 线路号已经限定了是哪条线，所以半径可以放宽些（车站坐标和 OSM 里的线常差一两百米）
+const SNAP = { bus: 400, tram: 300, lrt: 600, train: 500, metro: 500, ferry: 600 };
 
 // ---------- 读出网页里的行程数据，列出所有要画的小段 ----------
 export function readPage(html) {

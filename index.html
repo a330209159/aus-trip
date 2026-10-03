@@ -1042,7 +1042,7 @@ function midOf(pts){
 }
 function addBadge(g, pts, dim){
   var ll=midOf(pts), txt=g.line;
-  if(scene.marks.some(function(m){ return m.badge===txt && nearLL(m.ll, ll); })) return;
+  if(scene.marks.some(function(m){ return m.badge===txt && Math.abs(m.ll[0]-ll[0])<0.002 && Math.abs(m.ll[1]-ll[1])<0.002; })) return;
   var w=Math.round(12+txt.length*7.2);
   var mk=LF.marker(ll, {icon:LF.divIcon({className:'lnbm'+(dim?' opt':''), html:'<span class="ln '+g.mode+'">'+esc(txt)+'</span>', iconSize:[w,20]}), zIndexOffset:280, riseOnHover:true});
   mk.on('add', function(){ var el=mk.getElement(); if(el) el.setAttribute('aria-label', txt+' '+TXMODE[g.mode]); });
