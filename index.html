@@ -15,6 +15,7 @@
   --bg:#EDF1F3; --surface:#FFFFFF; --ink:#16232B; --muted:#5B6B75; --line:#D3DDE2; --soft:#E4EBEF;
   --land:#F7F6F2; --sea:#CADCE4; --coast:#9AB5C1; --sea-ink:#477A8E; --grid:rgba(22,35,43,.075); --halo:rgba(247,246,242,.92);
   --syd:#1E5EA8; --mel:#2E7A52; --gc:#B06F08; --bne:#7347AE; --air:#3B4A53;
+  --walk:#46535B; --l-train:#C2571A; --l-metro:#0B7A78; --l-tram:#2F8A3A; --l-lrt:#C0263B; --l-bus:#1D63A6; --l-ferry:#0A7EA3; --l-car:#7A6450;
   --f-display:"Noto Serif SC","Songti SC","STSong",serif;
   --f-body:"Noto Sans SC","PingFang SC","Hiragino Sans GB","Microsoft YaHei",system-ui,sans-serif;
   --f-mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
@@ -25,12 +26,14 @@
     --bg:#0E1519; --surface:#162027; --ink:#E2E9EC; --muted:#93A4AD; --line:#2A3941; --soft:#1C2930;
     --land:#18232A; --sea:#0C1D25; --coast:#2D4C5A; --sea-ink:#7BB0C3; --grid:rgba(226,233,236,.06); --halo:rgba(24,35,42,.9);
     --syd:#74ABEE; --mel:#66C896; --gc:#E5AD4A; --bne:#B793F0; --air:#B9C6CD; color-scheme:dark;
+    --walk:#D3DDE2; --l-train:#F28C4E; --l-metro:#37B9B4; --l-tram:#6BCB77; --l-lrt:#F2667A; --l-bus:#64A2EC; --l-ferry:#4CC6E6; --l-car:#C9B49C;
   }
 }
 :root[data-theme="dark"]{
   --bg:#0E1519; --surface:#162027; --ink:#E2E9EC; --muted:#93A4AD; --line:#2A3941; --soft:#1C2930;
   --land:#18232A; --sea:#0C1D25; --coast:#2D4C5A; --sea-ink:#7BB0C3; --grid:rgba(226,233,236,.06); --halo:rgba(24,35,42,.9);
   --syd:#74ABEE; --mel:#66C896; --gc:#E5AD4A; --bne:#B793F0; --air:#B9C6CD; color-scheme:dark;
+  --walk:#D3DDE2; --l-train:#F28C4E; --l-metro:#37B9B4; --l-tram:#6BCB77; --l-lrt:#F2667A; --l-bus:#64A2EC; --l-ferry:#4CC6E6; --l-car:#C9B49C;
 }
 
 *{box-sizing:border-box}
@@ -101,14 +104,16 @@ button{font:inherit;color:inherit}
 .lmap .pop .lk{color:var(--ink)}
 /* 路线（Leaflet 的 SVG 路径，className 带过来） */
 .ctx{fill:var(--muted);fill-opacity:.4}
-.rt{fill:none;stroke-linecap:round;stroke-linejoin:round}
-.rt.m-walk{stroke-width:3.4}
-.rt.m-transit{stroke-width:2.8;stroke-dasharray:7 5}
-.rt.m-ferry{stroke-width:3.2;stroke-dasharray:.5 6;stroke:var(--sea-ink)!important}
-.rt.m-tour{stroke-width:2.8;stroke-dasharray:14 5 3 5}
-.rt.m-flight{stroke-width:2;stroke-dasharray:9 6;stroke:var(--air)!important}
+.rt{fill:none;stroke-linecap:round;stroke-linejoin:round;stroke:var(--lc2,var(--muted))}
+/* 步行：灰色圆点线；坐车：实线，颜色和线路号标签一致 */
+.rt.md-walk{--lc2:var(--walk)} .rt.md-train{--lc2:var(--l-train)} .rt.md-metro{--lc2:var(--l-metro)} .rt.md-tram{--lc2:var(--l-tram)}
+.rt.md-lrt{--lc2:var(--l-lrt)} .rt.md-bus{--lc2:var(--l-bus)} .rt.md-ferry{--lc2:var(--l-ferry)} .rt.md-taxi,.rt.md-car,.rt.md-tour{--lc2:var(--l-car)}
+.rt.m-walk{stroke-width:3.6;stroke-dasharray:.1 6.5}
+.rt.m-transit{stroke-width:4.5}
+.rt.m-ferry{stroke-width:4;stroke-dasharray:10 6}
+.rt.m-tour{stroke-width:3.2;stroke-dasharray:14 5 3 5}
+.rt.m-flight{stroke-width:2;stroke-dasharray:9 6;stroke:var(--air)}
 .rt.opt{opacity:.45}
-.rt.syd{stroke:var(--syd)} .rt.mel{stroke:var(--mel)} .rt.gc{stroke:var(--gc)} .rt.bne{stroke:var(--bne)}
 /* 点标记（divIcon；尺寸由 iconSize 决定，里面的元素铺满） */
 .mk{cursor:pointer}
 .mk.syd{--c:var(--syd)} .mk.mel{--c:var(--mel)} .mk.gc{--c:var(--gc)} .mk.bne{--c:var(--bne)}
@@ -138,8 +143,8 @@ button{font:inherit;color:inherit}
 .lbm .lb.bk{font-weight:700;color:var(--c)}
 /* 交通：线路号标签（列表和地图共用），颜色按交通方式 */
 .ln{display:inline-flex;align-items:center;justify-content:center;min-width:26px;height:20px;padding:0 6px;border-radius:5px;font:600 11.5px/1 var(--f-mono);color:#fff;background:var(--lc,#4B5563);white-space:nowrap}
-.ln.train{--lc:#C2571A} .ln.metro{--lc:#0B6E74} .ln.tram{--lc:#2F7D32} .ln.lrt{--lc:#B3122B} .ln.bus{--lc:#1D63A6} .ln.ferry{--lc:#0A7A70} .ln.taxi,.ln.car{--lc:#4B5563}
-.ln.walk{background:transparent;color:var(--muted);border:1px solid var(--line);font:500 11.5px/1 var(--f-body)}
+.ln.train{--lc:#C2571A} .ln.metro{--lc:#0B7A78} .ln.tram{--lc:#2F8A3A} .ln.lrt{--lc:#C0263B} .ln.bus{--lc:#1D63A6} .ln.ferry{--lc:#0A7EA3} .ln.taxi,.ln.car,.ln.tour{--lc:#6E5A47}
+.ln.walk{background:transparent;color:var(--walk);border:1.5px dashed var(--walk);font:500 11.5px/1 var(--f-body)}
 .lnbm{cursor:pointer}
 .lnbm .ln{width:100%;height:100%;padding:0;box-shadow:0 0 0 2px var(--surface),0 1px 4px rgba(0,0,0,.3)}
 .lnbm.opt{opacity:.6}
@@ -149,7 +154,12 @@ button{font:inherit;color:inherit}
 .legend{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:12px;color:var(--muted);padding:8px 2px 0}
 .legend span{display:inline-flex;align-items:center;gap:6px}
 .legend svg{width:30px;height:8px;overflow:visible}
-.legend line{stroke:var(--muted);stroke-linecap:round}
+.legend line{stroke-linecap:round;stroke-width:4}
+.legend .md-walk{stroke:var(--walk);stroke-width:3.4;stroke-dasharray:.1 5.5}
+.legend .md-train{stroke:var(--l-train)} .legend .md-metro{stroke:var(--l-metro)} .legend .md-tram{stroke:var(--l-tram)} .legend .md-lrt{stroke:var(--l-lrt)} .legend .md-bus{stroke:var(--l-bus)}
+.legend .md-ferry{stroke:var(--l-ferry);stroke-width:3.4;stroke-dasharray:7 4}
+.legend .md-car{stroke:var(--l-car);stroke-width:2.8;stroke-dasharray:9 3 2 3}
+.legend .md-flight{stroke:var(--air);stroke-width:2;stroke-dasharray:6 4}
 
 /* panel */
 .panel{min-width:0}
@@ -209,8 +219,14 @@ h3.sec::after{content:"";flex:1;height:1px;background:var(--line)}
 .txr .tn{font-size:12.5px;color:var(--muted)}
 .txr.walk{align-items:center}
 .tx .txl{justify-self:start}
-.txsum{display:flex;flex-wrap:wrap;gap:5px 6px;align-items:center;margin-top:10px;font-size:12.5px;color:var(--muted)}
-.txsum span:first-child{margin-right:2px}
+.daysum{display:flex;flex-wrap:wrap;gap:8px 22px;margin-top:12px;padding:10px 12px;border-radius:12px;background:var(--surface);border:1px solid var(--line)}
+.daysum .ds{display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px;font-size:13px}
+.daysum .lab{color:var(--muted);font-size:12.5px}
+.daysum b{font:600 17px/1.2 var(--f-mono);font-variant-numeric:tabular-nums}
+.daysum .sub{color:var(--muted);font-variant-numeric:tabular-nums}
+.daysum .unit{margin-left:-5px;font-weight:600}
+.daysum .chips{display:flex;flex-wrap:wrap;gap:5px}
+.txw{display:flex;align-items:center;gap:8px;margin:5px 0 3px;font-size:12.5px;color:var(--muted);font-variant-numeric:tabular-nums}
 .tips.pay li{list-style:none;margin-left:-1.1em}
 .lk{display:inline-flex;align-items:center;gap:4px;font-size:12.5px;text-decoration:none;border:1px solid var(--line);border-radius:7px;padding:2px 9px;background:var(--surface);color:var(--ink);white-space:nowrap}
 .lk:hover{border-color:var(--muted)}
@@ -299,11 +315,15 @@ h3.sec::after{content:"";flex:1;height:1px;background:var(--line)}
       </div>
     </div>
     <div class="legend" aria-label="图例">
-      <span><svg viewBox="0 0 30 8"><line x1="2" y1="4" x2="28" y2="4" stroke-width="3"/></svg>步行</span>
-      <span><svg viewBox="0 0 30 8"><line x1="2" y1="4" x2="28" y2="4" stroke-width="2.4" stroke-dasharray="6 4"/></svg>火车 · 巴士 · 电车</span>
-      <span><svg viewBox="0 0 30 8"><line x1="2" y1="4" x2="28" y2="4" stroke-width="3" stroke-dasharray=".5 5"/></svg>渡轮</span>
-      <span><svg viewBox="0 0 30 8"><line x1="2" y1="4" x2="28" y2="4" stroke-width="2.4" stroke-dasharray="10 4 2 4"/></svg>旅行团 · 自驾</span>
-      <span><svg viewBox="0 0 30 8"><line x1="2" y1="4" x2="28" y2="4" stroke-width="2" stroke-dasharray="7 5"/></svg>飞机</span>
+      <span><svg viewBox="0 0 30 8"><line class="md-walk" x1="3" y1="4" x2="27" y2="4"/></svg>步行</span>
+      <span><svg viewBox="0 0 30 8"><line class="md-train" x1="3" y1="4" x2="27" y2="4"/></svg>火车</span>
+      <span><svg viewBox="0 0 30 8"><line class="md-metro" x1="3" y1="4" x2="27" y2="4"/></svg>地铁</span>
+      <span><svg viewBox="0 0 30 8"><line class="md-tram" x1="3" y1="4" x2="27" y2="4"/></svg>电车</span>
+      <span><svg viewBox="0 0 30 8"><line class="md-lrt" x1="3" y1="4" x2="27" y2="4"/></svg>轻轨</span>
+      <span><svg viewBox="0 0 30 8"><line class="md-bus" x1="3" y1="4" x2="27" y2="4"/></svg>巴士</span>
+      <span><svg viewBox="0 0 30 8"><line class="md-ferry" x1="3" y1="4" x2="27" y2="4"/></svg>渡轮</span>
+      <span><svg viewBox="0 0 30 8"><line class="md-car" x1="3" y1="4" x2="27" y2="4"/></svg>打车 · 自驾 · 旅行团</span>
+      <span><svg viewBox="0 0 30 8"><line class="md-flight" x1="3" y1="4" x2="27" y2="4"/></svg>飞机</span>
     </div>
   </div>
   <section class="panel" id="panel" aria-live="polite"></section>
@@ -453,7 +473,7 @@ var TX = {
   toHelensvale:[
     {mode:'walk', time:'拖行李步行约 5 分钟到 Cavill Avenue 站'},
     {mode:'lrt', line:'G:link', dir:'往 Helensvale', on:'Cavill Avenue 站', off:'Helensvale 站（终点）', a:STN.cavill, b:STN.helensvale, time:'约 40 分钟', osm:{route:'light_rail|tram'}}],
-  citycat:{mode:'ferry', line:'CityCat', dir:'往 Northshore Hamilton', on:'North Quay', off:'Howard Smith Wharves', time:'约 15–20 分钟', note:'一程 50 分，刷 go card 或银行卡。', osm:{route:'ferry', name:'CityCat'}},
+  citycat:{mode:'ferry', line:'CityCat', dir:'往 Northshore Hamilton', on:'North Quay', off:'Howard Smith Wharves', time:'约 15–20 分钟', note:'一程 50 分，刷 go card 或银行卡。', osm:{route:'ferry'}},
   kpTaxi:{mode:'taxi', line:'打车', on:'Kangaroo Point', off:'酒店', time:'约 10 分钟', note:'晚上拖行李打车最省事，也可以叫 Uber。'},
   airtrain:{mode:'train', line:'Airtrain', dir:'往机场', on:'Roma St 站', off:'International 站', a:STN.romaSt, time:'约 25 分钟', freq:'约每 15–30 分钟', note:'私营机场快线，单程约 A$23，不在 50 分票价内；末班约 22:00。', osm:{route:'train', name:'Airport|Airtrain'}}
 };
@@ -723,18 +743,19 @@ function segKey(g){ function r(p){ return p[0].toFixed(4)+','+p[1].toFixed(4); }
 /* @geo-begin */var GEO = {
 "bus|333|-33.8906,151.2750|-33.8915,151.2477|0":"`gzmEm{hz[tGpH`ANr@n@dAT|A?bG_A`A@|Ap@\\nB_CjJ}Hf`AuBb[HxBuAt@iGpHf@nCfBvEt@pIwEZk@`LjCR",
 "bus|373|-33.8762,151.2099|-33.9205,151.2565|0":"fmwmE{d|y[GfAd@Bz@W\\m@F_Ld@iBxUk[xScChXaL~QsEd]aEjSeBfKeB~BaBzM{PhDyJ|FuRfGsLpBsBxJsE|BeBrAyAjCkAh@g@pB}Ib@wEhZeJhDmDd@gChAmK`DgLtC}^GQLI`CaZ{@M",
-"bus|700|-28.0921,153.4521|-28.1365,153.4860|0":"lvmjDubrg\\|@yHOe@iDBo@h@c@ByB`Ci@PkCCHq@xCGhCmC|@e@hHSfK|HjBTvAc@t@u@p@mAh@mE^uApM_QlGqTl@oAt@}@dAm@xSuHtr@qYn^{P`a@iTpNmIrLiEfCyBtVc]xAiChBeG`BkCtLoJjA~CHC",
-"bus|700|-28.1345,153.4872|-28.0921,153.4521|0":"r_vjD_~xg\\f@o@o@}@YRe@[gAl@SYBM~AiADShAIlC}@|BhGf@xB_KpHmAlAaAdBgB|FsAjCqVz\\aCfCkBbAiJxCiNhIeb@~Tk]fPur@nYyTjIgAbAy@zAuGrTmMdQu@hFe@pAs@bA{A|@eBFcAUqJsGsC]uCTeDlDEn@jIn@O~A",
+"bus|700|-28.0921,153.4521|-28.1365,153.4860|0":"pvmjDmorg\\tABhBd@fJpG|ANvAc@t@u@p@mAh@mE^uApM_QlGqTl@oAt@}@dAm@xSuHtr@qYn^{P`a@iT|NsIlLeEvCsCrVc]dAmBhBeGhAqBdLcJ",
+"bus|700|-28.1345,153.4872|-28.0921,153.4521|0":"pfvjDsbyg\\dB`G_KpHmAlAaAdBgB|FsAjCqVz\\aChCkB`AiJxCiNhIeb@~Tk]fPur@pYyThIgAbAy@|AuGpTuL|Ok@~Aq@xEu@vAcA|@eB`@aBS_JkGiBc@kBGeBNaBzA",
 "bus|705|-27.9570,153.4252|-28.0005,153.4270|0":"fjsiDozlg\\@aIxSF~Dg@pAVnG@rFc@pBs@hAPjFUrFv@jAMxDsAfBsAbA?tEq@dGVpBVpEjAhAx@Vt@rA|In@rAl@f@dGxClG~DrHfAjAx@`D{Ana@a[jD}AxI{BbEWpT`AtVlBpUdCJKMO",
 "bus|705|-28.0005,153.4270|-27.9570,153.4252|0":"bz{iDwemg\\`@LKd@oa@eE}\\cBiDAyD`@uGfBaF~B_^rXoDrBmBr@e@eAg@_@mHsAkGoEwGmCgAsBy@uHg@eAmAeAaH}AaF]yBFoCl@q@l@iAJsE`BaBVcHw@iE^{@VkAIkGj@{GBuAVaE]ySGA`I",
 "bus|SkyBus|-37.8183,144.9526|-37.6698,144.8422|0":"jkyeFw`vsZw@eEmm@jTwIhFmG`HgAnBeInVWdDDlBlBdIFjDgF~TE|@RhBKv@c@t@{@ZqAKgIoGgCoAkCu@yH]eS|BwGIqQmB{E{@cFuByJoGcIeCeGe@{MXaDVsCl@oKjEeKlDyJdAsRE__@}Aml@_BeGDgGf@wHbB{DrAaSbJeGnBkFn@wQIiFz@gGlCiIfH{D`CgDbA}I`B_ClAuC|BcEnFaE~HaBbF_AjEs@lFyCdf@OfFBvG~@dMnBfKrIhZp@lEN|DCdEcEdr@uAnGmCfFqCnCaCtAmCv@aEVcOkAuPsBoWsAyV{BgDEeEX_^tH{lA|SkJfDaQlL_OrL}MzNyo@j|@iH~KuChGsCbIwDdOaFxUaOnh@}QwGg@i@UmAw@`@y@`BiCXvAfV[\\B`AOxAo@hAkA^RnCKvArAKz@x@NbBOlAtE~T",
-"bus|TX7|-27.9077,153.3122|-27.9217,153.3337|0":"bviiDgxvf\\yFKSaAm@PyGB[o@jNqQxC}AAm@{AaIzE{@jJs@d@NrCm@bMcDrO_GdIeE|MaJxKuJhJmKVmAz@sAbA}C~AeSEcDkCwLcByEuBuCyCkBqAJgCzEqAhAfGzLf@tCl@r@Ip@k@Hc@e@qB]k@eAfAo@]u@]R",
-"bus|TX7|-27.9217,153.3337|-27.9077,153.3122|0":"rmliDs~zf\\\\S\\t@gAn@j@dAzAT`@MJcA]sBwGwMtAeAxDoHrEtC`BjBzB|FXRjDdIvGpPLjCi@pCqA`BwE`DqPdRs@HsJpIoI`GoIzEuK|E}NvEG^kIzCwBRYZs@|BoHz@u@fAr@|FO`A{AtAgA`BiB|Aw@zB[^R`AxFJ",
+"bus|TX7|-27.9077,153.3122|-27.9217,153.3337|0":"rniiD{{vf\\g@j@o@JmGB[o@jNqQfAu@fA[JYSuAvDiApFe@tEw@dKeFXtAfCu@L^kCfAYMB]YuAz]yKpFqBvAaAhTyRtGoHbDeHr@_@dCk@p@kMSaFk@mCuGeR",
+"bus|TX7|-27.9217,153.3337|-27.9077,153.3122|0":"r_miDei{f\\pGxQn@bDNnFs@xN_BT_B~@mCdEsHlIiTxRwA`A}d@rOTfAfCu@L^kCfAYMB]UgAqFfDaC`AmBf@wLzAu@fAr@|FO`A{AvAeA~AkB~Au@rB",
 "car||-28.0040,153.4300|-28.1690,153.2715|0":"~o|iDqxmg\\N~EbF?tBc@WvDdCMtJnAzBfC~LhIfC`DpIp[YxKe@rAgD|_@NnBzUdCja@gBhj@bHzOd@|SbFpJb@bx@|JbGChI}AxEbSnXfXbAXfLjMtAfFFzNj@p@`f@{HnH_@lVn@p]nIzF?lOsArDp@dCbBtPz^V|EsArQZ`CpC|C~BhGpKdDuCtFkCxOiPrf@cCzJR~BtCzFTdG_@rHpDbHhDrKKbd@jCdE`IzBbBnB|EpSrBfRvC~O|@nBbChBxKbA|CpC~IrU?|LdAlG`H`NdDtU~BxFtGnFzI`DrYjDzRsAnP|E~DpCjMjUpEh@xDaA|F`CjApEy@rBVvB~DxFhBLbBrAlBgCz@UvFtCBv@{BjDSrBf@t@vBq@DfCaEdGpCj@`@`DeAtA{D|AIt@dCjMoAlDxEzHdD|BtD`A`AzBN~DaCdU^tKz@zCtG`ItGdBdAjG{AbEEpB~DqB`E[zH^rD`Cr@{B|AI|Bd@bAjCdF~A|FsFpBu@VuCz@GzA~AeCtHzAxGaCvCrBfGjH~AFnCd@`@xAc@nE?hGlAhA_@`AuCzCBn@p@uCzGcOrIyD|EaCnA@j@hErBtBKzAp@lC_BhBJpB~A`C_@bDzAlA~AxAi@xMs@bB`CqAlGiEzFqM|D}ChKgDfDH|@tMoAvDyAjBKrGjAv@t@vFSzFtCpBk@lCn@fEcCh@d@l@vGrDdC~DdGdDbAzCMnCbCrCr@~GP|EmAlGf@xH~IhNjJ|@qAa@s@~_@up@",
 "car||-28.1690,153.2715|-28.2400,153.2650|0":"fw|jD{ynf\\_`@tp@`@r@}@pAnGjLlAx@xD?hClA|BR|VaFdBl@rD~EpLtAxC@nDv@fNo@pJ|DxSy@jCbF|FfBpErCdNzBdEaAhKL|E~CrAVtLg@fI_B`FNzHuD|CAbE_AxD~AbQrA|EnAhBY~GcFnJjBnEAfI{EvBuC\\iGlEmJlEsEpEExCeAdEBnJ{CdFnC`@zDbAxA~GBhCy@xEEnAyALsAlBqBzZePtC}DhJgCvK_@hEcBnEoDhGrGt@bDA~I",
 "car||-28.2400,153.2650|-28.0040,153.4300|0":"~rjkDgqmf\\@_Ju@cDiGsGoEnDiEbBwK^iJfCuC|D{ZdPmBpBMrAoAxAyEDiCx@_HCcAyAa@{DeFoCoJzCeECyCdAqEDmErEmElJ]hGwBtCgIzEoE@oJkB_HbFiBX}EoAcQsAyD_BcE~@}C@{HtDaFOgI~AuLf@sAW}E_DiKMeE`AeN{BqEsC}FgBkCcFySx@qJ}DgNn@oDw@yCAqLuAsD_FeBm@}V`F}BSiCmAyD?mAy@gGcLqNsJqDaFsEbBsFeC_LVqSmI_EeGsDeCm@wGi@e@gEbCmCo@qBj@{FuCwFRw@u@sGkAkBJwDxAuMnAI}@fDgD|CiKpM}DdDyDxB_IgBqCyMr@yAh@mA_BcD{AaC^qB_BiBKmC~A{Aq@uBJiEsBAk@`CoAxD}EbOsIfCcFHkAgEa@aAtCiA^iGmAoE?yAb@e@a@GoCkH_BsBgG`CwC{AyGdCuH{A_B{@FWtCqBt@}FrFeF_BcAkC}Be@}AHs@zBsDaC{H_@aEZ_EpBDqBzAcEeAkGuGeBuGaI{@{C_@uK`CeUO_EaA{BuDaAeD}ByE{HnAmDeCkMHu@zD}AdAuAa@aDqCk@`EeGEgCwBp@g@u@RsBzBkDCw@wFuC{@TmBfCcBsAiBM_EyFWwBx@sBkAqE}FaCyD`AqEi@kMkU_EqCoP}E{RrAsYkD{IaDiFyDkDoHeDuUaHaNeAmG?}L_JsU}CqCyKcAiBkAoAsB_DyPsBgR}EqS}@wAoIcCeCkCcCnAwMfAoFzAmHBaGr@wGeBuReAiBuAcA_C}VsCkEJuHpAuDG}JaFsFw@_Kz@gQPa[bI}CyKiAu@uAoDsN}cA}CuJeV}ZkTsM}RiQwC_GeIeYwBqCIeBj@{Ca@kRqEec@rGgq@lBwFjJ{MOsCw@_AwPoEkQ_Aoj@}Ggc@`BeIeAoAyA_Ig@Qm@tFyn@s@qGqFuR_HsHwHqE_B]eAeB_I{AiDXdBmRiJi@g@fGUC",
 "ferry|F1|-33.8000,151.2845|-33.8606,151.2121|6":"xshmEerjz[bRbLrLpDhpAbVlv@nKrJhHv{@n|@hn@dSdUnJtM`KzI~JdGzJrA~HRlJcBv\\_Ip}@_@|IElUxAnj@h@dp@f@jAdCbB|QdIdDdCrBk@bDZ",
 "ferry|F1|-33.8606,151.2121|-33.8000,151.2845|6":"hltmEgn|y[cD[sBj@eDeC}QeIeCcBg@kAi@ep@yAoj@DmU^}I~Hq}@bBw\\SmJsA_IeG{J{I_KuMaKeUoJin@eSw{@o|@sJiHmv@oKipAcVsLqDcRcL",
+"ferry|F9|-33.8604,151.2113|-33.8432,151.2810|5":"vjtmEgq|y[wADmChB_D{CoPwI{AaDI_DlDamAxAySnDqR`XudAx@oHj@mc@p@_OXyDtAeG~CgEvHoEnLuE|SkG_P`CmlAfEeQe@uJqC{GqGwIuPqD}IkFiQoEoWuDki@",
 "lrt|G:link|-27.9217,153.3337|-28.0010,153.4285|0":"rmliDs~zf\\\\S\\t@gAn@j@dAzAT`@MJcA]sBwGwMtAeAxDoHrEtC`BjBjMbZrAtBxA~@n@FjAMpA_@pKoG\\FnIeEhIeDtf@iN`T}GvPkGra@{PlKgD^e@zS}F~EoCdC{BhCcDdCcFlBkHx@}GbQ{tB|EywA]iFcAyD}A{CkGkIsAaCwA}D}@}EUwDFaFzIuhABkBa@kBqQc`@ju@we@`JmE~J_Dld@uInHmCdH}EpXgTrFoCfHmBtFe@z_@rBjV`Cp@{GxD@dEv@d@CCa@",
 "lrt|G:link|-28.0010,153.4285|-27.9217,153.3337|0":"f}{iDcomg\\B`@~JmAo@bBSnBG|GcABcFqAuDi@w^sD}\\cBiDAyD`@uGfBaF~B_^rXoDrBiDhAek@pLyJfDsWbOuw@rg@eTrIuBXuA?kHs@iGIoIkAgFC{DXmLnBePCsE~@gIr@eAd@q@r@oG`PeC`F_@bBiApPRxTU|FySz|AaCt]o@hFsFdVgTj|@w@jByMxSy@bBaB`FwA|H_BzXg@lC{A`DeL`QaAdC_@hBWhDDvC^hCbA~C`A`BbBfBdL`HgDrG_B~AfGzLf@tCl@r@Ip@k@Hc@e@qB]k@eAfAo@]u@]R",
 "lrt|G:link|-28.0010,153.4285|-28.0275,153.4310|0":"l}{iDwmmg\\jIkAzCItCa@~EB~FgAne@mBfCH|N`BpN]|XvCpBEf[gE",
@@ -857,8 +878,19 @@ function decodePl(s){
   while(i<s.length){ lat+=next(); lng+=next(); pts.push([lat/1e5, lng/1e5]); }
   return pts;
 }
+var plCache = {};
+function geoLine(g){ var k=segKey(g); return GEO[k] ? (plCache[k] || (plCache[k]=decodePl(GEO[k]))) : null; }
 // 有取到的形状就用，没有就按途经点连直线
-function geoPts(g){ var e=GEO[segKey(g)]; return e ? decodePl(e) : [g.A].concat(g.via||[]).concat([g.B]); }
+function geoPts(g){ return geoLine(g) || [g.A].concat(g.via||[]).concat([g.B]); }
+/* 步行距离：有实际路线按路线算，没有就按直线 × 1.25 估；步行速度按 4.5 km/h，步数按每公里约 1,350 步 */
+var STEPS_PER_KM = 1350;
+function lineKm(pts){ var s=0; for(var i=1;i<pts.length;i++) s+=haversine(pts[i-1], pts[i]); return s; }
+function segKm(g){ var l=geoLine(g); return l ? lineKm(l) : lineKm([g.A].concat(g.via||[]).concat([g.B]))*1.25; }
+function fmtKm(km){ return km<1 ? Math.max(50, Math.round(km*20)*50)+' m' : km.toFixed(1)+' km'; }
+function walkText(km){ return '约 '+Math.max(1, Math.round(km/4.5*60))+' 分钟 · '+fmtKm(km); }
+// 一天要走多少：只算站与站之间的步行（不含可选的支线和景点里面逛）
+function dayWalkKm(d){ var km=0; dayLegs(d).forEach(function(l){ if(l.s.opt) return; legSegs(l).forEach(function(g){ if(g.mode==='walk') km+=segKm(g); }); }); return km; }
+function fmtSteps(km){ return (Math.round(km*STEPS_PER_KM/100)*100).toLocaleString('zh-CN'); }
 
 /* ---------- 日出日落（简化天文算法，约 ±2 分钟） ---------- */
 function sunTimes(dateStr, lat, lon, tz){
@@ -1019,7 +1051,7 @@ function setTileWarn(on){ if(mapnote.classList.contains('warn')!==on){ mapnote.c
 function mapNote(d){
   if(!d) return REGION.au.note;
   if(d.region==='gor') return REGION.gor.note;
-  return (Object.keys(GEO).length ? '路线沿实际道路和公交线路画（OpenStreetMap 数据）' : '路线按顺序直线连接，是示意')+'；彩色小标签是线路号，点开看怎么坐。';
+  return '灰色点线是步行，彩色实线是坐车（颜色和线路号一致）'+(Object.keys(GEO).length ? '' : '，按直线示意')+'；点线路号看怎么坐。';
 }
 
 /* 图层 */
@@ -1033,7 +1065,7 @@ function onActivate(mk, fn){
   mk.on('click', fn);
   mk.on('keydown', function(e){ var k=e.originalEvent.key; if(k==='Enter'||k===' '){ e.originalEvent.preventDefault(); fn(); } });
 }
-function addRoute(pts, mode, extra){ LF.polyline(pts, {className:'rt '+MCLS[mode]+(extra?' '+extra:''), interactive:false}).addTo(scene.group); }
+function addRoute(pts, mode, extra){ LF.polyline(pts, {className:'rt '+MCLS[mode]+' md-'+mode+(extra?' '+extra:''), interactive:false}).addTo(scene.group); }
 // 线路号标签：放在这一小段路线的中点，点开看怎么坐；去程回程同一条线只放一个
 function midOf(pts){
   var L=[0], i; for(i=1;i<pts.length;i++) L.push(L[i-1]+Math.hypot(pts[i][0]-pts[i-1][0], (pts[i][1]-pts[i-1][1])*Math.cos(pts[i][0]*D2R)));
@@ -1077,7 +1109,7 @@ function buildScene(){
   if(isOv){
     OV_LEGS.forEach(function(g){
       var pts=arcPts(g.a, g.b, g.bend);
-      addRoute(pts, g.mode, g.mode==='train'?'gc':'');
+      addRoute(pts, g.mode);
       addLabel(g.lb, 'f', pts[16], 2, 3);
     });
     [{a:JINAN, b:[-33.9366,151.1658], lb:'济南 → 悉尼 10/23–24'},{a:[-27.3842,153.1175], b:JINAN, lb:'布里斯班 → 济南 11/3–4'}].forEach(function(g,i){
@@ -1111,7 +1143,7 @@ function buildScene(){
       var dim = !!leg.s.opt;
       legSegs(leg).forEach(function(g){
         var pts=geoPts(g);
-        addRoute(pts, g.mode, city+(dim?' opt':''));
+        addRoute(pts, g.mode, dim?'opt':'');
         if(g.mode==='walk') return;
         [g.A, g.B].forEach(function(p){ if(!nearLL(p, leg.from) && !nearLL(p, leg.to)) LF.circleMarker(p, {radius:3.5, className:'xdot', interactive:false}).addTo(sc.group); });
         if(g.line) badges.push([g, pts, dim]);
@@ -1278,10 +1310,22 @@ function xferHtml(list){
   }).join('')+'</div>';
 }
 // 一段路怎么坐：每小段一行（线路号、方向、上下车站、时间），最后是 Google 地图实时查询
+function walkRow(g){
+  var km=segKm(g), txt=(g.time||'').replace(/^步行\s*/, '');
+  return '<div class="txr walk"><span class="ln walk">步行</span><span class="tn">'+esc([txt, g.time ? fmtKm(km) : walkText(km), g.note].filter(Boolean).join(' · '))+'</span></div>';
+}
+// 没写 tx 的一段：步行写时间和距离；旅行团 / 自驾写距离
+function plainLeg(leg){
+  var segs=legSegs(leg), g=segs[0];
+  if(segs.every(function(x){ return x.mode==='walk'; })){ var km=segs.reduce(function(a,x){ return a+segKm(x); }, 0); return '<div class="txw"><span class="ln walk">步行</span><span>'+walkText(km)+'</span></div>'; }
+  var kmAll=segs.reduce(function(a,x){ return a+segKm(x); }, 0);
+  return '<div class="txw"><span class="ln '+g.mode+'">'+esc(MODE[g.mode]||TXMODE[g.mode])+'</span><span>约 '+fmtKm(kmAll)+'</span></div>';
+}
 function txHtml(leg){
-  var segs=legSegs(leg).filter(function(g){ return !g.auto; }), drive=segs.every(function(g){ return /^(walk|taxi|car)$/.test(g.mode); });
+  // 步行接驳太短（200 米以内）就不单列
+  var segs=legSegs(leg).filter(function(g){ return !g.auto || segKm(g)>=0.2; }), drive=segs.every(function(g){ return /^(walk|taxi|car)$/.test(g.mode); });
   return '<div class="tx">'+segs.map(function(g){
-    if(g.mode==='walk') return '<div class="txr walk"><span class="ln walk">步行</span><span class="tn">'+esc([g.time, g.note].filter(Boolean).join('，'))+'</span></div>';
+    if(g.mode==='walk') return walkRow(g);
     var info=[g.time, g.freq].filter(Boolean).join(' · ');
     return '<div class="txr"><span class="ln '+g.mode+'">'+esc(g.line||TXMODE[g.mode])+'</span>'+
       '<span class="tk">'+esc(TXMODE[g.mode]+(g.dir?' · '+g.dir:''))+'</span>'+
@@ -1301,9 +1345,10 @@ function renderDay(d){
     '<h2>'+esc(d.title)+'</h2></div>';
   h+='<p class="lede">'+esc(d.lede)+'</p>';
   h+='<div class="meta"><span>'+c.name+'日出 <span class="mono">'+sun.rise+'</span></span><span>日落 <span class="mono">'+sun.set+'</span></span><span>'+(c.tz===11?'夏令时 UTC+11':'UTC+10，不用夏令时')+'</span></div>';
-  var seen={}, chips=[];
+  var seen={}, chips=[], wkm=dayWalkKm(d);
   legs.forEach(function(l){ legSegs(l).forEach(function(g){ if(!g.line || g.mode==='walk' || seen[g.mode+g.line]) return; seen[g.mode+g.line]=1; chips.push('<span class="ln '+g.mode+'">'+esc(g.line)+'</span>'); }); });
-  if(chips.length) h+='<div class="txsum"><span>今天坐</span>'+chips.join('')+'</div>';
+  h+='<div class="daysum"><div class="ds"><span class="lab">今天步行</span>'+(wkm<0.1 ? '<b>很少</b><span class="sub">坐车为主，景点里走的不算</span>' : '<b>'+wkm.toFixed(1)+'</b><span class="unit">km</span><span class="sub">约 '+fmtSteps(wkm)+' 步</span>')+'</div>'+
+    (chips.length ? '<div class="ds"><span class="lab">今天坐</span><span class="chips">'+chips.join('')+'</span></div>' : '')+'</div>';
   h+='<div class="pager"><button class="pbtn" type="button" data-go="'+(idx>0?DAYS[idx-1].id:'overview')+'">‹ '+(idx>0?DAYS[idx-1].date.slice(5).replace('-','/'):'总览')+'</button><button class="pbtn" type="button" data-go="'+(idx<DAYS.length-1?DAYS[idx+1].id:'')+'"'+(idx<DAYS.length-1?'':' disabled')+'>'+(idx<DAYS.length-1?DAYS[idx+1].date.slice(5).replace('-','/'):'行程结束')+' ›</button></div>';
   if(d.options){
     var cur=Math.min(S.opt[d.id]||0, d.options.length-1);
@@ -1315,16 +1360,15 @@ function renderDay(d){
   var num=0;
   stops.forEach(function(s,i){
     var lab = s.kind==='stay' ? '宿' : (s.kind==='air' ? '机' : String(++num));
-    var tx = s.tx && legAt[i] ? txHtml(legAt[i]) : '';
-    var mode = !tx && s.mode && s.mode!=='walk' ? '<span class="via">'+MODE[s.mode]+'</span><br>' : '';
-    h+='<li class="stop'+(s.opt?' opt':'')+(s.kind?' '+s.kind:'')+'" id="stop-'+i+'" data-i="'+i+'"><div class="n">'+lab+'</div><div class="body">'+mode+
+    var tx = legAt[i] ? (s.tx ? txHtml(legAt[i]) : plainLeg(legAt[i])) : '';
+    h+='<li class="stop'+(s.opt?' opt':'')+(s.kind?' '+s.kind:'')+'" id="stop-'+i+'" data-i="'+i+'"><div class="n">'+lab+'</div><div class="body">'+
       '<div class="ttl"><span class="nm">'+esc(s.n)+'</span>'+(s.t?'<span class="t">'+esc(s.t)+'</span>':'')+(s.sunset?'<span class="t">日落 '+sun.set+'</span>':'')+'</div>'+
       '<div class="en">'+esc(s.en||'')+'</div>'+tx+(s.note?'<p class="note">'+esc(s.note)+'</p>':'')+
       '<div class="links">'+stopLinks(s)+'</div></div></li>';
   });
-  if(en && (en.n!=='回住处' || en.tx)){
-    var etx = en.tx && legAt.end ? txHtml(legAt.end) : '';
-    h+='<li class="stop stay"><div class="n" style="background:var(--muted)">'+(en.n==='回住处'?'回':'终')+'</div><div class="body">'+(!etx && en.mode&&en.mode!=='walk'?'<span class="via">'+MODE[en.mode]+'</span><br>':'')+'<div class="ttl"><span class="nm">'+esc(en.n)+'</span>'+(en.t?'<span class="t">'+esc(en.t)+'</span>':'')+'</div>'+etx+'</div></li>';
+  if(en && legAt.end){
+    var etx = en.tx ? txHtml(legAt.end) : plainLeg(legAt.end);
+    h+='<li class="stop stay"><div class="n" style="background:var(--muted)">'+(en.n==='回住处'?'回':'终')+'</div><div class="body"><div class="ttl"><span class="nm">'+esc(en.n)+'</span>'+(en.t?'<span class="t">'+esc(en.t)+'</span>':'')+'</div>'+etx+'</div></li>';
   }
   h+='</ol>';
   var gm=dayGm(d);
@@ -1351,7 +1395,7 @@ function renderDay(d){
   } else {
     h+='<h3 class="sec">今晚</h3><p class="hstay">在飞机上。我回自己的住处。</p>';
   }
-  h+='<p class="fine">距离是直线距离；价格是估价或之前查到的参考价，营业时间和交通时刻出发前再核对一遍。线路号和班次是 2026 年 10 月查的，坐车前点「实时查询」确认。</p>';
+  h+='<p class="fine">距离是直线距离；价格是估价或之前查到的参考价，营业时间和交通时刻出发前再核对一遍。线路号和班次是 2026 年 10 月查的，坐车前点「实时查询」确认。步行距离只算站与站之间（不含景点里面逛和可选支线），步数按每公里约 1,350 步估。</p>';
   panel.innerHTML=h;
   panel.querySelectorAll('.pbtn').forEach(function(b){ b.addEventListener('click', function(){ var g=b.getAttribute('data-go'); if(g){ setView(g); window.scrollTo({top: isNarrow()? 0 : window.scrollY, behavior:'auto'}); } }); });
   panel.querySelectorAll('.obtn').forEach(function(b){ b.addEventListener('click', function(){ S.opt[d.id]=+b.getAttribute('data-opt'); store('opt',S.opt); render(); }); });
@@ -1366,7 +1410,7 @@ function renderOverview(){
   h+='<li><div class="drow static"><span class="md">10/23</span><span class="wd">五</span><span class="tt"><b>朋友济南出发</b><span>13:05 东航，武汉转机</span></span><span class="nt">飞机上</span></div></li>';
   DAYS.forEach(function(d){
     var c=CITY[d.city], night = d.night ? CITY[d.night].name : '飞机上';
-    h+='<li><button class="drow" type="button" data-go="'+d.id+'" style="--c:var(--'+d.city+')"><span class="md">'+d.date.slice(5).replace('-','/')+'</span><span class="wd">'+d.wd.slice(1)+'</span><span class="tt"><b><i class="dot-c"></i>'+esc(d.title)+'</b><span>'+esc(d.tag)+'</span></span><span class="nt">住 '+night+'</span></button></li>';
+    h+='<li><button class="drow" type="button" data-go="'+d.id+'" style="--c:var(--'+d.city+')"><span class="md">'+d.date.slice(5).replace('-','/')+'</span><span class="wd">'+d.wd.slice(1)+'</span><span class="tt"><b><i class="dot-c"></i>'+esc(d.title)+'</b><span>'+esc(d.tag)+(dayWalkKm(d)>=0.1 ? ' · 步行约 '+dayWalkKm(d).toFixed(1)+' km' : '')+'</span></span><span class="nt">住 '+night+'</span></button></li>';
   });
   h+='<li><div class="drow static"><span class="md">11/04</span><span class="wd">三</span><span class="tt"><b>11:30 到济南</b><span>11/5 上班</span></span><span class="nt">到家</span></div></li></ol>';
   h+='<h3 class="sec">交通</h3><div class="tblwrap"><table class="ftable"><tbody>'+FLIGHTS.map(function(f){ return '<tr><td>'+f.d+'</td><td><b>'+esc(f.code)+'</b> <span class="r">'+esc(f.r)+'</span><span class="sub">'+esc(f.who)+(f.sub?' · '+esc(f.sub):'')+'</span></td><td class="r" style="text-align:right;white-space:nowrap">'+esc(f.p)+'</td></tr>'; }).join('')+'</tbody></table></div>';
