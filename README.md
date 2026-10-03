@@ -90,7 +90,7 @@ var CARTO_KEY = '你的 key';
 | `t` | 时间，随便写，如 `'约 10:30'` |
 | `note` | 说明 |
 | `q` | Google 地图搜索词（「地图」链接） |
-| `img` | 列表里方形小图用哪个维基百科（英文）条目的照片，如 `'Sydney Opera House'`；可以写几个备选 `['Coogee Beach', 'Coogee, New South Wales']`。不写就显示占位图标（酒店、回住处这类点就是这样） |
+| `img` | 列表里方形小图用哪个维基百科（英文）条目的照片，如 `'Sydney Opera House'`；可以写几个备选 `['Coogee Beach', 'Coogee, New South Wales']`；也可以写 `'File:文件名.jpg'` 直接指定 Commons 上的一张图，或 `'search:关键词'` 在 Commons 搜图（见下面「地点照片」）。不写就显示占位图标（酒店、回住处这类点就是这样） |
 | `mode` | 从上一站到这一站怎么走，决定地图上的颜色和线型（见下面「地图颜色和步行统计」）：`walk`（默认）、`train` / `tram` / `bus` / `taxi`、`ferry`、`tour` / `car`、`flight` |
 | `tx` | 从上一站到这一站具体怎么坐，写 `TX.xxx` 引用下面的交通段 |
 | `via` | 途经点 `[[纬度, 经度], ...]`，让渡轮、大洋路这类路线按大致走向画，而不是直线 |
@@ -136,9 +136,15 @@ var CARTO_KEY = '你的 key';
 
 - 先用条目的主图，不合适（地图、标志、示意图、SVG）再看条目里的其他图片；只用 Commons 上自由授权的图片。
 - 作者和授权写在地图弹窗的照片下面，点开是 Commons 上的图片页。
-- 图片直接从 `upload.wikimedia.org` 加载，只取 320 px 宽的缩略图；加载不了（比如网络限制）就显示灰色占位图标，不影响其他功能。
+- 图片直接从 Wikimedia 的图片服务器加载，只取 320 px 宽的缩略图；加载不了（比如网络限制）就显示灰色占位图标，不影响其他功能。
 
-新加了地点或改了 `img` 之后，到 **Actions → Update photos → Run workflow**（分支选 `main`）跑一次，它会提交到 `main` 并自动重新发布网页。某张图不满意，就换一个更具体的条目名（比如用海滩条目代替所在城镇的条目）再跑。
+新加了地点或改了 `img` 之后，到 **Actions → Update photos → Run workflow**（分支选 `main`）跑一次，它会提交到 `main` 并自动重新发布网页。某张图不满意，可以：
+
+- 换一个更具体的条目名（比如用海滩条目代替所在城镇的条目）；
+- 写 `'search:关键词'` 在 Commons 搜图，用第一张合适的。加 `intitle:` 只搜文件名，比如 `'search:intitle:"Royal Arcade" Melbourne'`；
+- 写 `'File:文件名.jpg'` 固定用某一张。工作流日志里每个地点都写了选中的文件名，用 `search:` 时还会列出搜到的其他几张。
+
+改完再跑一次。
 
 ### 其他数据
 

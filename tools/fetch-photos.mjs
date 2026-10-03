@@ -2,7 +2,10 @@
 // 给每个地点找一张风景小图，写进 index.html 的 PHOTO（@photo-begin … @photo-end）。
 //
 // - 每站的 img 写维基百科（英文）条目名，可以写几个备选；按顺序找第一张合适的图。
-// - 先看条目的主图，不合适再看条目里的其他图片；跳过地图、标志、示意图和 SVG。
+//   先看条目的主图，不合适再看条目里的其他图片；跳过地图、标志、示意图和 SVG。
+// - 备选也可以写成 'File:xxx.jpg'（直接用 Commons 上这张图），
+//   或 'search:关键词'（在 Commons 搜图，用第一张合适的；比如 'search:intitle:"Royal Arcade" Melbourne'
+//   只要文件名里有 Royal Arcade 的图）。日志里会列出搜到的其他几张，想固定某张就改成 File: 写法。
 // - 只用 Wikimedia Commons 上自由授权的图片（非自由的「合理使用」图不在 Commons 上，自然排除），
 //   记下作者和授权，网页上显示署名并链接到图片页。
 // - 这次没找到、但以前找到过的沿用旧的。
@@ -63,7 +66,9 @@ export function writePhotos(html, pb, pe, photos) {
 async function commonsInfo(file) {
   const q = `${COMMONS}?action=query&format=json&formatversion=2&prop=imageinfo&iiprop=url|extmetadata|mime&iiurlwidth=${WIDTH}&titles=${encodeURIComponent(file)}`;
   const j = await getJSON(q);
-  const p = j && j.query && j.query.pages && j.query.pages[0];
+  return infoOf(j && j.query && j.query.pages && j.query.pages[0]);
+}
+function infoOf(p) {
   const ii = p && !p.missing && p.imageinfo && p.imageinfo[0];
   if (!ii || !/^image\/(jpeg|png|webp)$/.test(ii.mime) || !ii.thumburl) return null;
   const m = ii.extmetadata || {};
@@ -73,7 +78,24 @@ async function commonsInfo(file) {
   if (artist.length > 48) artist = artist.slice(0, 46) + '…';
   return { src: ii.thumburl, file: p.title, credit: artist + ' · ' + license, desc: strip(m.ImageDescription && m.ImageDescription.value).slice(0, 90) };
 }
+// Commons 搜图（只搜文件），按搜索结果的顺序返回能用的图
+async function searchCommons(q) {
+  const u = `${COMMONS}?action=query&format=json&formatversion=2&generator=search&gsrnamespace=6&gsrlimit=12&gsrsearch=${encodeURIComponent(q)}` +
+    `&prop=imageinfo&iiprop=url|extmetadata|mime&iiurlwidth=${WIDTH}`;
+  const j = await getJSON(u);
+  const pages = ((j && j.query && j.query.pages) || []).slice().sort((a, b) => a.index - b.index);
+  return pages.filter(p => !SKIP.test(p.title)).map(p => infoOf(p)).filter(Boolean);
+}
 async function pickFor(title) {
+  if (/^File:/.test(title)) {
+    const info = await commonsInfo(title);
+    return info ? { info } : { why: 'Commons 上没有这张图，或者不是自由授权的照片' };
+  }
+  if (/^search:/.test(title)) {
+    const found = await searchCommons(title.slice(7).trim());
+    if (!found.length) return { why: '搜不到合适的图' };
+    return { info: found[0], also: found.slice(1, 5).map(f => f.file) };
+  }
   const slug = encodeURIComponent(title.replace(/ /g, '_'));
   const files = [];
   const sum = await getJSON(WIKI + 'summary/' + slug);
@@ -101,12 +123,13 @@ export async function main() {
     let got = null, why = '';
     for (const t of cands) {
       const r = await pickFor(t);
-      if (r.info) { got = r.info; got.title = t; break; }
+      if (r.info) { got = r.info; got.title = t; got.also = r.also; break; }
       why = `${t}：${r.why}`;
     }
     if (got) {
       photos[key] = { src: got.src, file: got.file, credit: got.credit };
-      ok++; lines.push(`✔ ${name} ← ${got.title} · ${got.file} · ${got.credit}${got.desc ? ' · ' + got.desc : ''}`);
+      ok++; lines.push(`✔ ${name} ← ${got.title} · ${got.file} · ${got.credit}${got.desc ? ' · ' + got.desc : ''}` +
+        (got.also && got.also.length ? `\n    其他搜到的：${got.also.join(' ／ ')}` : ''));
     } else if (old[key]) {
       photos[key] = old[key]; kept++; lines.push(`↺ ${name} 沿用上次的图（${why}）`);
     } else {
