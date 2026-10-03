@@ -4,13 +4,25 @@
 
 **网址：<https://a330209159.github.io/aus-trip/>**
 
-整个网页就是根目录的一个 `index.html`（样式和脚本都写在里面），没有构建步骤。地图用 [Leaflet](https://leafletjs.com) 加 CARTO / OpenStreetMap 底图；景点和酒店按真实坐标放，路线是按顺序连的直线，渡轮和大洋路按途经点画，都是示意。底图或地图组件加载不出来时，行程列表照常能用。
+整个网页就是根目录的一个 `index.html`（样式和脚本都写在里面），没有构建步骤。地图用 [Leaflet](https://leafletjs.com) 加 OpenStreetMap 底图；景点和酒店按真实坐标放，路线是按顺序连的直线，渡轮和大洋路按途经点画，都是示意。底图或地图组件加载不出来时，行程列表照常能用。
 
 ## 发布
 
 推送到 `main` 后，GitHub Actions（`.github/workflows/pages.yml`）会自动发布，一两分钟后网址上就是新版。进度在仓库的 **Actions** 页看。
 
 第一次使用前要在 **Settings → Pages → Build and deployment → Source** 选 **GitHub Actions**（只需设一次）。
+
+## 底图
+
+默认用 OpenStreetMap 官方瓦片，不需要 key；深色模式下用滤镜把瓦片调暗。
+
+如果想换成 CARTO 的 Positron（浅色）/ Dark Matter（深色）样式：CARTO 从 2026 年 8 月起要求 key，不带 key 的瓦片会印上「API KEY REQUIRED」。到 <https://carto.com/basemaps/apikey/> 免费申请（不用注册账号，非商业用途每月 500 万次请求以内免费），然后在 `index.html` 里搜 `CARTO_KEY`，把 key 填进引号：
+
+```js
+var CARTO_KEY = '你的 key';
+```
+
+留空就继续用 OpenStreetMap。这个 key 会出现在公开的网页源码里，瓦片服务的 key 本来就是这样用的。
 
 ## 改行程
 

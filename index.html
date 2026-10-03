@@ -10,7 +10,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Sans+SC:wght@400;500;700&family=Noto+Serif+SC:wght@600;700&display=swap">
 <style>
 /* Layout: date rail pinned on top; wide screens keep the map pinned on the left while the day's itinerary scrolls on the right; phones stack map over itinerary.
-   The map is Leaflet (loaded at runtime from a CDN) on CARTO tiles; its stylesheet is inserted before this one so the rules below win. */
+   The map is Leaflet (loaded at runtime from a CDN) on OpenStreetMap tiles (CARTO if a key is set); its stylesheet is inserted before this one so the rules below win. */
 :root{
   --bg:#EDF1F3; --surface:#FFFFFF; --ink:#16232B; --muted:#5B6B75; --line:#D3DDE2; --soft:#E4EBEF;
   --land:#F7F6F2; --sea:#CADCE4; --coast:#9AB5C1; --sea-ink:#477A8E; --grid:rgba(22,35,43,.075); --halo:rgba(247,246,242,.92);
@@ -83,6 +83,9 @@ button{font:inherit;color:inherit}
 .mapnote.warn .tw{display:block;margin-top:3px;padding-top:3px;border-top:1px solid var(--line);color:var(--ink)}
 /* Leaflet 外观跟随页面主题 */
 .lmap.leaflet-container{background:var(--land);font-family:var(--f-body);font-size:13px;line-height:1.5}
+/* OSM 瓦片：浅色时略降饱和度，让路线更显眼；深色时反色调暗 */
+.lmap.tiles-osm .leaflet-tile-pane{filter:saturate(.7)}
+.lmap.tiles-osm.tiles-dark .leaflet-tile-pane{filter:invert(1) hue-rotate(180deg) brightness(.9) contrast(.85) saturate(.55)}
 .lmap .leaflet-control-attribution{background:var(--halo);color:var(--muted);font-size:10.5px;line-height:1.5;padding:1px 6px;border-top-left-radius:6px}
 .lmap .leaflet-control-attribution a{color:var(--ink);text-decoration:none}
 .lmap .leaflet-control-scale{margin:0 0 8px 10px}
@@ -303,7 +306,7 @@ var CITY = {
 var MODE = { walk:'步行', train:'火车', tram:'电车 / 轻轨', bus:'巴士', taxi:'打车', ferry:'渡轮', tour:'旅行团', car:'自驾或参团', flight:'飞机' };
 var MCLS = { walk:'m-walk', train:'m-transit', tram:'m-transit', bus:'m-transit', taxi:'m-transit', ferry:'m-ferry', tour:'m-tour', car:'m-tour', flight:'m-flight' };
 
-/* ---------- 地图左上角的说明（底图来自 CARTO / OpenStreetMap） ---------- */
+/* ---------- 地图左上角的说明 ---------- */
 var REGION = {
   au:{note:'航线弧线是示意。点城市进入当天行程。'},
   gor:{note:'大洋路按途经点连线，是示意，不是真实道路。'},
@@ -634,7 +637,7 @@ function syncRail(){
 }
 function reduce(){ return window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches; }
 
-/* ---------- 地图（Leaflet + CARTO 底图） ---------- */
+/* ---------- 地图（Leaflet + OpenStreetMap 底图） ---------- */
 var mapBox=document.getElementById('map'), mapEl=document.getElementById('lmap'), mapnote=document.getElementById('mapnote'), mapmsg=document.getElementById('mapmsg'), btnHotels=document.getElementById('btnHotels');
 // Leaflet 固定 1.9.4。先试 unpkg，失败或超时换 cdnjs；integrity 保证文件没被改过
 var LEAFLET = {
@@ -642,7 +645,12 @@ var LEAFLET = {
   src:[{css:'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css', js:'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js'},
        {css:'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css', js:'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js'}]
 };
-var TILE_ATTR = '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions" target="_blank" rel="noopener">CARTO</a>';
+// 底图默认用 OpenStreetMap 官方瓦片，不需要 key；深色模式用滤镜把瓦片调暗。
+// CARTO 从 2026 年 8 月起要求 key（不带 key 的瓦片会印上 API KEY REQUIRED）。想用 CARTO 的
+// Positron / Dark Matter 样式，到 https://carto.com/basemaps/apikey/ 免费申请，把 key 填进下面的引号。
+var CARTO_KEY = '';
+var OSM_ATTR = '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors';
+var TILE_ATTR = CARTO_KEY ? OSM_ATTR+' &copy; <a href="https://carto.com/attributions" target="_blank" rel="noopener">CARTO</a>' : OSM_ATTR;
 var LF=null, map=null, tiles=null, tileUrlNow='', tileStat={ok:0,err:0}, cssOk=false;
 var scene=null, FITB=null, FITZ=0, lastKey=null;
 var BED = 'M-5.5 3.5V-3.5M-5.5 1.2H5.5V3.5M-5.5 1.2V-.6H-.6V1.2M.2 -.6H3.6A1.9 1.9 0 0 1 5.5 1.3';
@@ -651,8 +659,15 @@ var BED_SVG = '<svg viewBox="-10 -10 20 20" aria-hidden="true"><path d="'+BED+'"
 /* 底图跟随页面浅色 / 深色 */
 var darkMq = window.matchMedia ? window.matchMedia('(prefers-color-scheme: dark)') : null;
 function isDark(){ var t=document.documentElement.getAttribute('data-theme'); return t==='dark' || (t!=='light' && !!(darkMq && darkMq.matches)); }
-function tileUrl(){ return 'https://{s}.basemaps.cartocdn.com/'+(isDark()?'dark_all':'light_all')+'/{z}/{x}/{y}{r}.png'; }
-function syncTiles(){ if(!tiles) return; var u=tileUrl(); if(u===tileUrlNow) return; tileUrlNow=u; tileStat={ok:0,err:0}; setTileWarn(false); tiles.setUrl(u); }
+function tileUrl(){
+  return CARTO_KEY ? 'https://basemaps.cartocdn.com/rastertiles/'+(isDark()?'dark_all':'light_all')+'/{z}/{x}/{y}{r}.png?key='+encodeURIComponent(CARTO_KEY)
+                   : 'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
+}
+function syncTiles(){
+  mapEl.classList.toggle('tiles-osm', !CARTO_KEY);
+  mapEl.classList.toggle('tiles-dark', isDark());
+  if(!tiles) return; var u=tileUrl(); if(u===tileUrlNow) return; tileUrlNow=u; tileStat={ok:0,err:0}; setTileWarn(false); tiles.setUrl(u);
+}
 
 /* 加载：loading → ready；失败时地图区收成一行提示，列表照常可用 */
 function setMapState(st){
@@ -695,7 +710,8 @@ function initMap(){
   map.createPane('lbl').style.zIndex = 620;
   map.setView([-30,147], 4);
   tileUrlNow = tileUrl();
-  tiles = LF.tileLayer(tileUrlNow, {subdomains:'abcd', maxZoom:20, attribution:TILE_ATTR}).addTo(map);
+  tiles = LF.tileLayer(tileUrlNow, {maxZoom:CARTO_KEY?20:19, attribution:TILE_ATTR}).addTo(map);
+  syncTiles();
   // 瓦片加载失败：地图照常显示路线和景点，只在提示里说明一句
   tiles.on('tileload', function(){ tileStat.ok++; setTileWarn(false); });
   tiles.on('tileerror', function(){ tileStat.err++; if(!tileStat.ok && tileStat.err>=4) setTileWarn(true); });
@@ -1019,7 +1035,7 @@ function renderOverview(){
   h+='<li><div class="drow static"><span class="md">11/04</span><span class="wd">三</span><span class="tt"><b>11:30 到济南</b><span>11/5 上班</span></span><span class="nt">到家</span></div></li></ol>';
   h+='<h3 class="sec">交通</h3><div class="tblwrap"><table class="ftable"><tbody>'+FLIGHTS.map(function(f){ return '<tr><td>'+f.d+'</td><td><b>'+esc(f.code)+'</b> <span class="r">'+esc(f.r)+'</span><span class="sub">'+esc(f.who)+(f.sub?' · '+esc(f.sub):'')+'</span></td><td class="r" style="text-align:right;white-space:nowrap">'+esc(f.p)+'</td></tr>'; }).join('')+'</tbody></table></div>';
   h+='<h3 class="sec">住宿</h3><div class="stays">'+['syd','mel','gc','bne'].map(function(k){ var c=CITY[k]; return '<div style="border-top:3px solid var(--'+k+')"><b>'+c.name+'</b><span class="n">'+c.nights+'</span> <span>晚</span><br><span>'+c.cin.slice(5).replace('-','/')+' → '+c.cout.slice(5).replace('-','/')+'</span>'+(bookedHotel(k)?'<span class="bkd">已订 · '+esc(bookedHotel(k).s||bookedHotel(k).n)+'</span>':'')+'</div>'; }).join('')+'</div>';
-  h+='<p class="fine">底图来自 OpenStreetMap / CARTO，景点和酒店按真实坐标放置；路线按顺序直线连接，渡轮和大洋路按途经点画，都是示意。实际导航请点每一站的「地图」，在 Google 地图里打开。机票价格是之前查到的参考价，购买前重新查。</p>';
+  h+='<p class="fine">底图来自 OpenStreetMap，景点和酒店按真实坐标放置；路线按顺序直线连接，渡轮和大洋路按途经点画，都是示意。实际导航请点每一站的「地图」，在 Google 地图里打开。机票价格是之前查到的参考价，购买前重新查。</p>';
   panel.innerHTML=h;
   panel.querySelectorAll('[data-go]').forEach(function(b){ b.addEventListener('click', function(){ setView(b.getAttribute('data-go')); if(isNarrow()) window.scrollTo({top:0}); }); });
 }
