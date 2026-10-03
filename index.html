@@ -81,7 +81,7 @@ button{font:inherit;color:inherit}
 .tgroup{display:flex;flex-direction:column;border-radius:9px;overflow:hidden;border:1px solid var(--line);box-shadow:0 1px 2px rgba(0,0,0,.06)}
 .tgroup .tbtn{border:0;border-radius:0;box-shadow:none;font-family:var(--f-mono);font-size:17px;width:34px;padding:0}
 .tgroup .tbtn+.tbtn{border-top:1px solid var(--line)}
-.mapnote{position:absolute;z-index:500;left:10px;top:10px;max-width:calc(100% - 140px);font-size:11.5px;line-height:1.4;color:var(--muted);background:var(--halo);padding:4px 8px;border-radius:7px}
+.mapnote{position:absolute;z-index:500;pointer-events:none;left:10px;top:10px;max-width:calc(100% - 140px);font-size:11.5px;line-height:1.4;color:var(--muted);background:var(--halo);padding:4px 8px;border-radius:7px}
 .mapnote .tw{display:none}
 .mapnote.warn .tw{display:block;margin-top:3px;padding-top:3px;border-top:1px solid var(--line);color:var(--ink)}
 /* Leaflet 外观跟随页面主题 */
@@ -98,6 +98,12 @@ button{font:inherit;color:inherit}
 .lmap .leaflet-popup-content{margin:10px 12px;font-size:13px;line-height:1.5}
 .lmap a.leaflet-popup-close-button{top:4px;right:4px;width:26px;height:26px;font:18px/26px var(--f-body);color:var(--muted)}
 .pop h4{margin:0 22px 2px 0;font-size:14.5px;line-height:1.35}
+.pop .pim{margin:-10px -12px 9px;height:128px;border-radius:12px 12px 0 0;overflow:hidden;background:var(--soft)}
+.pop .pim img{display:block;width:100%;height:100%;object-fit:cover}
+.pop .pim + h4{margin-right:0}
+.pop .pcr{margin-top:7px;font-size:11px;line-height:1.4;color:var(--muted)}
+.lmap .pop .pcr a{color:var(--muted);text-decoration:none}
+.lmap a.leaflet-popup-close-button{background:var(--halo);border-radius:7px}
 .pop .en{font-family:var(--f-mono);font-size:11.5px;color:var(--muted)}
 .lmap .pop p{margin:6px 0 8px;color:var(--ink)}
 .pop .links{display:flex;flex-wrap:wrap;gap:6px}
@@ -204,6 +210,14 @@ h3.sec::after{content:"";flex:1;height:1px;background:var(--line)}
 .stop .body{min-width:0;padding:2px 8px 6px;margin-left:-8px;border-radius:10px;transition:background .2s}
 .stop.on .body{background:var(--soft)}
 .stop .ttl{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 8px}
+.stop .hd{display:flex;align-items:center;gap:11px;min-width:0}
+.stop .hdt{flex:1;min-width:0}
+.thumb{flex:none;position:relative;width:58px;height:58px;border-radius:10px;overflow:hidden;background:var(--soft);border:1px solid var(--line)}
+.thumb i{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--muted)}
+.thumb i svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+.thumb i svg.fill{fill:currentColor;stroke:none;width:22px;height:22px}
+.thumb img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.stop.opt .thumb{opacity:.75}
 .stop .nm{font-weight:700;font-size:15.5px}
 .stop .t{font-family:var(--f-mono);font-size:12.5px;color:var(--muted);font-variant-numeric:tabular-nums}
 .stop .en{font-family:var(--f-mono);font-size:12px;color:var(--muted);line-height:1.4}
@@ -281,6 +295,7 @@ h3.sec::after{content:"";flex:1;height:1px;background:var(--line)}
 
 @media (min-width: 900px){
   .wrap{padding-inline:24px}
+  .thumb{width:66px;height:66px}
   .stage{grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:24px;align-items:start}
   .mapcol{position:sticky;top:calc(env(safe-area-inset-top,0px) + var(--rail) + 14px)}
   .map{height:calc(100vh - var(--rail) - 80px);height:calc(100dvh - var(--rail) - 80px);max-height:none}
@@ -486,16 +501,16 @@ var DAYS = [
     {who:'朋友', code:'东航', dep:'TNA 10/23 13:05', arr:'SYD T1 09:00', note:'武汉转机 4h35m'},
     {who:'我', code:'JQ403', dep:'OOL 07:10', arr:'SYD 09:40', note:'到国内航站楼'}],
   stops:[
-    {n:'悉尼机场 T1 国际', en:'Sydney Airport T1', ll:[-33.9366,151.1658], t:'09:00', kind:'air', note:'朋友入境、取行李，大约 1 小时。', q:'Sydney International Airport T1'},
-    {n:'国内航站楼 T2', en:'Domestic Terminal T2', ll:[-33.9331,151.1796], t:'09:40', kind:'air', mode:'train', tx:TX.sydIntlDom, note:'我落地。两个航站楼之间坐机场线火车 1 站，或坐航站楼摆渡巴士会合。', q:'Sydney Airport T2 Domestic'},
+    {n:'悉尼机场 T1 国际', en:'Sydney Airport T1', ll:[-33.9366,151.1658], t:'09:00', kind:'air', note:'朋友入境、取行李，大约 1 小时。', q:'Sydney International Airport T1', img:'Sydney Airport'},
+    {n:'国内航站楼 T2', en:'Domestic Terminal T2', ll:[-33.9331,151.1796], t:'09:40', kind:'air', mode:'train', tx:TX.sydIntlDom, note:'我落地。两个航站楼之间坐机场线火车 1 站，或坐航站楼摆渡巴士会合。', q:'Sydney Airport T2 Domestic', img:'Sydney Airport'},
     {n:'酒店放行李', en:'Hotel · Hyde Park 一带', ll:[-33.8775,151.2095], t:'约 10:30', kind:'stay', mode:'train', tx:TX.sydDomCity, note:'机场线火车到 Museum 或 Central 站约 15 分钟；机场两站进出会加收站点费。', q:'Museum Station Sydney'},
-    {n:'环形码头', en:'Circular Quay', ll:[-33.8614,151.2109], t:'约 11:30', mode:'train', tx:TX.sydMuseumCQ, note:'火车 2 站，或穿过 Hyde Park 步行约 25 分钟。', q:'Circular Quay Sydney'},
-    {n:'悉尼歌剧院', en:'Sydney Opera House', ll:[-33.8568,151.2153], note:'外观、大台阶，以及和海港大桥同框的角度。想进内部可以订导览。', q:'Sydney Opera House'},
-    {n:'皇家植物园', en:'Royal Botanic Garden', ll:[-33.8642,151.2166], note:'午后慢逛，累了就在草地上歇一会。', q:'Royal Botanic Garden Sydney'},
-    {n:'麦考利夫人椅', en:"Mrs Macquarie's Chair", ll:[-33.8597,151.2228], note:'歌剧院和海港大桥同框的经典机位。', q:"Mrs Macquarie's Chair Sydney"},
-    {n:'岩石区', en:'The Rocks', ll:[-33.8593,151.2085], note:'老街区，周末有 The Rocks Markets。晚饭可以在这里解决。', q:'The Rocks Sydney'},
-    {n:'天文台山', en:'Observatory Hill', ll:[-33.8590,151.2045], sunset:true, note:'看海港大桥和日落。', q:'Observatory Hill Sydney'},
-    {n:'屈臣氏湾（可选）', en:'Watsons Bay', ll:[-33.8432,151.2810], opt:true, mode:'ferry', tx:TX.watsons, from:3, via:FERRY_WATSONS, note:'体力特别好再考虑。从 Circular Quay 坐渡轮约 20–25 分钟，第一天不强求。', q:'Watsons Bay Wharf'}
+    {n:'环形码头', en:'Circular Quay', ll:[-33.8614,151.2109], t:'约 11:30', mode:'train', tx:TX.sydMuseumCQ, note:'火车 2 站，或穿过 Hyde Park 步行约 25 分钟。', q:'Circular Quay Sydney', img:'Circular Quay'},
+    {n:'悉尼歌剧院', en:'Sydney Opera House', ll:[-33.8568,151.2153], note:'外观、大台阶，以及和海港大桥同框的角度。想进内部可以订导览。', q:'Sydney Opera House', img:'Sydney Opera House'},
+    {n:'皇家植物园', en:'Royal Botanic Garden', ll:[-33.8642,151.2166], note:'午后慢逛，累了就在草地上歇一会。', q:'Royal Botanic Garden Sydney', img:'Royal Botanic Garden, Sydney'},
+    {n:'麦考利夫人椅', en:"Mrs Macquarie's Chair", ll:[-33.8597,151.2228], note:'歌剧院和海港大桥同框的经典机位。', q:"Mrs Macquarie's Chair Sydney", img:"Mrs Macquarie's Chair"},
+    {n:'岩石区', en:'The Rocks', ll:[-33.8593,151.2085], note:'老街区，周末有 The Rocks Markets。晚饭可以在这里解决。', q:'The Rocks Sydney', img:['The Rocks, Sydney', 'The Rocks, New South Wales']},
+    {n:'天文台山', en:'Observatory Hill', ll:[-33.8590,151.2045], sunset:true, note:'看海港大桥和日落。', q:'Observatory Hill Sydney', img:['Observatory Hill, Sydney', 'Sydney Observatory']},
+    {n:'屈臣氏湾（可选）', en:'Watsons Bay', ll:[-33.8432,151.2810], opt:true, mode:'ferry', tx:TX.watsons, from:3, via:FERRY_WATSONS, note:'体力特别好再考虑。从 Circular Quay 坐渡轮约 20–25 分钟，第一天不强求。', q:'Watsons Bay Wharf', img:['Watsons Bay', 'Watsons Bay, New South Wales']}
   ],
   gm:{mode:'walking', list:[3,4,5,6,7,8]},
   tips:['悉尼的火车、渡轮、巴士都可以直接刷信用卡或手机进出站，不用专门买卡。','第一天别暴走，晚饭后早点回酒店倒时差。']},
@@ -504,14 +519,14 @@ var DAYS = [
   lede:'从唐人街一路往北走到海边，中间穿插两个馆，各控制在 1–1.5 小时。',
   start:true, end:{mode:'train', tx:TX.barangarooHome},
   stops:[
-    {n:'唐人街', en:'Chinatown · Dixon St', ll:[-33.8786,151.2041], t:'10:00', note:'早午饭可以在这里吃。', q:'Dixon Street Chinatown Sydney'},
-    {n:'维多利亚女王大厦 · 市政厅', en:'QVB · Town Hall', ll:[-33.8718,151.2067], q:'Queen Victoria Building Sydney'},
-    {n:'海德公园', en:'Hyde Park', ll:[-33.8731,151.2111], q:'Hyde Park Sydney'},
-    {n:'圣玛丽大教堂', en:"St Mary's Cathedral", ll:[-33.8712,151.2133], q:"St Mary's Cathedral Sydney"},
-    {n:'澳大利亚博物馆', en:'Australian Museum', ll:[-33.8743,151.2131], note:'控制在 1–1.5 小时。', q:'Australian Museum Sydney'},
-    {n:'新州图书馆', en:'State Library of NSW', ll:[-33.8661,151.2131], note:'Mitchell 阅览室很出片。', q:'State Library of NSW'},
-    {n:'新州美术馆', en:'Art Gallery of NSW', ll:[-33.8688,151.2174], note:'常设展免费。博物馆和美术馆不必都深度逛。', q:'Art Gallery of New South Wales'},
-    {n:'Barangaroo', en:'Barangaroo', ll:[-33.8630,151.2018], note:'海边散步、晚饭。从美术馆过去步行约 30 分钟，也可以坐火车到 Wynyard。', q:'Barangaroo Sydney'}
+    {n:'唐人街', en:'Chinatown · Dixon St', ll:[-33.8786,151.2041], t:'10:00', note:'早午饭可以在这里吃。', q:'Dixon Street Chinatown Sydney', img:'Chinatown, Sydney'},
+    {n:'维多利亚女王大厦 · 市政厅', en:'QVB · Town Hall', ll:[-33.8718,151.2067], q:'Queen Victoria Building Sydney', img:'Queen Victoria Building'},
+    {n:'海德公园', en:'Hyde Park', ll:[-33.8731,151.2111], q:'Hyde Park Sydney', img:'Hyde Park, Sydney'},
+    {n:'圣玛丽大教堂', en:"St Mary's Cathedral", ll:[-33.8712,151.2133], q:"St Mary's Cathedral Sydney", img:"St Mary's Cathedral, Sydney"},
+    {n:'澳大利亚博物馆', en:'Australian Museum', ll:[-33.8743,151.2131], note:'控制在 1–1.5 小时。', q:'Australian Museum Sydney', img:'Australian Museum'},
+    {n:'新州图书馆', en:'State Library of NSW', ll:[-33.8661,151.2131], note:'Mitchell 阅览室很出片。', q:'State Library of NSW', img:'State Library of New South Wales'},
+    {n:'新州美术馆', en:'Art Gallery of NSW', ll:[-33.8688,151.2174], note:'常设展免费。博物馆和美术馆不必都深度逛。', q:'Art Gallery of New South Wales', img:'Art Gallery of New South Wales'},
+    {n:'Barangaroo', en:'Barangaroo', ll:[-33.8630,151.2018], note:'海边散步、晚饭。从美术馆过去步行约 30 分钟，也可以坐火车到 Wynyard。', q:'Barangaroo Sydney', img:['Barangaroo Reserve', 'Barangaroo']}
   ],
   gm:{mode:'walking', list:[0,1,2,3,4,5,6,7]},
   tips:['周日不少商店营业时间较短，想购物尽量放在白天。']},
@@ -520,11 +535,11 @@ var DAYS = [
   lede:'约 6 km 的悬崖步道，一路经过五个海滩。',
   start:true, end:{mode:'bus', tx:TX.bondiHome},
   stops:[
-    {n:'库吉海滩', en:'Coogee Beach', ll:[-33.9205,151.2577], t:'约 09:30', mode:'bus', tx:TX.coogee, note:'从市区坐巴士约 30–40 分钟，步道从这里往北走。', q:'Coogee Beach Sydney'},
-    {n:'克洛夫利', en:'Clovelly Beach', ll:[-33.9140,151.2680], q:'Clovelly Beach Sydney'},
-    {n:'勃朗特海滩', en:'Bronte Beach', ll:[-33.9036,151.2683], q:'Bronte Beach Sydney'},
-    {n:'塔玛拉玛', en:'Tamarama Beach', ll:[-33.8990,151.2710], note:'Sculpture by the Sea 如果今年照常举办，展品主要在 Tamarama 到 Bondi 这一段。', q:'Tamarama Beach Sydney'},
-    {n:'邦迪海滩', en:'Bondi Beach', ll:[-33.8908,151.2743], note:'Bondi Icebergs 泳池是经典机位。回程坐巴士到 Bondi Junction 换火车。', q:'Bondi Beach Sydney'}
+    {n:'库吉海滩', en:'Coogee Beach', ll:[-33.9205,151.2577], t:'约 09:30', mode:'bus', tx:TX.coogee, note:'从市区坐巴士约 30–40 分钟，步道从这里往北走。', q:'Coogee Beach Sydney', img:['Coogee Beach', 'Coogee, New South Wales']},
+    {n:'克洛夫利', en:'Clovelly Beach', ll:[-33.9140,151.2680], q:'Clovelly Beach Sydney', img:['Clovelly Beach', 'Clovelly, New South Wales']},
+    {n:'勃朗特海滩', en:'Bronte Beach', ll:[-33.9036,151.2683], q:'Bronte Beach Sydney', img:['Bronte Beach', 'Bronte, New South Wales']},
+    {n:'塔玛拉玛', en:'Tamarama Beach', ll:[-33.8990,151.2710], note:'Sculpture by the Sea 如果今年照常举办，展品主要在 Tamarama 到 Bondi 这一段。', q:'Tamarama Beach Sydney', img:['Tamarama Beach', 'Tamarama, New South Wales']},
+    {n:'邦迪海滩', en:'Bondi Beach', ll:[-33.8908,151.2743], note:'Bondi Icebergs 泳池是经典机位。回程坐巴士到 Bondi Junction 换火车。', q:'Bondi Beach Sydney', img:'Bondi Beach'}
   ],
   gm:{mode:'walking', list:[0,1,2,3,4]},
   tips:['含拍照大约 2.5–3 小时，台阶多，穿运动鞋，带水和防晒。','上午走比较凉快，光线也顺。']},
@@ -533,13 +548,13 @@ var DAYS = [
   lede:'早上退房寄存行李，坐渡轮去 Manly，下午回来取行李飞墨尔本。',
   start:true,
   stops:[
-    {n:'环形码头', en:'Circular Quay', ll:[-33.8605,151.2112], t:'约 09:30', mode:'train', tx:TX.sydMuseumCQ, q:'Circular Quay Sydney'},
-    {n:'曼利码头', en:'Manly Wharf', ll:[-33.8000,151.2845], mode:'ferry', tx:TX.manly, via:FERRY_MANLY, note:'渡轮约 30 分钟，坐露天甲板看海港和歌剧院。', q:'Manly Wharf'},
-    {n:'曼利海滩', en:'Manly Beach · The Corso', ll:[-33.7969,151.2878], q:'Manly Beach'},
-    {n:'雪莉海滩', en:'Shelly Beach', ll:[-33.7998,151.2973], note:'沿海边步道走过去约 15–20 分钟，海水很清。午饭在 Manly 吃。', q:'Shelly Beach Manly'},
-    {n:'回环形码头', en:'Circular Quay', ll:[-33.8615,151.2105], t:'约 14:30', mode:'ferry', tx:TX.manlyBack, fromLL:[-33.8000,151.2845], via:FERRY_MANLY.slice().reverse(), q:'Circular Quay Sydney'},
+    {n:'环形码头', en:'Circular Quay', ll:[-33.8605,151.2112], t:'约 09:30', mode:'train', tx:TX.sydMuseumCQ, q:'Circular Quay Sydney', img:'Circular Quay'},
+    {n:'曼利码头', en:'Manly Wharf', ll:[-33.8000,151.2845], mode:'ferry', tx:TX.manly, via:FERRY_MANLY, note:'渡轮约 30 分钟，坐露天甲板看海港和歌剧院。', q:'Manly Wharf', img:['Manly Wharf', 'Manly ferry services']},
+    {n:'曼利海滩', en:'Manly Beach · The Corso', ll:[-33.7969,151.2878], q:'Manly Beach', img:['Manly Beach', 'Manly, New South Wales']},
+    {n:'雪莉海滩', en:'Shelly Beach', ll:[-33.7998,151.2973], note:'沿海边步道走过去约 15–20 分钟，海水很清。午饭在 Manly 吃。', q:'Shelly Beach Manly', img:['Cabbage Tree Bay Aquatic Reserve', 'Shelly Beach, Manly']},
+    {n:'回环形码头', en:'Circular Quay', ll:[-33.8615,151.2105], t:'约 14:30', mode:'ferry', tx:TX.manlyBack, fromLL:[-33.8000,151.2845], via:FERRY_MANLY.slice().reverse(), q:'Circular Quay Sydney', img:'Circular Quay'},
     {n:'酒店取行李', en:'Hotel', ll:[-33.8775,151.2095], t:'约 15:30', kind:'stay', mode:'train', tx:TX.sydCQMuseum, q:'Museum Station Sydney'},
-    {n:'国内航站楼 T2', en:'Sydney Domestic T2', ll:[-33.9331,151.1796], t:'约 16:45', kind:'air', mode:'train', tx:TX.sydMuseumDom, note:'国内线建议起飞前约 1 小时到。', q:'Sydney Airport T2 Domestic'}
+    {n:'国内航站楼 T2', en:'Sydney Domestic T2', ll:[-33.9331,151.1796], t:'约 16:45', kind:'air', mode:'train', tx:TX.sydMuseumDom, note:'国内线建议起飞前约 1 小时到。', q:'Sydney Airport T2 Domestic', img:'Sydney Airport'}
   ],
   after:[
     {who:'两人', code:'JQ533', dep:'SYD 18:25', arr:'MEL 20:05', note:'目标价 ≤ A$95/人'},
@@ -551,17 +566,17 @@ var DAYS = [
   lede:'从州立图书馆往南，穿过拱廊和涂鸦巷，傍晚到亚拉河边。',
   start:true, end:{mode:'walk'},
   stops:[
-    {n:'维州州立图书馆', en:'State Library Victoria', ll:[-37.8098,144.9652], t:'10:00', note:'穹顶阅览室 La Trobe Reading Room。', q:'State Library Victoria'},
-    {n:'墨尔本中心', en:'Melbourne Central', ll:[-37.8102,144.9628], note:'商场中庭里的老子弹塔。', q:'Melbourne Central'},
-    {n:'唐人街', en:'Chinatown · Little Bourke St', ll:[-37.8115,144.9686], q:'Chinatown Melbourne'},
-    {n:'皇家拱廊', en:'Royal Arcade', ll:[-37.8144,144.9640], q:'Royal Arcade Melbourne'},
-    {n:'墨尔本市政厅', en:'Melbourne Town Hall', ll:[-37.8150,144.9667], q:'Melbourne Town Hall'},
-    {n:'圣保罗大教堂', en:"St Paul's Cathedral", ll:[-37.8169,144.9676], q:"St Paul's Cathedral Melbourne"},
-    {n:'涂鸦巷', en:'Hosier Lane', ll:[-37.8165,144.9692], q:'Hosier Lane Melbourne'},
-    {n:'联邦广场', en:'Federation Square', ll:[-37.8179,144.9690], q:'Federation Square Melbourne'},
-    {n:'弗林德斯街车站', en:'Flinders Street Station', ll:[-37.8183,144.9671], q:'Flinders Street Station'},
-    {n:'国立维多利亚美术馆', en:'NGV International', ll:[-37.8226,144.9689], note:'常设展免费。', q:'NGV International'},
-    {n:'南岸 · 亚拉河', en:'Southbank · Yarra River', ll:[-37.8203,144.9637], sunset:true, note:'沿河散步、晚饭、看夜景。', q:'Southbank Promenade Melbourne'}
+    {n:'维州州立图书馆', en:'State Library Victoria', ll:[-37.8098,144.9652], t:'10:00', note:'穹顶阅览室 La Trobe Reading Room。', q:'State Library Victoria', img:'State Library Victoria'},
+    {n:'墨尔本中心', en:'Melbourne Central', ll:[-37.8102,144.9628], note:'商场中庭里的老子弹塔。', q:'Melbourne Central', img:['Melbourne Central Shopping Centre', 'search:intitle:"Melbourne Central" shopping']},
+    {n:'唐人街', en:'Chinatown · Little Bourke St', ll:[-37.8115,144.9686], q:'Chinatown Melbourne', img:'Chinatown, Melbourne'},
+    {n:'皇家拱廊', en:'Royal Arcade', ll:[-37.8144,144.9640], q:'Royal Arcade Melbourne', img:['search:intitle:"Royal Arcade" Melbourne', 'Royal Arcade, Melbourne']},
+    {n:'墨尔本市政厅', en:'Melbourne Town Hall', ll:[-37.8150,144.9667], q:'Melbourne Town Hall', img:'Melbourne Town Hall'},
+    {n:'圣保罗大教堂', en:"St Paul's Cathedral", ll:[-37.8169,144.9676], q:"St Paul's Cathedral Melbourne", img:"St Paul's Cathedral, Melbourne"},
+    {n:'涂鸦巷', en:'Hosier Lane', ll:[-37.8165,144.9692], q:'Hosier Lane Melbourne', img:'Hosier Lane'},
+    {n:'联邦广场', en:'Federation Square', ll:[-37.8179,144.9690], q:'Federation Square Melbourne', img:'Federation Square'},
+    {n:'弗林德斯街车站', en:'Flinders Street Station', ll:[-37.8183,144.9671], q:'Flinders Street Station', img:'Flinders Street railway station'},
+    {n:'国立维多利亚美术馆', en:'NGV International', ll:[-37.8226,144.9689], note:'常设展免费。', q:'NGV International', img:'National Gallery of Victoria'},
+    {n:'南岸 · 亚拉河', en:'Southbank · Yarra River', ll:[-37.8203,144.9637], sunset:true, note:'沿河散步、晚饭、看夜景。', q:'Southbank Promenade Melbourne', img:['Southbank, Victoria', 'Yarra River']}
   ],
   gm:{mode:'walking', list:[0,1,2,3,4,5,6,7,8,9,10]},
   tips:['CBD 免费电车区内坐电车不用刷卡，出区要刷卡。','维多利亚女王市场周三白天不营业，所以放到明天。']},
@@ -570,24 +585,24 @@ var DAYS = [
   lede:'早上逛市场，下午走 Carlton 和 Fitzroy，傍晚去 St Kilda 看海。按体力删减。',
   start:true, end:{mode:'tram', tx:TX.stkildaHome},
   stops:[
-    {n:'维多利亚女王市场', en:'Queen Victoria Market', ll:[-37.8076,144.9568], t:'约 09:00', note:'早上去，早午饭在市场里解决。营业时间出发前再核对。', q:'Queen Victoria Market'},
-    {n:'皇家展览馆 · 卡尔顿花园', en:'Royal Exhibition Building', ll:[-37.8047,144.9717], mode:'tram', tx:TX.reb, q:'Royal Exhibition Building'},
-    {n:'Lygon St 意大利街', en:'Lygon Street, Carlton', ll:[-37.7985,144.9668], q:'Lygon Street Carlton'},
-    {n:'Brunswick St', en:'Brunswick Street, Fitzroy', ll:[-37.7985,144.9785], note:'咖啡、古着店、街头涂鸦。', q:'Brunswick Street Fitzroy'},
-    {n:'圣基尔达', en:'St Kilda · Luna Park', ll:[-37.8676,144.9760], mode:'tram', tx:TX.stkilda96, sunset:true, note:'96 路电车直达，约 45 分钟。海边看日落；防波堤傍晚可能看到小企鹅，遵守现场观看规定。', q:'St Kilda Beach'}
+    {n:'维多利亚女王市场', en:'Queen Victoria Market', ll:[-37.8076,144.9568], t:'约 09:00', note:'早上去，早午饭在市场里解决。营业时间出发前再核对。', q:'Queen Victoria Market', img:'Queen Victoria Market'},
+    {n:'皇家展览馆 · 卡尔顿花园', en:'Royal Exhibition Building', ll:[-37.8047,144.9717], mode:'tram', tx:TX.reb, q:'Royal Exhibition Building', img:'Royal Exhibition Building'},
+    {n:'Lygon St 意大利街', en:'Lygon Street, Carlton', ll:[-37.7985,144.9668], q:'Lygon Street Carlton', img:'Lygon Street'},
+    {n:'Brunswick St', en:'Brunswick Street, Fitzroy', ll:[-37.7985,144.9785], note:'咖啡、古着店、街头涂鸦。', q:'Brunswick Street Fitzroy', img:'Brunswick Street, Melbourne'},
+    {n:'圣基尔达', en:'St Kilda · Luna Park', ll:[-37.8676,144.9760], mode:'tram', tx:TX.stkilda96, sunset:true, note:'96 路电车直达，约 45 分钟。海边看日落；防波堤傍晚可能看到小企鹅，遵守现场观看规定。', q:'St Kilda Beach', img:['Luna Park Melbourne', 'St Kilda, Victoria']}
   ],
   gm:{mode:'walking', list:[0,1,2,3]},
   tips:['St Kilda 在免费电车区外，坐电车要刷卡。']},
 
  {id:'d1030', date:'2026-10-30', wd:'周五', city:'mel', region:'gor', night:'mel', tag:'墨尔本 · 大洋路', title:'大洋路一日游（反向）',
   lede:'跟团先走内陆直奔十二门徒石，再沿海岸开回墨尔本，避开上午的人流。',
-  start:{n:'墨尔本集合点', en:'Melbourne CBD', q:'Federation Square Melbourne', ll:[-37.8179,144.9690], t:'约 07:00', note:'按旅行团通知，常见在 Federation Square 或 Southern Cross 一带。'},
-  end:{n:'返回墨尔本', en:'Melbourne CBD', q:'Federation Square Melbourne', ll:[-37.8179,144.9690], mode:'tour', via:[[-38.338,144.326],[-38.15,144.36]], t:'约 20:00–21:00'},
+  start:{n:'墨尔本集合点', en:'Melbourne CBD', q:'Federation Square Melbourne', img:'Federation Square', ll:[-37.8179,144.9690], t:'约 07:00', note:'按旅行团通知，常见在 Federation Square 或 Southern Cross 一带。'},
+  end:{n:'返回墨尔本', en:'Melbourne CBD', q:'Federation Square Melbourne', img:'Federation Square', ll:[-37.8179,144.9690], mode:'tour', via:[[-38.338,144.326],[-38.15,144.36]], t:'约 20:00–21:00'},
   stops:[
-    {n:'十二门徒石', en:'Twelve Apostles', ll:[-38.6656,143.1044], t:'约 11:00', mode:'tour', via:[[-38.15,144.36],[-38.34,143.585]], note:'反向团先走内陆经 Colac 过来，约 3.5–4 小时车程。', q:'Twelve Apostles Victoria'},
-    {n:'洛克阿德峡谷', en:'Loch Ard Gorge', ll:[-38.6460,143.0703], mode:'tour', q:'Loch Ard Gorge'},
-    {n:'阿波罗湾', en:'Apollo Bay', ll:[-38.7567,143.6711], mode:'tour', via:[[-38.70,143.16],[-38.68,143.39],[-38.73,143.55]], note:'午饭或下午茶。', q:'Apollo Bay Victoria'},
-    {n:'大洋路纪念拱门', en:'Memorial Arch', ll:[-38.4630,144.0450], mode:'tour', via:[[-38.73,143.71],[-38.668,143.862],[-38.542,143.979]], note:'沿海最经典的一段大洋路。', q:'Great Ocean Road Memorial Arch'}
+    {n:'十二门徒石', en:'Twelve Apostles', ll:[-38.6656,143.1044], t:'约 11:00', mode:'tour', via:[[-38.15,144.36],[-38.34,143.585]], note:'反向团先走内陆经 Colac 过来，约 3.5–4 小时车程。', q:'Twelve Apostles Victoria', img:['The Twelve Apostles (Victoria)', 'Twelve Apostles (Victoria)']},
+    {n:'洛克阿德峡谷', en:'Loch Ard Gorge', ll:[-38.6460,143.0703], mode:'tour', q:'Loch Ard Gorge', img:'Loch Ard Gorge'},
+    {n:'阿波罗湾', en:'Apollo Bay', ll:[-38.7567,143.6711], mode:'tour', via:[[-38.70,143.16],[-38.68,143.39],[-38.73,143.55]], note:'午饭或下午茶。', q:'Apollo Bay Victoria', img:'Apollo Bay'},
+    {n:'大洋路纪念拱门', en:'Memorial Arch', ll:[-38.4630,144.0450], mode:'tour', via:[[-38.73,143.71],[-38.668,143.862],[-38.542,143.979]], note:'沿海最经典的一段大洋路。', q:'Great Ocean Road Memorial Arch', img:['search:Great Ocean Road arch', 'Great Ocean Road']}
   ],
   gm:{mode:'driving', list:['start',0,1,2,3,'end']},
   tips:['一日游约 12–13 小时，前一晚早睡；带外套和零食，海边风大。','Klook、淘宝或当地正规旅行团都可以，确认是「反向」路线和集合地点。']},
@@ -597,22 +612,22 @@ var DAYS = [
   start:true,
   options:[
     {label:'St Kilda 海边', stops:[
-      {n:'St Kilda 海滩 · 栈桥', en:'St Kilda Pier', ll:[-37.8650,144.9730], mode:'tram', tx:TX.stkildaPier, t:'上午', note:'如果 10/29 没来得及去。', q:'St Kilda Pier'},
-      {n:'Acland St', en:'Acland Street', ll:[-37.8685,144.9800], note:'蛋糕店一条街，午饭。', q:'Acland Street St Kilda'}], back:{tx:TX.aclandHome}},
+      {n:'St Kilda 海滩 · 栈桥', en:'St Kilda Pier', ll:[-37.8650,144.9730], mode:'tram', tx:TX.stkildaPier, t:'上午', note:'如果 10/29 没来得及去。', q:'St Kilda Pier', img:'St Kilda Pier'},
+      {n:'Acland St', en:'Acland Street', ll:[-37.8685,144.9800], note:'蛋糕店一条街，午饭。', q:'Acland Street St Kilda', img:['search:intitle:"Acland Street" cake', 'Acland Street']}], back:{tx:TX.aclandHome}},
     {label:'CBD 购物', stops:[
-      {n:'Bourke St Mall', en:'Bourke Street Mall', ll:[-37.8136,144.9645], t:'上午', q:'Bourke Street Mall'},
-      {n:'Emporium', en:'Emporium Melbourne', ll:[-37.8122,144.9638], q:'Emporium Melbourne'},
-      {n:'Block Arcade', en:'The Block Arcade', ll:[-37.8159,144.9649], q:'Block Arcade Melbourne'},
-      {n:'DFO South Wharf', en:'DFO South Wharf', ll:[-37.8255,144.9525], note:'折扣店，离 Southern Cross 不远。', q:'DFO South Wharf'}], back:{tx:TX.dfoHome}},
+      {n:'Bourke St Mall', en:'Bourke Street Mall', ll:[-37.8136,144.9645], t:'上午', q:'Bourke Street Mall', img:['Bourke Street Mall', 'Bourke Street']},
+      {n:'Emporium', en:'Emporium Melbourne', ll:[-37.8122,144.9638], q:'Emporium Melbourne', img:'Emporium Melbourne'},
+      {n:'Block Arcade', en:'The Block Arcade', ll:[-37.8159,144.9649], q:'Block Arcade Melbourne', img:'Block Arcade'},
+      {n:'DFO South Wharf', en:'DFO South Wharf', ll:[-37.8255,144.9525], note:'折扣店，离 Southern Cross 不远。', q:'DFO South Wharf', img:'South Wharf, Victoria'}], back:{tx:TX.dfoHome}},
     {label:'Carlton / Fitzroy', stops:[
-      {n:'卡尔顿花园', en:'Carlton Gardens', ll:[-37.8047,144.9717], mode:'tram', tx:TX.carlton, t:'上午', note:'如果 10/29 走得太赶。', q:'Carlton Gardens'},
-      {n:'Lygon St', en:'Lygon Street', ll:[-37.7985,144.9668], q:'Lygon Street Carlton'},
-      {n:'Brunswick St', en:'Brunswick Street', ll:[-37.7985,144.9785], q:'Brunswick Street Fitzroy'}], back:{tx:TX.fitzroyHome}}
+      {n:'卡尔顿花园', en:'Carlton Gardens', ll:[-37.8047,144.9717], mode:'tram', tx:TX.carlton, t:'上午', note:'如果 10/29 走得太赶。', q:'Carlton Gardens', img:'Carlton Gardens'},
+      {n:'Lygon St', en:'Lygon Street', ll:[-37.7985,144.9668], q:'Lygon Street Carlton', img:'Lygon Street'},
+      {n:'Brunswick St', en:'Brunswick Street', ll:[-37.7985,144.9785], q:'Brunswick Street Fitzroy', img:'Brunswick Street, Melbourne'}], back:{tx:TX.fitzroyHome}}
   ],
   tail:[
     {n:'酒店取行李', en:'Hotel', ll:[-37.8120,144.9620], t:'约 18:00', kind:'stay', mode:'tram', q:'Melbourne Central'},
-    {n:'Southern Cross 站', en:'SkyBus · Southern Cross', ll:[-37.8183,144.9526], t:'约 18:15', mode:'tram', tx:TX.toSouthernCross, note:'坐 SkyBus 去机场约 30–40 分钟。', q:'Southern Cross Station'},
-    {n:'墨尔本机场', en:'Melbourne Airport', ll:[-37.6698,144.8422], t:'约 19:00', kind:'air', mode:'bus', tx:TX.skybus, nofit:true, q:'Melbourne Airport'}
+    {n:'Southern Cross 站', en:'SkyBus · Southern Cross', ll:[-37.8183,144.9526], t:'约 18:15', mode:'tram', tx:TX.toSouthernCross, note:'坐 SkyBus 去机场约 30–40 分钟。', q:'Southern Cross Station', img:'Southern Cross railway station'},
+    {n:'墨尔本机场', en:'Melbourne Airport', ll:[-37.6698,144.8422], t:'约 19:00', kind:'air', mode:'bus', tx:TX.skybus, nofit:true, q:'Melbourne Airport', img:'Melbourne Airport'}
   ],
   after:[
     {who:'两人', code:'Jetstar', dep:'MEL 21:10', arr:'OOL 22:15', note:'实际飞约 2h05；墨尔本比黄金海岸快 1 小时'},
@@ -623,9 +638,9 @@ var DAYS = [
   lede:'上午去野生动物保护区，下午沿海往北，傍晚在 Burleigh Heads 看海。',
   start:true, end:{mode:'tram', tx:TX.burleighHome},
   stops:[
-    {n:'Currumbin 野生动物保护区', en:'Currumbin Wildlife Sanctuary', ll:[-28.1360,153.4870], t:'约 09:00', mode:'bus', tx:TX.currumbin, note:'考拉合影可选树上合影或抱考拉；抱考拉要求身高 140cm 以上、能托住考拉。门票和合影分开买，出发前在官网确认价格和时段。', q:'Currumbin Wildlife Sanctuary', link:{l:'合影官网', u:'https://book.currumbinsanctuary.com.au/location/currumbin-sanctuary/book/encounters/tree-kangaroo-encounter'}},
-    {n:'象岩 · Currumbin 海滩', en:'Elephant Rock', ll:[-28.1327,153.4906], q:'Elephant Rock Currumbin'},
-    {n:'伯利角', en:'Burleigh Heads', ll:[-28.0890,153.4555], mode:'bus', tx:TX.burleigh, sunset:true, note:'国家公园海岬步道，看冲浪和 Surfers 天际线。', q:'Burleigh Head National Park'}
+    {n:'Currumbin 野生动物保护区', en:'Currumbin Wildlife Sanctuary', ll:[-28.1360,153.4870], t:'约 09:00', mode:'bus', tx:TX.currumbin, note:'考拉合影可选树上合影或抱考拉；抱考拉要求身高 140cm 以上、能托住考拉。门票和合影分开买，出发前在官网确认价格和时段。', q:'Currumbin Wildlife Sanctuary', img:'Currumbin Wildlife Sanctuary', link:{l:'合影官网', u:'https://book.currumbinsanctuary.com.au/location/currumbin-sanctuary/book/encounters/tree-kangaroo-encounter'}},
+    {n:'象岩 · Currumbin 海滩', en:'Elephant Rock', ll:[-28.1327,153.4906], q:'Elephant Rock Currumbin', img:['Currumbin, Queensland', 'Currumbin Beach']},
+    {n:'伯利角', en:'Burleigh Heads', ll:[-28.0890,153.4555], mode:'bus', tx:TX.burleigh, sunset:true, note:'国家公园海岬步道，看冲浪和 Surfers 天际线。', q:'Burleigh Head National Park', img:['Burleigh Head National Park', 'Burleigh Heads, Queensland']}
   ],
   gm:{mode:'driving', list:['start',0,1,2,'end']},
   tips:['先坐 G:link 轻轨到 Burleigh Heads，再换 700 路到 Currumbin；打车约 25 分钟。','11 月阳光很强，带帽子和防晒。']},
@@ -635,23 +650,23 @@ var DAYS = [
   start:true,
   options:[
     {label:'海岸城市', stops:[
-      {n:'SkyPoint 观景台', en:'SkyPoint · Q1', ll:[-28.0063,153.4296], t:'上午', q:'SkyPoint Observation Deck'},
-      {n:'Surfers Paradise 海滩', en:'Surfers Paradise Beach', ll:[-28.0024,153.4315], q:'Surfers Paradise Beach'},
-      {n:'Broadbeach', en:'Broadbeach · Kurrawa', ll:[-28.0310,153.4325], mode:'tram', tx:TX.broadbeach, q:'Kurrawa Beach Broadbeach'},
-      {n:'Pacific Fair', en:'Pacific Fair', ll:[-28.0355,153.4268], note:'大型商场，午饭和购物。', q:'Pacific Fair Shopping Centre'}],
+      {n:'SkyPoint 观景台', en:'SkyPoint · Q1', ll:[-28.0063,153.4296], t:'上午', q:'SkyPoint Observation Deck', img:'Q1 (building)'},
+      {n:'Surfers Paradise 海滩', en:'Surfers Paradise Beach', ll:[-28.0024,153.4315], q:'Surfers Paradise Beach', img:'Surfers Paradise, Queensland'},
+      {n:'Broadbeach', en:'Broadbeach · Kurrawa', ll:[-28.0310,153.4325], mode:'tram', tx:TX.broadbeach, q:'Kurrawa Beach Broadbeach', img:['search:intitle:Broadbeach beach', 'Broadbeach, Queensland']},
+      {n:'Pacific Fair', en:'Pacific Fair', ll:[-28.0355,153.4268], note:'大型商场，午饭和购物。', q:'Pacific Fair Shopping Centre', img:['Pacific Fair Shopping Centre', 'Pacific Fair']}],
      gm:{mode:'walking', list:[0,1,2,3]}, back:{tx:TX.pacificFairHome}},
     {label:'Springbrook 自然', stops:[
-      {n:'Purling Brook 瀑布', en:'Purling Brook Falls', ll:[-28.1690,153.2715], t:'上午', mode:'car', note:'没有公共交通，需要自驾或参团；单程约 1 小时。', q:'Purling Brook Falls'},
-      {n:'Best of All 观景台', en:'Best of All Lookout', ll:[-28.2400,153.2650], mode:'car', q:'Best of All Lookout Springbrook'}],
+      {n:'Purling Brook 瀑布', en:'Purling Brook Falls', ll:[-28.1690,153.2715], t:'上午', mode:'car', note:'没有公共交通，需要自驾或参团；单程约 1 小时。', q:'Purling Brook Falls', img:'Purling Brook Falls'},
+      {n:'Best of All 观景台', en:'Best of All Lookout', ll:[-28.2400,153.2650], mode:'car', q:'Best of All Lookout Springbrook', img:'Springbrook National Park'}],
      gm:{mode:'driving', list:['start',0,1]}, back:{mode:'car'}},
     {label:'Sea World', stops:[
-      {n:'Sea World', en:'Sea World', ll:[-27.9570,153.4252], t:'全天', mode:'bus', tx:TX.seaworld, q:'Sea World Gold Coast'}], back:{tx:TX.seaworldHome}},
+      {n:'Sea World', en:'Sea World', ll:[-27.9570,153.4252], t:'全天', mode:'bus', tx:TX.seaworld, q:'Sea World Gold Coast', img:['Sea World (Australia)', 'Sea World (Gold Coast)']}], back:{tx:TX.seaworldHome}},
     {label:'Movie World', stops:[
-      {n:'Movie World', en:'Warner Bros. Movie World', ll:[-27.9077,153.3122], t:'全天', mode:'bus', tx:TX.movieworld, note:'旁边就是 Wet\'n\'Wild，一天只选一个园区。', q:'Warner Bros. Movie World'}], back:{tx:TX.movieworldHome}}
+      {n:'Movie World', en:'Warner Bros. Movie World', ll:[-27.9077,153.3122], t:'全天', mode:'bus', tx:TX.movieworld, note:'旁边就是 Wet\'n\'Wild，一天只选一个园区。', q:'Warner Bros. Movie World', img:'Warner Bros. Movie World'}], back:{tx:TX.movieworldHome}}
   ],
   tail:[
     {n:'酒店取行李', en:'Hotel', ll:[-28.0040,153.4300], t:'约 17:00', kind:'stay', mode:'bus', q:'Cavill Avenue Surfers Paradise'},
-    {n:'Helensvale 站', en:'Helensvale Station', ll:[-27.9217,153.3337], t:'约 18:00', mode:'tram', tx:TX.toHelensvale, note:'G:link 轻轨坐到终点 Helensvale，约 40 分钟，换火车去布里斯班。', q:'Helensvale Station'}
+    {n:'Helensvale 站', en:'Helensvale Station', ll:[-27.9217,153.3337], t:'约 18:00', mode:'tram', tx:TX.toHelensvale, note:'G:link 轻轨坐到终点 Helensvale，约 40 分钟，换火车去布里斯班。', q:'Helensvale Station', img:'Helensvale railway station'}
   ],
   after:[{who:'', code:'火车', dep:'Helensvale', arr:'Roma St / Central', note:'约 1 小时，到布里斯班后入住'}],
   tips:['退房后行李寄存在酒店前台，傍晚回来取。']},
@@ -660,15 +675,15 @@ var DAYS = [
   lede:'白天沿河玩一圈，傍晚在袋鼠角看天际线，晚饭后坐 Airtrain 去机场。',
   start:true,
   stops:[
-    {n:'南岸公园', en:'South Bank Parklands', ll:[-27.4780,153.0230], t:'约 09:30', note:'Streets Beach 人造沙滩和花廊步道。', q:'South Bank Parklands Brisbane'},
-    {n:'昆士兰美术馆 · 现代美术馆', en:'QAGOMA', ll:[-27.4703,153.0170], note:'常设展免费，控制在 1–1.5 小时。', q:'Gallery of Modern Art Brisbane'},
-    {n:'Queen St Mall', en:'Queen Street Mall', ll:[-27.4688,153.0255], note:'过 Victoria Bridge 进市中心，午饭。', q:'Queen Street Mall Brisbane'},
-    {n:'CityCat 码头', en:'North Quay ferry terminal', ll:[-27.4712,153.0196], q:'North Quay ferry terminal Brisbane'},
-    {n:'Howard Smith Wharves', en:'Howard Smith Wharves', ll:[-27.4616,153.0358], mode:'ferry', tx:TX.citycat, via:CITYCAT, note:'Story Bridge 下的餐厅酒吧区，坐 CityCat 沿河过来。', q:'Howard Smith Wharves'},
-    {n:'袋鼠角悬崖', en:'Kangaroo Point Cliffs', ll:[-27.4785,153.0350], sunset:true, note:'步行过 Story Bridge 约 25–30 分钟。傍晚看城市天际线，18:00 左右吃晚饭。', q:'Kangaroo Point Cliffs'},
+    {n:'南岸公园', en:'South Bank Parklands', ll:[-27.4780,153.0230], t:'约 09:30', note:'Streets Beach 人造沙滩和花廊步道。', q:'South Bank Parklands Brisbane', img:'South Bank Parklands'},
+    {n:'昆士兰美术馆 · 现代美术馆', en:'QAGOMA', ll:[-27.4703,153.0170], note:'常设展免费，控制在 1–1.5 小时。', q:'Gallery of Modern Art Brisbane', img:['Gallery of Modern Art, Brisbane', 'Queensland Art Gallery']},
+    {n:'Queen St Mall', en:'Queen Street Mall', ll:[-27.4688,153.0255], note:'过 Victoria Bridge 进市中心，午饭。', q:'Queen Street Mall Brisbane', img:'Queen Street Mall'},
+    {n:'CityCat 码头', en:'North Quay ferry terminal', ll:[-27.4712,153.0196], q:'North Quay ferry terminal Brisbane', img:'CityCat'},
+    {n:'Howard Smith Wharves', en:'Howard Smith Wharves', ll:[-27.4616,153.0358], mode:'ferry', tx:TX.citycat, via:CITYCAT, note:'Story Bridge 下的餐厅酒吧区，坐 CityCat 沿河过来。', q:'Howard Smith Wharves', img:'Howard Smith Wharves'},
+    {n:'袋鼠角悬崖', en:'Kangaroo Point Cliffs', ll:[-27.4785,153.0350], sunset:true, note:'步行过 Story Bridge 约 25–30 分钟。傍晚看城市天际线，18:00 左右吃晚饭。', q:'Kangaroo Point Cliffs', img:['Kangaroo Point Cliffs', 'Kangaroo Point, Queensland']},
     {n:'酒店取行李', en:'Hotel', ll:[-27.4690,153.0215], t:'约 18:45', kind:'stay', mode:'taxi', tx:TX.kpTaxi, q:'Roma Street Station Brisbane'},
-    {n:'Roma St 站', en:'Roma Street · Airtrain', ll:[-27.4659,153.0193], t:'约 19:15', note:'Airtrain 也停 Central 站。', q:'Roma Street Station Brisbane'},
-    {n:'布里斯班机场国际', en:'BNE International', ll:[-27.3842,153.1175], t:'19:30–20:00', kind:'air', mode:'train', tx:TX.airtrain, nofit:true, note:'Airtrain 约 20–25 分钟。国际航班建议提前 3 小时到。', q:'Brisbane International Airport'}
+    {n:'Roma St 站', en:'Roma Street · Airtrain', ll:[-27.4659,153.0193], t:'约 19:15', note:'Airtrain 也停 Central 站。', q:'Roma Street Station Brisbane', img:'Roma Street railway station'},
+    {n:'布里斯班机场国际', en:'BNE International', ll:[-27.3842,153.1175], t:'19:30–20:00', kind:'air', mode:'train', tx:TX.airtrain, nofit:true, note:'Airtrain 约 20–25 分钟。国际航班建议提前 3 小时到。', q:'Brisbane International Airport', img:'Brisbane Airport'}
   ],
   after:[{who:'朋友', code:'南航', dep:'BNE 23:00', arr:'TNA 11/4 11:30', note:'广州转机 2h45m'}],
   gm:{mode:'walking', list:[0,1,2]},
@@ -873,6 +888,96 @@ function segKey(g){ function r(p){ return p[0].toFixed(4)+','+p[1].toFixed(4); }
 "walk||-37.8679,144.9792|-37.8676,144.9760|0":"jacfF_g{sZBJgA`AFNs@z@g@dGPFJPIZBRb@\\UXhAb@Sx@",
 "walk||-37.8685,144.9800|-37.8680,144.9772|0":"becfF_l{sZNXq@l@BPi@f@FL{BtBzAvCKJt@xAm@j@"
 };/* @geo-end */
+
+/* ---------- 地点照片：tools/fetch-photos.mjs 从维基百科 / Wikimedia Commons 取来后写在这里，不要手改 ---------- */
+/* @photo-begin */var PHOTO = {
+"Apollo Bay":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/5/5a/Apollo_Bay_from_Mariners_Lookout.jpg/330px-Apollo_Bay_from_Mariners_Lookout.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Apollo Bay from Mariners Lookout.jpg","credit":"Marcus Wong Wongm · CC BY-SA 3.0"},
+"Art Gallery of New South Wales":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/e/ec/Art_Gallery_of_New_South_Wales%2C_2022%2C_09.jpg/330px-Art_Gallery_of_New_South_Wales%2C_2022%2C_09.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Art Gallery of New South Wales, 2022, 09.jpg","credit":"Chris Olszewski · CC BY-SA 4.0"},
+"Australian Museum":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f9/Australian_Museum%2C_Sydney-William_Street_view.jpg/330px-Australian_Museum%2C_Sydney-William_Street_view.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Australian Museum, Sydney-William Street view.jpg","credit":"Shkuru Afshar · CC BY-SA 4.0"},
+"Barangaroo Reserve":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/9/9d/Barangaroo_waterfront%2C_May_2023_-_IMG_6066_%282%29.jpg/330px-Barangaroo_waterfront%2C_May_2023_-_IMG_6066_%282%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Barangaroo waterfront, May 2023 - IMG 6066 (2).jpg","credit":"芳蘭 徐芳蘭 · CC BY 2.0"},
+"Block Arcade":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/f/fe/Melbourne_Block_Arcade_2014.jpg/330px-Melbourne_Block_Arcade_2014.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Melbourne Block Arcade 2014.jpg","credit":"a.canvas.of.light from Melbourne, Australia · CC BY 2.0"},
+"Bondi Beach":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/7/79/Bondi_from_above.jpg/330px-Bondi_from_above.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Bondi from above.jpg","credit":"Nick Ang · CC BY-SA 4.0"},
+"Bourke Street Mall":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/9/9e/BourkeStreetMall-rain.jpg/330px-BourkeStreetMall-rain.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:BourkeStreetMall-rain.jpg","credit":"Vincent Quach · CC BY-SA 3.0"},
+"Brisbane Airport":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b9/Brisbane_Airport_%2831649590441%29.jpg/330px-Brisbane_Airport_%2831649590441%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Brisbane Airport (31649590441).jpg","credit":"Tony Hisgett from Birmingham, UK · CC BY 2.0"},
+"Bronte Beach":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/6/6a/AUS_Sydney%2C_Waverley%2C_Bronte_Beach_006.jpg/330px-AUS_Sydney%2C_Waverley%2C_Bronte_Beach_006.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:AUS Sydney, Waverley, Bronte Beach 006.jpg","credit":"-wuppertaler · CC BY 4.0"},
+"Brunswick Street, Melbourne":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/7/7a/Fitzroy_Melbourne.jpg/330px-Fitzroy_Melbourne.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Fitzroy Melbourne.jpg","credit":"Marcus Bichel Lindegaard · CC BY 2.0"},
+"Burleigh Head National Park":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/6/69/Burleigh_Heads_and_Tallebudgera_Creek.JPG/330px-Burleigh_Heads_and_Tallebudgera_Creek.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Burleigh Heads and Tallebudgera Creek.JPG","credit":"Shiftchange · Public domain"},
+"Cabbage Tree Bay Aquatic Reserve":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/0/07/Cabbage_Tree_Bay.jpg/330px-Cabbage_Tree_Bay.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Cabbage Tree Bay.jpg","credit":"MarineParkLover · CC BY-SA 4.0"},
+"Carlton Gardens":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/2/27/Aerial_Photo_of_Royal_Exhibition_Building%2C_Melbourne.jpg/330px-Aerial_Photo_of_Royal_Exhibition_Building%2C_Melbourne.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Aerial Photo of Royal Exhibition Building, Melbourne.jpg","credit":"Andrew Lukaris · CC BY-SA 2.0"},
+"Chinatown, Melbourne":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/2/26/Little_bourke_st.jpg/330px-Little_bourke_st.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Little bourke st.jpg","credit":"User:Bmra73 · Public domain"},
+"Chinatown, Sydney":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/2/2b/The_Sydney_Chinatown_in_Dixon_Street.jpg/330px-The_Sydney_Chinatown_in_Dixon_Street.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:The Sydney Chinatown in Dixon Street.jpg","credit":"Chen Hualin · CC BY-SA 4.0"},
+"Circular Quay":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/e/ed/North_view_of_Sydney_Opera_House%2C_the_Rocks_and_Sydney_CBD_20230223_1.jpg/330px-North_view_of_Sydney_Opera_House%2C_the_Rocks_and_Sydney_CBD_20230223_1.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:North view of Sydney Opera House, the Rocks and Sydney CBD 20230223 1.jpg","credit":"DXR · CC BY-SA 4.0"},
+"CityCat":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8c/Kurilpa.jpg/330px-Kurilpa.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Kurilpa.jpg","credit":"EamonM25 · CC BY-SA 4.0"},
+"Clovelly Beach":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/0/07/Clovelly_Sydney_2025-03-05.jpg/330px-Clovelly_Sydney_2025-03-05.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Clovelly Sydney 2025-03-05.jpg","credit":"FlyingKoala · CC BY 4.0"},
+"Coogee Beach":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/d/df/%281%29Coogee_Beach_001.jpg/330px-%281%29Coogee_Beach_001.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:(1)Coogee Beach 001.jpg","credit":"Sardaka · CC BY-SA 4.0"},
+"Currumbin Wildlife Sanctuary":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/b/ba/Currumbin_Wildlife_Sanctuary.jpg/330px-Currumbin_Wildlife_Sanctuary.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Currumbin Wildlife Sanctuary.jpg","credit":"Lewi Hirvela · CC BY-SA 2.0"},
+"Currumbin, Queensland":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e2/Gold_Coast_skyline_from_Currumbin_Beach.jpg/330px-Gold_Coast_skyline_from_Currumbin_Beach.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Gold Coast skyline from Currumbin Beach.jpg","credit":"Rob Deutscher · CC BY 2.0"},
+"Emporium Melbourne":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a3/Emporium_Melbourne_Void_view_2017.jpg/330px-Emporium_Melbourne_Void_view_2017.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Emporium Melbourne Void view 2017.jpg","credit":"Wpcpey · CC BY-SA 4.0"},
+"Federation Square":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/5/55/Fed_Square%2C_Melbourne%2C_west_view_20230219_1.jpg/330px-Fed_Square%2C_Melbourne%2C_west_view_20230219_1.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Fed Square, Melbourne, west view 20230219 1.jpg","credit":"DXR · CC BY-SA 4.0"},
+"Flinders Street railway station":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/9/99/Flinders_Station_and_trams.jpg/330px-Flinders_Station_and_trams.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Flinders Station and trams.jpg","credit":"Created by Philip Mallis in 2021; cropped by H… · CC BY-SA 3.0"},
+"Gallery of Modern Art, Brisbane":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/a/ae/Gallery_of_Modern_Art_Main_Entrance.JPG/330px-Gallery_of_Modern_Art_Main_Entrance.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Gallery of Modern Art Main Entrance.JPG","credit":"Fairfieldstation · Public domain"},
+"Helensvale railway station":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/b/bf/Helensvale_Station_Light_Rail_Entrance.jpg/330px-Helensvale_Station_Light_Rail_Entrance.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Helensvale Station Light Rail Entrance.jpg","credit":"Nottashaa432 · CC0"},
+"Hosier Lane":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/6/62/Hosier_Lane_from_Flinders_Street_Melbourne.jpg/330px-Hosier_Lane_from_Flinders_Street_Melbourne.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Hosier Lane from Flinders Street Melbourne.jpg","credit":"WANG.PC · CC BY 2.0"},
+"Howard Smith Wharves":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c1/Howard_Smith_Wharves_under_Story_Bridge_seen_from_Wilson_Outlook_Reserve%2C_Brisbane%2C_Queensland.jpg/330px-Howard_Smith_Wharves_under_Story_Bridge_seen_from_Wilson_Outlook_Reserve%2C_Brisbane%2C_Queensland.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Howard Smith Wharves under Story Bridge seen from Wilson Outlook Reserve, Brisbane, Queensland.jpg","credit":"Chris Olszewski · CC BY-SA 4.0"},
+"Hyde Park, Sydney":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a0/AUS_Sydney%2C_Central_Business_District%2C_Hyde_Park_020.jpg/330px-AUS_Sydney%2C_Central_Business_District%2C_Hyde_Park_020.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:AUS Sydney, Central Business District, Hyde Park 020.jpg","credit":"-wuppertaler · CC BY 4.0"},
+"Kangaroo Point Cliffs":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b9/Kangaroo_Point_Cliffs.jpg/330px-Kangaroo_Point_Cliffs.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Kangaroo Point Cliffs.jpg","credit":"Cassandra Black · Public domain"},
+"Loch Ard Gorge":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/e/ea/Loch_Ard_Gorge_Panorama_July_2005.jpg/330px-Loch_Ard_Gorge_Panorama_July_2005.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Loch Ard Gorge Panorama July 2005.jpg","credit":"Diliff · CC BY-SA 3.0"},
+"Luna Park Melbourne":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/7/77/Luna_park_melboure.jpg/330px-Luna_park_melboure.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Luna park melboure.jpg","credit":"Adam.J.W.C. · CC BY-SA 2.5"},
+"Lygon Street":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/8/81/Lygon_Street%2C_Carlton.jpg/330px-Lygon_Street%2C_Carlton.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Lygon Street, Carlton.jpg","credit":"Tim J Keegan · CC BY-SA 2.0"},
+"Manly Beach":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/0/07/Summer_days_at_Manly_Beach.jpg/330px-Summer_days_at_Manly_Beach.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Summer days at Manly Beach.jpg","credit":"Hardlinerr · CC BY-SA 4.0"},
+"Manly Wharf":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/5/56/Entrance_to_Manly_Ferry_Wharf_July_2022_b.jpg/330px-Entrance_to_Manly_Ferry_Wharf_July_2022_b.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Entrance to Manly Ferry Wharf July 2022 b.jpg","credit":"File:Entrance to Manly Ferry Wharf July 2022.j… · CC BY-SA 4.0"},
+"Melbourne Airport":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8e/Tullamarine_International_terminal_Vabre-1.jpg/330px-Tullamarine_International_terminal_Vabre-1.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Tullamarine International terminal Vabre-1.jpg","credit":"Phil Vabre · GFDL"},
+"Melbourne Central Shopping Centre":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d6/Melbourne_Central_Coop%27s_Shot_Tower.jpg/330px-Melbourne_Central_Coop%27s_Shot_Tower.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Melbourne Central Coop's Shot Tower.jpg","credit":"Jordan from Singapore · CC BY-SA 2.0"},
+"Melbourne Town Hall":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a4/Melbourne_Town_Hall_October_2023.jpg/330px-Melbourne_Town_Hall_October_2023.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Melbourne Town Hall October 2023.jpg","credit":"Argmae · CC BY-SA 4.0"},
+"Mrs Macquarie's Chair":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/4/4d/Mrs_Macquarie%27s_Chair_2013.jpg/330px-Mrs_Macquarie%27s_Chair_2013.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Mrs Macquarie's Chair 2013.jpg","credit":"Mitch Ames · CC BY-SA 3.0"},
+"National Gallery of Victoria":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/0/01/National_Gallery_of_Victoria_2024.jpg/330px-National_Gallery_of_Victoria_2024.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:National Gallery of Victoria 2024.jpg","credit":"Shkuru Afshar · CC BY-SA 4.0"},
+"Observatory Hill, Sydney":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d7/%281%29Observatory_Hill_Sydney.jpg/330px-%281%29Observatory_Hill_Sydney.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:(1)Observatory Hill Sydney.jpg","credit":"Sardaka · CC BY-SA 3.0"},
+"Pacific Fair Shopping Centre":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/1/11/PacificFairStage1.jpg/330px-PacificFairStage1.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:PacificFairStage1.jpg","credit":"AMP Capital Shopping Centres · CC BY 4.0"},
+"Purling Brook Falls":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/6/6f/Purlingbrook_Falls_edit.jpg/330px-Purlingbrook_Falls_edit.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Purlingbrook Falls edit.jpg","credit":"Mike Young , edited by Thegreenj · CC BY-SA 4.0"},
+"Q1 (building)":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/8/82/Q1_Tower%2C_Gold_Coast%2C_Queensland.jpg/330px-Q1_Tower%2C_Gold_Coast%2C_Queensland.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Q1 Tower, Gold Coast, Queensland.jpg","credit":"Jordan Gellie jordan_gellie · CC0"},
+"Queen Street Mall":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d1/Queen_Street_Mall%2C_Brisbane_in_Jan_2020.jpg/330px-Queen_Street_Mall%2C_Brisbane_in_Jan_2020.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Queen Street Mall, Brisbane in Jan 2020.jpg","credit":"Chris Olszewski · CC BY-SA 4.0"},
+"Queen Victoria Building":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d0/Sydney_%28AU%29%2C_Queen_Victoria_Building_--_2019_--_3580.jpg/330px-Sydney_%28AU%29%2C_Queen_Victoria_Building_--_2019_--_3580.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Sydney (AU), Queen Victoria Building -- 2019 -- 3580.jpg","credit":"Dietmar Rabich · CC BY-SA 4.0"},
+"Queen Victoria Market":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/9/93/Aerial_photograph_of_Queen_Victoria_Market.jpg/330px-Aerial_photograph_of_Queen_Victoria_Market.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Aerial photograph of Queen Victoria Market.jpg","credit":"Bob T · CC BY-SA 4.0"},
+"Roma Street railway station":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/3/3d/Roma_Street_station_aerial_2026.jpg/330px-Roma_Street_station_aerial_2026.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Roma Street station aerial 2026.jpg","credit":"Nottashaa432 · CC0"},
+"Royal Botanic Garden, Sydney":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/2/2a/Gates_at_Royal_Botanic_Gardens_viewed_from_Art_Gallery_Road.jpg/330px-Gates_at_Royal_Botanic_Gardens_viewed_from_Art_Gallery_Road.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Gates at Royal Botanic Gardens viewed from Art Gallery Road.jpg","credit":"Bidgee · CC BY-SA 3.0 au"},
+"Royal Exhibition Building":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/4/43/Royal_exhibition_building_tulips_straight.jpg/330px-Royal_exhibition_building_tulips_straight.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Royal exhibition building tulips straight.jpg","credit":"Photograph taken by Diliff and straightened by… · CC BY 2.5"},
+"Sea World (Australia)":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/7/7d/Sea_world_australia.jpg/330px-Sea_world_australia.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Sea world australia.jpg","credit":"Tristanb ( talk ). · CC BY-SA 3.0"},
+"South Bank Parklands":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/1/1d/Streets_Beach_at_South_Bank_Parklands%2C_Brisbane_03.jpg/330px-Streets_Beach_at_South_Bank_Parklands%2C_Brisbane_03.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Streets Beach at South Bank Parklands, Brisbane 03.jpg","credit":"Chris Olszewski · CC BY-SA 4.0"},
+"South Wharf, Victoria":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/4/4c/The_Yarra_River_in_Melbourne.jpg/330px-The_Yarra_River_in_Melbourne.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:The Yarra River in Melbourne.jpg","credit":"Douglas P. Perkins · CC BY-SA 3.0"},
+"Southbank, Victoria":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b4/Southbank-Melbourne_skyscrapers_in_January_2021.jpg/330px-Southbank-Melbourne_skyscrapers_in_January_2021.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Southbank-Melbourne skyscrapers in January 2021.jpg","credit":"Andrew Ho · CC0"},
+"Southern Cross railway station":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/9/96/Southern_Cross_station_entrance_%2815_August_2024%29.jpg/330px-Southern_Cross_station_entrance_%2815_August_2024%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Southern Cross station entrance (15 August 2024).jpg","credit":"PEPSI697 · CC BY-SA 4.0"},
+"Springbrook National Park":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c8/IMAG0310.jpg/330px-IMAG0310.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:IMAG0310.jpg","credit":"Knödelbaum · CC BY-SA 3.0"},
+"St Kilda Pier":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/0/03/St_Kilda_Pier_and_Kiosk_with_Catani_Gardens_in_foreground_-_panoramio.jpg/330px-St_Kilda_Pier_and_Kiosk_with_Catani_Gardens_in_foreground_-_panoramio.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:St Kilda Pier and Kiosk with Catani Gardens in foreground - panoramio.jpg","credit":"Stephen Digby · CC BY-SA 3.0"},
+"St Mary's Cathedral, Sydney":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/3/30/St_Mary%27s_Cathedral%2C_Sydney_HDR_b.jpg/330px-St_Mary%27s_Cathedral%2C_Sydney_HDR_b.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:St Mary's Cathedral, Sydney HDR b.jpg","credit":"File:St Mary's Cathedral, Sydney HDR.jpg : Ada… · CC BY-SA 2.5"},
+"St Paul's Cathedral, Melbourne":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/c/cb/St._Paul%27s_Cathedral_Tower.jpg/330px-St._Paul%27s_Cathedral_Tower.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:St. Paul's Cathedral Tower.jpg","credit":"Donaldytong · CC BY-SA 3.0"},
+"State Library Victoria":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/7/78/State_Library_of_Victoria_-_right_side.jpg/330px-State_Library_of_Victoria_-_right_side.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:State Library of Victoria - right side.jpg","credit":"Diliff · CC BY 2.5"},
+"State Library of New South Wales":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/7/72/AUS_Sydney%2C_Central_Business_District%2C_State_Library_of_New_South_Wales_004.jpg/330px-AUS_Sydney%2C_Central_Business_District%2C_State_Library_of_New_South_Wales_004.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:AUS Sydney, Central Business District, State Library of New South Wales 004.jpg","credit":"-wuppertaler · CC BY 4.0"},
+"Surfers Paradise, Queensland":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/1/1f/Surfers_Paradise%2C_QLD_skyline.jpg/330px-Surfers_Paradise%2C_QLD_skyline.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Surfers Paradise, QLD skyline.jpg","credit":"chillmimi · CC BY 2.0"},
+"Sydney Airport":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/2/2d/Sydney_Airport_%28Kingsford_Smith%29_-_aerial_view_%28cropped%29.jpg/330px-Sydney_Airport_%28Kingsford_Smith%29_-_aerial_view_%28cropped%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Sydney Airport (Kingsford Smith) - aerial view (cropped).jpg","credit":"Andrew Harvey · CC BY 2.0"},
+"Sydney Opera House":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a0/Sydney_Australia._%2821339175489%29.jpg/330px-Sydney_Australia._%2821339175489%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Sydney Australia. (21339175489).jpg","credit":"Bernard Spragg. NZ from Christchurch, New Zeal… · CC0"},
+"Tamarama Beach":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/7/71/Bondi_to_Maroubra_-_15SEP2012_%2828%29_%288010852277%29.jpg/330px-Bondi_to_Maroubra_-_15SEP2012_%2828%29_%288010852277%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Bondi to Maroubra - 15SEP2012 (28) (8010852277).jpg","credit":"portengaround · CC BY-SA 2.0"},
+"The Rocks, Sydney":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f6/Sydney_%28AU%29%2C_The_Rocks_--_2019_--_2133.jpg/330px-Sydney_%28AU%29%2C_The_Rocks_--_2019_--_2133.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Sydney (AU), The Rocks -- 2019 -- 2133.jpg","credit":"Dietmar Rabich · CC BY-SA 4.0"},
+"The Twelve Apostles (Victoria)":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e4/The_Twelve_Apostles_2011.jpg/330px-The_Twelve_Apostles_2011.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:The Twelve Apostles 2011.jpg","credit":"Michael J Fromholtz · CC BY-SA 4.0"},
+"Warner Bros. Movie World":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/5/59/Warner_Bros_Movie_World_-_panoramio_%285%29.jpg/330px-Warner_Bros_Movie_World_-_panoramio_%285%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Warner Bros Movie World - panoramio (5).jpg","credit":"caoyadong · CC BY-SA 3.0"},
+"Watsons Bay":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/7/7f/Watsons_Bay_-_Camp_Cove_Beach%2C_Sydney_-_Nov_2008.jpg/330px-Watsons_Bay_-_Camp_Cove_Beach%2C_Sydney_-_Nov_2008.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Watsons Bay - Camp Cove Beach, Sydney - Nov 2008.jpg","credit":"Diliff · CC BY-SA 3.0"},
+"search:Great Ocean Road arch":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/3/3d/Great_Ocean_Road_Arch_2018_-_3.jpg/330px-Great_Ocean_Road_Arch_2018_-_3.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Great Ocean Road Arch 2018 - 3.jpg","credit":"Orderinchaos · CC BY-SA 4.0"},
+"search:intitle:\"Acland Street\" cake":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/1/1b/Acland_Street_cake_shop_window.jpg/330px-Acland_Street_cake_shop_window.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Acland Street cake shop window.jpg","credit":"VirtualSteve at English Wikipedia · CC BY-SA 3.0"},
+"search:intitle:\"Royal Arcade\" Melbourne":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/b/bc/Melbourne_Royal_Arcade_Passage_to_Elizabeth_Street.jpg/330px-Melbourne_Royal_Arcade_Passage_to_Elizabeth_Street.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Melbourne Royal Arcade Passage to Elizabeth Street.jpg","credit":"Ymblanter · CC BY-SA 4.0"},
+"search:intitle:Broadbeach beach":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/f/fb/Kurrawa_Beach%2C_Broadbeach%2C_Queensland_2019%2C_01.jpg/330px-Kurrawa_Beach%2C_Broadbeach%2C_Queensland_2019%2C_01.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Kurrawa Beach, Broadbeach, Queensland 2019, 01.jpg","credit":"Kgbo · CC BY-SA 4.0"}
+};/* @photo-end */
+function photoOf(s){ var k = s && s.img ? [].concat(s.img)[0] : null; return k && PHOTO[k] ? PHOTO[k] : null; }
+function commonsUrl(file){ return 'https://commons.wikimedia.org/wiki/'+encodeURIComponent(file.replace(/ /g,'_')).replace('%3A',':'); }
+var THUMB_ICON = {
+  stay:'<svg viewBox="-10 -10 20 20" aria-hidden="true"><path d="M-5.5 3.5V-3.5M-5.5 1.2H5.5V3.5M-5.5 1.2V-.6H-.6V1.2M.2 -.6H3.6A1.9 1.9 0 0 1 5.5 1.3"/></svg>',
+  air:'<svg class="fill" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5z"/></svg>',
+  def:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 19l6-8 4.5 5.5 3-3.5L21 19z"/><circle cx="16.5" cy="7.5" r="2"/></svg>'
+};
+// 列表里的方形小图；图片加载不了（比如网络限制）就只剩占位图标
+function thumbHtml(s, kind){
+  var p = photoOf(s);
+  return '<span class="thumb"><i>'+(THUMB_ICON[kind] || THUMB_ICON.def)+'</i>'+
+    (p ? '<img src="'+esc(p.src)+'" alt="" loading="lazy" decoding="async" title="'+esc('图片：'+p.credit+' · Wikimedia Commons')+'" onerror="this.remove()">' : '')+'</span>';
+}
 function decodePl(s){
   var pts=[], i=0, lat=0, lng=0;
   function next(){ var b, sh=0, r=0; do{ b=s.charCodeAt(i++)-63; r|=(b&31)<<sh; sh+=5; }while(b>=32); return (r&1) ? ~(r>>1) : (r>>1); }
@@ -1255,7 +1360,12 @@ document.getElementById('btnFit').addEventListener('click', function(){ if(!map)
 btnHotels.addEventListener('click', function(){ S.hotels=!S.hotels; store('hotels',S.hotels); applyHotelVis(); });
 
 /* 弹出说明 */
-function popHtml(o){ return '<div class="pop"><h4>'+esc(o.n)+'</h4>'+(o.en?'<div class="en">'+esc(o.en)+'</div>':'')+(o.note?'<p>'+esc(o.note)+'</p>':'')+(o.links?'<div class="links">'+o.links+'</div>':'')+'</div>'; }
+function popHtml(o){
+  var p=o.photo;
+  return '<div class="pop">'+(p ? '<div class="pim"><img src="'+esc(p.src)+'" alt="" onerror="var c=this.closest(\'.pop\').querySelector(\'.pcr\');if(c)c.remove();this.parentNode.remove()"></div>' : '')+
+    '<h4>'+esc(o.n)+'</h4>'+(o.en?'<div class="en">'+esc(o.en)+'</div>':'')+(o.note?'<p>'+esc(o.note)+'</p>':'')+(o.links?'<div class="links">'+o.links+'</div>':'')+
+    (p ? '<div class="pcr"><a href="'+commonsUrl(p.file)+'" target="_blank" rel="noopener">图片：'+esc(p.credit)+' · Wikimedia Commons</a></div>' : '')+'</div>';
+}
 // 按钮列和左上角提示条盖在地图上面，弹窗自动平移时避开它们
 function openPop(o, ll, r){
   var W=map.getSize().x, tl=document.querySelector('.tools'), top=mapnote.offsetTop+mapnote.offsetHeight+8, right=tl.offsetWidth+18;
@@ -1289,7 +1399,7 @@ function select(i, fromList){
   var d=byId[S.view]; if(!d) return; var s=dayStops(d)[i];
   if(!map || !scene){ setListOn('stop-'+i, true); return; }
   var m=findMark(function(m){ return m.i===i; });
-  function show(){ openPop({n:s.n, en:s.en, note:s.note, links:stopLinks(s)}, s.ll, 12); markSel(m); setListOn('stop-'+i, fromList); S.sel={type:'s', i:i}; }
+  function show(){ openPop({n:s.n, en:s.en, note:s.note, links:stopLinks(s), photo:photoOf(s)}, s.ll, 12); markSel(m); setListOn('stop-'+i, fromList); S.sel={type:'s', i:i}; }
   if(fromList){ focusOn(s.ll, show); if(isNarrow()) revealMap(); } else show();
 }
 function selectHotel(hi, fromList){
@@ -1357,19 +1467,19 @@ function renderDay(d){
   }
   if(d.before){ h+='<h3 class="sec">抵达</h3>'+xferHtml(d.before); }
   h+='<h3 class="sec">路线</h3><ol class="stops" style="--c:var(--'+d.city+')">';
-  if(st && st.n!=='住处出发'){ h+='<li class="stop stay"><div class="n" style="background:var(--muted)">起</div><div class="body"><div class="ttl"><span class="nm">'+esc(st.n)+'</span>'+(st.t?'<span class="t">'+esc(st.t)+'</span>':'')+'</div>'+(st.note?'<p class="note">'+esc(st.note)+'</p>':'')+'</div></li>'; }
+  if(st && st.n!=='住处出发'){ h+='<li class="stop stay"><div class="n" style="background:var(--muted)">起</div><div class="body"><div class="hd">'+thumbHtml(st)+'<div class="hdt"><div class="ttl"><span class="nm">'+esc(st.n)+'</span>'+(st.t?'<span class="t">'+esc(st.t)+'</span>':'')+'</div><div class="en">'+esc(st.en||'')+'</div></div></div>'+(st.note?'<p class="note">'+esc(st.note)+'</p>':'')+'</div></li>'; }
   var num=0;
   stops.forEach(function(s,i){
     var lab = s.kind==='stay' ? '宿' : (s.kind==='air' ? '机' : String(++num));
     var tx = legAt[i] ? (s.tx ? txHtml(legAt[i]) : plainLeg(legAt[i])) : '';
     h+='<li class="stop'+(s.opt?' opt':'')+(s.kind?' '+s.kind:'')+'" id="stop-'+i+'" data-i="'+i+'"><div class="n">'+lab+'</div><div class="body">'+
-      '<div class="ttl"><span class="nm">'+esc(s.n)+'</span>'+(s.t?'<span class="t">'+esc(s.t)+'</span>':'')+(s.sunset?'<span class="t">日落 '+sun.set+'</span>':'')+'</div>'+
-      '<div class="en">'+esc(s.en||'')+'</div>'+tx+(s.note?'<p class="note">'+esc(s.note)+'</p>':'')+
+      '<div class="hd">'+thumbHtml(s, s.kind)+'<div class="hdt"><div class="ttl"><span class="nm">'+esc(s.n)+'</span>'+(s.t?'<span class="t">'+esc(s.t)+'</span>':'')+(s.sunset?'<span class="t">日落 '+sun.set+'</span>':'')+'</div>'+
+      '<div class="en">'+esc(s.en||'')+'</div></div></div>'+tx+(s.note?'<p class="note">'+esc(s.note)+'</p>':'')+
       '<div class="links">'+stopLinks(s)+'</div></div></li>';
   });
   if(en && legAt.end){
     var etx = en.tx ? txHtml(legAt.end) : plainLeg(legAt.end);
-    h+='<li class="stop stay"><div class="n" style="background:var(--muted)">'+(en.n==='回住处'?'回':'终')+'</div><div class="body"><div class="ttl"><span class="nm">'+esc(en.n)+'</span>'+(en.t?'<span class="t">'+esc(en.t)+'</span>':'')+'</div>'+etx+'</div></li>';
+    h+='<li class="stop stay"><div class="n" style="background:var(--muted)">'+(en.n==='回住处'?'回':'终')+'</div><div class="body"><div class="hd">'+thumbHtml(en, en.n==='回住处'?'stay':'')+'<div class="hdt"><div class="ttl"><span class="nm">'+esc(en.n)+'</span>'+(en.t?'<span class="t">'+esc(en.t)+'</span>':'')+'</div><div class="en">'+esc(en.en||'')+'</div></div></div>'+etx+'</div></li>';
   }
   h+='</ol>';
   var gm=dayGm(d);
@@ -1417,7 +1527,7 @@ function renderOverview(){
   h+='<h3 class="sec">交通</h3><div class="tblwrap"><table class="ftable"><tbody>'+FLIGHTS.map(function(f){ return '<tr><td>'+f.d+'</td><td><b>'+esc(f.code)+'</b> <span class="r">'+esc(f.r)+'</span><span class="sub">'+esc(f.who)+(f.sub?' · '+esc(f.sub):'')+'</span></td><td class="r" style="text-align:right;white-space:nowrap">'+esc(f.p)+'</td></tr>'; }).join('')+'</tbody></table></div>';
   h+='<h3 class="sec">当地交通怎么付钱</h3><ul class="tips pay">'+PAY.map(function(p){ return '<li>'+(p.c?'<i class="dot-c" style="--c:var(--'+p.c+')"></i>':'')+esc(p.t)+'</li>'; }).join('')+'</ul>';
   h+='<h3 class="sec">住宿</h3><div class="stays">'+['syd','mel','gc','bne'].map(function(k){ var c=CITY[k]; return '<div style="border-top:3px solid var(--'+k+')"><b>'+c.name+'</b><span class="n">'+c.nights+'</span> <span>晚</span><br><span>'+c.cin.slice(5).replace('-','/')+' → '+c.cout.slice(5).replace('-','/')+'</span>'+(bookedHotel(k)?'<span class="bkd">已订 · '+esc(bookedHotel(k).s||bookedHotel(k).n)+'</span>':'')+'</div>'; }).join('')+'</div>';
-  h+='<p class="fine">底图和路线数据来自 OpenStreetMap，景点和酒店按真实坐标放置；线路走向仅供参考，坐车以站牌和实时查询为准。实际导航请点每一站的「地图」，在 Google 地图里打开。机票价格是之前查到的参考价，购买前重新查。</p>';
+  h+='<p class="fine">底图和路线数据来自 OpenStreetMap，地点照片来自维基百科 / Wikimedia Commons（作者和授权写在地图弹窗的照片下面），景点和酒店按真实坐标放置；线路走向仅供参考，坐车以站牌和实时查询为准。实际导航请点每一站的「地图」，在 Google 地图里打开。机票价格是之前查到的参考价，购买前重新查。</p>';
   panel.innerHTML=h;
   panel.querySelectorAll('[data-go]').forEach(function(b){ b.addEventListener('click', function(){ setView(b.getAttribute('data-go')); if(isNarrow()) window.scrollTo({top:0}); }); });
 }
