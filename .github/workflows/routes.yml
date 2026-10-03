@@ -1,0 +1,51 @@
+# Fetch real route shapes from OpenStreetMap (bus / tram / train / ferry lines and
+# walking paths) and write them into index.html (the GEO block).
+# Run it from the Actions tab after changing stops or transport legs; on main it also
+# redeploys the site. It runs by itself when the generator script changes on a claude/ branch.
+name: Update route shapes
+
+on:
+  workflow_dispatch:
+  push:
+    branches: ['claude/**']
+    paths: ['tools/fetch-routes.mjs', '.github/workflows/routes.yml']
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: routes-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  routes:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - name: Fetch shapes from OpenStreetMap
+        run: node tools/fetch-routes.mjs
+      - name: Commit changes
+        id: commit
+        run: |
+          if git diff --quiet -- index.html; then
+            echo "No shape changes."
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Update route shapes from OpenStreetMap" -- index.html
+          # someone may have pushed while shapes were being fetched
+          git pull --rebase origin "$GITHUB_REF_NAME"
+          git push origin "HEAD:$GITHUB_REF_NAME"
+          echo "changed=true" >> "$GITHUB_OUTPUT"
+      # Pushes made with the workflow token don't trigger other workflows, so start the deploy explicitly.
+      - name: Redeploy the site
+        if: github.ref == 'refs/heads/main' && steps.commit.outputs.changed == 'true'
+        run: gh workflow run pages.yml --ref main
+        env:
+          GH_TOKEN: ${{ github.token }}
