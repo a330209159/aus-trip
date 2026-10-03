@@ -27,6 +27,10 @@ const OSRM = {
 };
 // 简化容差（米）：步行更细，长途自驾更粗
 const TOL = { walk: 3, bus: 5, tram: 4, lrt: 5, train: 8, metro: 8, ferry: 10, taxi: 6, car: 12, tour: 25 };
+// 总时间预算：超过就不再请求，已经取到的照常写进去（GitHub Actions 那边整个任务限 30 分钟）
+const BUDGET_MS = 18 * 60 * 1000;
+const T0 = Date.now();
+const elapsed = () => ((Date.now() - T0) / 1000).toFixed(0) + 's';
 // 上下车点离线路多远以内算「在这条线上」（米）
 const SNAP = { bus: 250, tram: 250, lrt: 300, train: 400, metro: 400, ferry: 450 };
 
@@ -120,16 +124,16 @@ export function encode(line) {
 
 // ---------- 网络 ----------
 const sleep = ms => new Promise(r => setTimeout(r, ms));
-async function request(url, opts = {}, tries = 4) {
+async function request(url, opts = {}, tries = 2, timeoutMs = 30000) {
   let err;
   for (let k = 0; k < tries; k++) {
     try {
-      const res = await fetch(url, { ...opts, headers: { 'User-Agent': UA, ...(opts.headers || {}) }, signal: AbortSignal.timeout(120000) });
+      const res = await fetch(url, { ...opts, headers: { 'User-Agent': UA, ...(opts.headers || {}) }, signal: AbortSignal.timeout(timeoutMs) });
       if (res.ok) return await res.json();
       err = new Error(`HTTP ${res.status}`);
       if (res.status !== 429 && res.status < 500) break;
     } catch (e) { err = e; }
-    await sleep(3000 * (k + 1));
+    if (k < tries - 1) await sleep(3000 * (k + 1));
   }
   throw err;
 }
@@ -139,17 +143,17 @@ async function overpass(q) {
   for (let k = 0; k < OVERPASS.length; k++) {
     const url = OVERPASS[(opIdx + k) % OVERPASS.length];
     try {
-      const j = await request(url, { method: 'POST', body: 'data=' + encodeURIComponent(q), headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }, 2);
+      const j = await request(url, { method: 'POST', body: 'data=' + encodeURIComponent(q), headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }, 1, 100000);
       opIdx = (opIdx + k) % OVERPASS.length;
       await sleep(1500);
       return j;
-    } catch (e) { err = e; }
+    } catch (e) { err = e; console.log(`  · ${url.split('/')[2]} 失败：${e.message}（${elapsed()}）`); }
   }
   throw err;
 }
 async function osrm(profile, pts) {
   const url = OSRM[profile] + pts.map(p => `${p[1].toFixed(6)},${p[0].toFixed(6)}`).join(';') + '?overview=full&geometries=geojson';
-  const j = await request(url);
+  const j = await request(url, {}, 2, 25000);
   await sleep(400);
   if (j.code !== 'Ok' || !j.routes || !j.routes.length) return null;
   return { line: j.routes[0].geometry.coordinates.map(c => [c[1], c[0]]), meters: j.routes[0].distance };
@@ -177,12 +181,15 @@ function groupSegs(segs) {
 async function relationsFor(filter) {
   if (relCache.has(filter)) return relCache.get(filter);
   const b = groups.get(filter), pad = 0.03;
-  const q = `[out:json][timeout:180];relation${filter}(${b[0] - pad},${b[1] - pad},${b[2] + pad},${b[3] + pad});out geom;`;
-  const j = await overpass(q);
+  const q = `[out:json][timeout:90];relation${filter}(${b[0] - pad},${b[1] - pad},${b[2] + pad},${b[3] + pad});out geom;`;
+  console.log(`  查线路 ${filter}（${elapsed()}）`);
+  let j;
+  try { j = await overpass(q); } catch (e) { relCache.set(filter, []); throw e; }
   const rels = (j.elements || []).filter(e => e.type === 'relation').map(r => {
     const ways = r.members.filter(m => m.type === 'way' && m.geometry && !/platform|stop/.test(m.role || '')).map(m => m.geometry.filter(Boolean).map(p => [p.lat, p.lon]));
     return { id: r.id, name: (r.tags && (r.tags.name || r.tags.ref)) || '', line: ways.length ? stitch(ways) : [] };
   }).filter(r => r.line.length > 1);
+  console.log(`  → ${rels.length} 条 relation（${elapsed()}）`);
   relCache.set(filter, rels);
   return rels;
 }
@@ -223,17 +230,18 @@ const geo = {}, report = [];
 let ok = 0, kept = 0, none = 0;
 for (const [k, { g, day }] of segs) {
   let res = null, how = '';
-  try {
+  if (Date.now() - T0 > BUDGET_MS) res = { reject: '时间预算用完，下次再取' };
+  else try {
     if (g.osm) {
-      res = await transitShape(g);
-      if (!res && /^(bus|tram|lrt)$/.test(g.mode)) { res = await roadShape(g, 'car'); how = res && res.part ? '（线路没找到，按公路）' : ''; }
+      try { res = await transitShape(g); } catch (e) { how = `（线路查询失败：${e.message}）`; }
+      if (!res && /^(bus|tram|lrt)$/.test(g.mode)) { res = await roadShape(g, 'car'); if (res && res.part) how += '（线路没找到，按公路）'; }
     } else if (g.mode === 'walk') res = await roadShape(g, 'foot');
     else if (/^(taxi|car|tour|bus|tram|lrt)$/.test(g.mode)) res = await roadShape(g, 'car');
   } catch (e) { res = { reject: '请求失败：' + e.message }; }
   if (res && res.part) {
     const simple = simplify(res.part, TOL[g.mode] || 5);
     geo[k] = encode(simple); ok++;
-    report.push(`✔ ${day} ${g.mode} ${g.line || ''} ${how}${res.info} · ${simple.length} 点`);
+    report.push(`✔ ${day} ${g.mode} ${g.line || ''} ${how}${res.info} · ${simple.length} 点（${elapsed()}）`);
   } else if (oldGeo[k]) {
     geo[k] = oldGeo[k]; kept++;
     report.push(`↺ ${day} ${g.mode} ${g.line || ''} 沿用上次的形状${res && res.reject ? '（' + res.reject + '）' : ''}`);
@@ -241,8 +249,8 @@ for (const [k, { g, day }] of segs) {
     none++;
     report.push(`✘ ${day} ${g.mode} ${g.line || ''} 没取到${res && res.reject ? '：' + res.reject : ''}，网页按直线画 · ${k}`);
   }
+  console.log(report[report.length - 1]);
 }
-console.log(report.join('\n'));
 console.log(`\n共 ${segs.size} 段：新取到 ${ok}，沿用旧的 ${kept}，没有 ${none}。`);
 
 fs.writeFileSync(FILE, writeGeo(html, gb, ge, geo));
