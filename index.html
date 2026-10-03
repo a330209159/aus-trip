@@ -1,10 +1,16 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>澳洲四城行程地图</title>
+<style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Sans+SC:wght@400;500;700&family=Noto+Serif+SC:wght@600;700&display=swap">
 <style>
-/* Layout: date rail pinned on top; wide screens keep the map pinned on the left while the day's itinerary scrolls on the right; phones stack map over itinerary */
+/* Layout: date rail pinned on top; wide screens keep the map pinned on the left while the day's itinerary scrolls on the right; phones stack map over itinerary.
+   The map is Leaflet (loaded at runtime from a CDN) on CARTO tiles; its stylesheet is inserted before this one so the rules below win. */
 :root{
   --bg:#EDF1F3; --surface:#FFFFFF; --ink:#16232B; --muted:#5B6B75; --line:#D3DDE2; --soft:#E4EBEF;
   --land:#F7F6F2; --sea:#CADCE4; --coast:#9AB5C1; --sea-ink:#477A8E; --grid:rgba(22,35,43,.075); --halo:rgba(247,246,242,.92);
@@ -58,64 +64,71 @@ button{font:inherit;color:inherit}
 
 /* stage */
 .stage{display:grid;grid-template-columns:minmax(0,1fr);gap:14px;padding-block:14px 40px}
-.map{position:relative;height:min(58svh,540px);min-height:320px;border-radius:14px;overflow:hidden;border:1px solid var(--line);background:var(--land);touch-action:none;user-select:none;-webkit-user-select:none}
-.map svg{display:block;width:100%;height:100%;cursor:grab}
-.map svg.dragging{cursor:grabbing}
-.tools{position:absolute;top:10px;right:10px;display:flex;flex-direction:column;gap:6px;align-items:flex-end}
+.map{position:relative;isolation:isolate;scroll-margin-top:calc(var(--rail) + 8px);height:min(58svh,540px);min-height:320px;border-radius:14px;overflow:hidden;border:1px solid var(--line);background:var(--land);touch-action:none;user-select:none;-webkit-user-select:none}
+.lmap{position:absolute;inset:0}
+.map:not(.ready) .tools,.map:not(.ready) .mapnote{display:none}
+.map.nomap{height:auto;min-height:0;touch-action:auto;user-select:auto;-webkit-user-select:auto}
+.map.nomap .lmap{display:none}
+.mapmsg{position:absolute;inset:0;z-index:500;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:8px 12px;padding:14px 16px;text-align:center;font-size:13px;color:var(--muted)}
+.mapmsg p{margin:0;max-width:44ch}
+.map.nomap .mapmsg{position:static;justify-content:flex-start;text-align:left}
+.tools{position:absolute;z-index:500;top:10px;right:10px;display:flex;flex-direction:column;gap:6px;align-items:flex-end}
 .tbtn{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-width:34px;height:34px;padding:0 10px;border-radius:9px;border:1px solid var(--line);background:var(--surface);font-size:13px;cursor:pointer;box-shadow:0 1px 2px rgba(0,0,0,.06)}
 .tbtn[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
 .tgroup{display:flex;flex-direction:column;border-radius:9px;overflow:hidden;border:1px solid var(--line);box-shadow:0 1px 2px rgba(0,0,0,.06)}
 .tgroup .tbtn{border:0;border-radius:0;box-shadow:none;font-family:var(--f-mono);font-size:17px;width:34px;padding:0}
 .tgroup .tbtn+.tbtn{border-top:1px solid var(--line)}
-.mapnote{position:absolute;left:10px;top:10px;max-width:calc(100% - 140px);font-size:11.5px;line-height:1.4;color:var(--muted);background:var(--halo);padding:4px 8px;border-radius:7px}
-.callout{position:absolute;z-index:5;width:min(260px,calc(100% - 24px));background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 12px 10px;box-shadow:0 6px 24px rgba(10,20,26,.18);font-size:13px;line-height:1.5}
-.callout h4{margin:0 22px 2px 0;font-size:14.5px;line-height:1.35}
-.callout .en{font-family:var(--f-mono);font-size:11.5px;color:var(--muted)}
-.callout p{margin:6px 0 8px;color:var(--ink)}
-.callout .x{position:absolute;right:6px;top:6px;width:26px;height:26px;border:0;background:transparent;border-radius:6px;cursor:pointer;color:var(--muted);font-size:16px;line-height:1}
-.callout .links{display:flex;flex-wrap:wrap;gap:6px}
-
-/* svg styling */
-.base-land{fill:var(--land)} .base-sea{fill:var(--sea)}
-.poly-land{fill:var(--land);stroke:var(--coast);stroke-width:1}
-.poly-sea{fill:var(--sea);stroke:var(--coast);stroke-width:1}
-.grid line{stroke:var(--grid);stroke-width:1}
-.grid text{font-family:var(--f-mono);font-size:9.5px;fill:var(--muted);opacity:.85}
-.water{font-family:var(--f-display);font-style:italic;font-size:12.5px;fill:var(--sea-ink);letter-spacing:.12em;text-anchor:middle}
-.ctx{fill:var(--muted);opacity:.35}
+.mapnote{position:absolute;z-index:500;left:10px;top:10px;max-width:calc(100% - 140px);font-size:11.5px;line-height:1.4;color:var(--muted);background:var(--halo);padding:4px 8px;border-radius:7px}
+.mapnote .tw{display:none}
+.mapnote.warn .tw{display:block;margin-top:3px;padding-top:3px;border-top:1px solid var(--line);color:var(--ink)}
+/* Leaflet 外观跟随页面主题 */
+.lmap.leaflet-container{background:var(--land);font-family:var(--f-body);font-size:13px;line-height:1.5}
+.lmap .leaflet-control-attribution{background:var(--halo);color:var(--muted);font-size:10.5px;line-height:1.5;padding:1px 6px;border-top-left-radius:6px}
+.lmap .leaflet-control-attribution a{color:var(--ink);text-decoration:none}
+.lmap .leaflet-control-scale{margin:0 0 8px 10px}
+.lmap .leaflet-control-scale-line{background:var(--halo);border-color:var(--ink);color:var(--ink);font:500 10.5px/1.5 var(--f-mono)}
+.lmap .leaflet-popup-content-wrapper{background:var(--surface);color:var(--ink);border-radius:12px;padding:0;box-shadow:0 0 0 1px var(--line),0 6px 24px rgba(10,20,26,.22)}
+.lmap .leaflet-popup-tip{background:var(--surface);box-shadow:none}
+.lmap .leaflet-popup-content{margin:10px 12px;font-size:13px;line-height:1.5}
+.lmap a.leaflet-popup-close-button{top:4px;right:4px;width:26px;height:26px;font:18px/26px var(--f-body);color:var(--muted)}
+.pop h4{margin:0 22px 2px 0;font-size:14.5px;line-height:1.35}
+.pop .en{font-family:var(--f-mono);font-size:11.5px;color:var(--muted)}
+.lmap .pop p{margin:6px 0 8px;color:var(--ink)}
+.pop .links{display:flex;flex-wrap:wrap;gap:6px}
+.lmap .pop .lk{color:var(--ink)}
+/* 路线（Leaflet 的 SVG 路径，className 带过来） */
+.ctx{fill:var(--muted);fill-opacity:.4}
 .rt{fill:none;stroke-linecap:round;stroke-linejoin:round}
-.rt.m-walk{stroke-width:3.2}
-.rt.m-transit{stroke-width:2.6;stroke-dasharray:7 5}
-.rt.m-ferry{stroke-width:3;stroke-dasharray:.5 6;stroke:var(--sea-ink)!important}
-.rt.m-tour{stroke-width:2.6;stroke-dasharray:14 5 3 5}
+.rt.m-walk{stroke-width:3.4}
+.rt.m-transit{stroke-width:2.8;stroke-dasharray:7 5}
+.rt.m-ferry{stroke-width:3.2;stroke-dasharray:.5 6;stroke:var(--sea-ink)!important}
+.rt.m-tour{stroke-width:2.8;stroke-dasharray:14 5 3 5}
 .rt.m-flight{stroke-width:2;stroke-dasharray:9 6;stroke:var(--air)!important}
 .rt.opt{opacity:.45}
 .rt.syd{stroke:var(--syd)} .rt.mel{stroke:var(--mel)} .rt.gc{stroke:var(--gc)} .rt.bne{stroke:var(--bne)}
+/* 点标记（divIcon；尺寸由 iconSize 决定，里面的元素铺满） */
 .mk{cursor:pointer}
-.mk .dot{stroke:var(--surface);stroke-width:2.2}
-.mk.syd .dot{fill:var(--syd)} .mk.mel .dot{fill:var(--mel)} .mk.gc .dot{fill:var(--gc)} .mk.bne .dot{fill:var(--bne)}
-.mk.opt .dot{fill:var(--surface)!important;stroke-width:2.2}
-.mk.opt.syd .dot{stroke:var(--syd)} .mk.opt.mel .dot{stroke:var(--mel)} .mk.opt.gc .dot{stroke:var(--gc)} .mk.opt.bne .dot{stroke:var(--bne)}
-.mk .num{font-family:var(--f-mono);font-weight:600;font-size:11px;fill:var(--surface);text-anchor:middle;dominant-baseline:central;pointer-events:none}
-.mk.opt.syd .num{fill:var(--syd)} .mk.opt.mel .num{fill:var(--mel)} .mk.opt.gc .num{fill:var(--gc)} .mk.opt.bne .num{fill:var(--bne)}
-.mk .ring{fill:none;stroke:var(--ink);stroke-width:2;opacity:0}
+.mk.syd{--c:var(--syd)} .mk.mel{--c:var(--mel)} .mk.gc{--c:var(--gc)} .mk.bne{--c:var(--bne)}
+.mk .ring{position:absolute;inset:-6px;border:2px solid var(--ink);border-radius:50%;opacity:0;pointer-events:none}
 .mk.sel .ring{opacity:1}
-.mk.htl .box{fill:var(--ink);stroke:var(--surface);stroke-width:2}
-.mk.htl .bed{fill:none;stroke:var(--surface);stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round}
-.mk.htl.area .box{fill:var(--surface);stroke:var(--ink);stroke-dasharray:3 2}
-.mk.htl.area .bed{stroke:var(--ink)}
-.mk.base .box{fill:var(--surface);stroke:var(--muted);stroke-width:1.6}
-.mk.base .bed{fill:none;stroke:var(--muted);stroke-width:1.3;stroke-linecap:round;stroke-linejoin:round}
-.mk.city .dot{stroke-width:3}
-.lb{font-family:var(--f-body);font-size:12px;font-weight:500;fill:var(--ink);paint-order:stroke;stroke:var(--halo);stroke-width:3.5px;stroke-linejoin:round;dominant-baseline:central;pointer-events:none}
-.lb.h{font-size:11.5px;font-weight:400;fill:var(--ink)}
-.lb.c{font-size:13.5px;font-weight:700}
-.lb.f{font-family:var(--f-mono);font-size:10.5px;font-weight:500;fill:var(--muted)}
-.lb.dim{fill:var(--muted);font-weight:400}
-.scale line{stroke:var(--ink);stroke-width:1.5}
-.scale text{font-family:var(--f-mono);font-size:10.5px;fill:var(--ink);paint-order:stroke;stroke:var(--halo);stroke-width:3px}
-.north path{fill:var(--ink)} .north text{font-family:var(--f-mono);font-size:10px;font-weight:600;fill:var(--ink);text-anchor:middle}
-
+.mk .dot{display:flex;align-items:center;justify-content:center;width:100%;height:100%;border-radius:50%;background:var(--c);border:2px solid var(--surface);color:var(--surface);font:600 11px/1 var(--f-mono);box-shadow:0 1px 3px rgba(0,0,0,.3)}
+.mk.opt .dot{background:var(--surface);color:var(--c);border-color:var(--c)}
+.mk.stay .dot,.mk.air .dot{font:700 11.5px/1 var(--f-body)}
+.mk.city .dot{border-width:3px;font-size:12px}
+.mk .box{display:block;width:100%;height:100%;border-radius:5px;background:var(--ink);border:2px solid var(--surface);box-shadow:0 1px 3px rgba(0,0,0,.3)}
+.mk .box svg{display:block;width:100%;height:100%;fill:none;stroke:var(--surface);stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+.mk.htl .ring{border-radius:10px}
+.mk.htl.area .box{background:var(--surface);border:1.5px dashed var(--ink)}
+.mk.htl.area .box svg{stroke:var(--ink)}
+.mk.base .box{background:var(--surface);border:1.6px solid var(--muted)}
+.mk.base .box svg{stroke:var(--muted)}
+.mk.base .ring{border-radius:9px}
+/* 标签：零尺寸锚点里的文字，位置由脚本避让后决定 */
+.lbm .lb{position:absolute;left:0;top:0;padding:0 2px;white-space:nowrap;font:500 12px/16px var(--f-body);color:var(--ink);visibility:hidden;text-shadow:0 0 1px var(--halo),0 0 2px var(--halo),0 0 3px var(--halo),0 0 4px var(--halo),0 0 6px var(--halo)}
+.lbm .lb.h{font-size:11.5px;font-weight:400}
+.lbm .lb.c{font-size:13.5px;font-weight:700;line-height:18px}
+.lbm .lb.f{font:500 10.5px/14px var(--f-mono);color:var(--muted)}
+.lbm .lb.dim{color:var(--muted);font-weight:400}
 .legend{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:12px;color:var(--muted);padding:8px 2px 0}
 .legend span{display:inline-flex;align-items:center;gap:6px}
 .legend svg{width:30px;height:8px;overflow:visible}
@@ -225,6 +238,8 @@ h3.sec::after{content:"";flex:1;height:1px;background:var(--line)}
 }
 @media (prefers-reduced-motion: reduce){ *{transition:none!important;scroll-behavior:auto!important} }
 </style>
+</head>
+<body>
 
 <div class="wrap masthead">
   <h1>澳洲四城行程地图</h1>
@@ -238,7 +253,8 @@ h3.sec::after{content:"";flex:1;height:1px;background:var(--line)}
 <main class="wrap stage">
   <div class="mapcol">
     <div class="map" id="map">
-      <svg id="svg" role="img" aria-label="行程路线示意地图"></svg>
+      <div class="lmap" id="lmap" role="region" aria-label="行程路线地图"></div>
+      <div class="mapmsg" id="mapmsg" aria-live="polite"><p>地图加载中…</p></div>
       <div class="mapnote" id="mapnote"></div>
       <div class="tools">
         <button class="tbtn" id="btnHotels" type="button" aria-pressed="true" title="显示或隐藏候选酒店">酒店</button>
@@ -248,7 +264,6 @@ h3.sec::after{content:"";flex:1;height:1px;background:var(--line)}
         </div>
         <button class="tbtn" id="btnFit" type="button" title="回到整天视图">复位</button>
       </div>
-      <div class="callout" id="callout" hidden></div>
     </div>
     <div class="legend" aria-label="图例">
       <span><svg viewBox="0 0 30 8"><line x1="2" y1="4" x2="28" y2="4" stroke-width="3"/></svg>步行</span>
@@ -267,7 +282,6 @@ h3.sec::after{content:"";flex:1;height:1px;background:var(--line)}
 var D2R = Math.PI/180;
 function proj(ll){ return [ll[1], -Math.log(Math.tan(Math.PI/4 + ll[0]*D2R/2))/D2R]; }
 function unprojY(y){ return (2*Math.atan(Math.exp(-y*D2R)) - Math.PI/2)/D2R; }
-function LL(a){ var r=[]; for(var i=0;i<a.length;i+=2) r.push([a[i+1],a[i]]); return r; }
 function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
 
 /* ---------- 城市 ---------- */
@@ -280,16 +294,12 @@ var CITY = {
 var MODE = { walk:'步行', train:'火车', tram:'电车 / 轻轨', bus:'巴士', taxi:'打车', ferry:'渡轮', tour:'旅行团', car:'自驾或参团', flight:'飞机' };
 var MCLS = { walk:'m-walk', train:'m-transit', tram:'m-transit', bus:'m-transit', taxi:'m-transit', ferry:'m-ferry', tour:'m-tour', car:'m-tour', flight:'m-flight' };
 
-/* ---------- 简化海岸线（示意，非精确测绘） ---------- */
-var AUS = LL([142.53,-10.69, 142.95,-11.9, 143.25,-11.97, 143.4,-12.6, 143.75,-13.6, 144.0,-14.25, 144.5,-14.17, 145.25,-15.47, 145.47,-16.08, 145.47,-16.48, 145.78,-16.92, 146.07,-17.52, 146.03,-18.27, 146.82,-19.26, 147.4,-19.3, 148.25,-20.0, 148.72,-20.27, 149.2,-21.14, 149.48,-21.53, 149.8,-22.35, 150.3,-22.4, 150.82,-22.7, 150.75,-23.13, 151.27,-23.85, 151.75,-24.02, 152.38,-24.75, 152.8,-25.25, 153.0,-24.95, 153.26,-24.69, 153.32,-25.2, 153.08,-25.79, 153.19,-25.93, 153.1,-26.39, 153.15,-26.8, 153.2,-27.0, 153.47,-27.03, 153.43,-27.4, 153.55,-27.43, 153.43,-27.9, 153.44,-28.05, 153.55,-28.17, 153.64,-28.64, 153.6,-28.87, 153.36,-29.43, 153.14,-30.3, 153.08,-30.92, 152.92,-31.43, 152.75,-31.84, 152.54,-32.18, 152.2,-32.72, 151.79,-32.93, 151.45,-33.45, 151.33,-33.58, 151.29,-33.83, 151.24,-34.0, 150.9,-34.42, 150.86,-34.67, 150.8,-35.1, 150.48,-35.36, 150.2,-35.72, 150.13,-36.22, 150.08,-36.43, 149.93,-37.07, 149.98,-37.51, 149.27,-37.8, 148.73,-37.8, 147.98,-37.89, 147.4,-38.25, 146.7,-38.68, 146.37,-39.13, 146.07,-38.85, 145.92,-38.9, 145.73,-38.63, 145.6,-38.67, 145.15,-38.5, 144.89,-38.49, 144.65,-38.31, 144.9,-38.36, 145.03,-38.22, 145.12,-38.14, 144.99,-37.91, 144.95,-37.84, 144.9,-37.86, 144.69,-37.98, 144.37,-38.12, 144.65,-38.11, 144.66,-38.27, 144.61,-38.29, 144.33,-38.34, 143.98,-38.54, 143.67,-38.76, 143.51,-38.86, 143.15,-38.7, 143.0,-38.62, 142.48,-38.4, 142.24,-38.39, 141.6,-38.35, 141.4,-38.38, 141.0,-38.07, 140.7,-38.06, 140.0,-37.48, 139.75,-37.16, 139.85,-36.83, 139.4,-36.2, 138.9,-35.56, 138.62,-35.56, 138.1,-35.6, 138.3,-35.45, 138.47,-35.15, 138.5,-34.93, 138.48,-34.8, 138.15,-34.19, 137.92,-34.42, 137.75,-35.08, 137.6,-35.15, 136.88,-35.3, 137.0,-34.9, 137.58,-34.06, 138.0,-33.18, 137.77,-32.5, 137.58,-33.03, 136.92,-33.68, 136.1,-34.38, 135.87,-34.73, 135.65,-34.95, 135.45,-34.6, 134.89,-33.65, 134.21,-32.8, 133.67,-32.12, 132.43,-31.99, 131.15,-31.48, 128.88,-31.68, 126.0,-32.28, 124.7,-32.9, 123.88,-33.62, 123.15,-34.0, 121.9,-33.86, 120.13,-33.95, 119.38,-34.4, 117.9,-35.03, 116.73,-35.0, 116.0,-34.83, 115.14,-34.37, 115.0,-33.53, 115.35,-33.65, 115.64,-33.33, 115.72,-32.53, 115.74,-32.05, 115.33,-31.02, 115.04,-30.3, 114.93,-29.25, 114.6,-28.77, 114.17,-27.71, 113.15,-26.15, 113.4,-25.7, 113.65,-24.88, 113.4,-24.4, 113.67,-22.7, 114.15,-21.8, 114.5,-22.3, 115.1,-21.64, 116.7,-20.66, 118.6,-20.31, 119.77,-19.95, 120.7,-19.4, 122.23,-17.96, 122.93,-16.39, 123.63,-17.3, 124.4,-16.4, 124.9,-15.3, 125.6,-14.5, 126.65,-13.74, 127.4,-14.2, 128.1,-15.4, 128.4,-14.8, 129.3,-14.9, 129.7,-13.8, 130.25,-13.3, 130.84,-12.46, 131.3,-12.0, 132.1,-11.2, 133.3,-11.7, 134.4,-12.0, 136.97,-12.35, 136.7,-12.6, 135.8,-13.4, 135.5,-14.8, 136.3,-15.6, 137.2,-16.2, 138.3,-16.8, 139.3,-17.3, 140.83,-17.48, 141.45,-16.0, 141.6,-15.0, 141.5,-13.6, 141.86,-12.63, 142.1,-11.6, 142.25,-10.95]);
-var TAS = LL([144.66,-40.68, 145.3,-40.85, 146.0,-41.07, 146.36,-41.16, 146.85,-41.07, 147.5,-40.9, 147.95,-40.75, 148.3,-40.97, 148.3,-41.35, 148.28,-41.85, 148.3,-42.15, 147.95,-42.6, 147.95,-43.08, 147.4,-43.1, 147.05,-43.5, 146.83,-43.64, 146.2,-43.55, 145.6,-42.9, 145.2,-42.2, 144.8,-41.6, 144.66,-41.0]);
-var GOR_SEA = [[-38.50,145.45],[-38.475,145.02],[-38.494,144.886],[-38.45,144.83],[-38.335,144.70],[-38.305,144.651],[-38.32,144.71],[-38.338,144.74],[-38.37,144.82],[-38.355,144.905],[-38.333,144.965],[-38.31,144.99],[-38.27,145.012],[-38.215,145.035],[-38.18,145.08],[-38.145,145.12],[-38.10,145.125],[-38.075,145.12],[-38.005,145.085],[-37.985,145.04],[-37.95,145.0],[-37.91,144.985],[-37.885,144.98],[-37.866,144.972],[-37.842,144.935],[-37.84,144.91],[-37.867,144.895],[-37.87,144.83],[-37.92,144.76],[-37.98,144.69],[-38.06,144.53],[-38.05,144.47],[-38.10,144.38],[-38.145,144.36],[-38.13,144.42],[-38.11,144.65],[-38.14,144.71],[-38.17,144.72],[-38.267,144.665],[-38.293,144.612],[-38.27,144.53],[-38.285,144.49],[-38.338,144.326],[-38.37,144.28],[-38.408,144.186],[-38.462,144.105],[-38.474,144.045],[-38.542,143.979],[-38.637,143.890],[-38.668,143.862],[-38.725,143.716],[-38.760,143.673],[-38.778,143.660],[-38.82,143.58],[-38.858,143.512],[-38.785,143.43],[-38.765,143.38],[-38.768,143.235],[-38.705,143.155],[-38.668,143.105],[-38.649,143.071],[-38.622,142.995],[-38.607,142.875],[-38.58,142.80],[-38.58,142.40],[-39.40,142.40],[-39.40,145.45]];
-var GC_SEA = [[-27.80,153.4230],[-27.85,153.4255],[-27.90,153.4285],[-27.936,153.4300],[-27.975,153.4320],[-28.000,153.4335],[-28.030,153.4372],[-28.050,153.4420],[-28.070,153.4455],[-28.083,153.4495],[-28.0875,153.4580],[-28.0905,153.4605],[-28.100,153.4610],[-28.115,153.4700],[-28.125,153.4820],[-28.1327,153.4925],[-28.137,153.4950],[-28.145,153.5035],[-28.158,153.5135],[-28.1655,153.5245],[-28.1675,153.5395],[-28.1650,153.5530],[-28.1720,153.5550],[-28.2000,153.5715],[-28.2500,153.5760],[-28.3400,153.5750],[-28.3400,153.80],[-27.80,153.80]];
+/* ---------- 地图左上角的说明（底图来自 CARTO / OpenStreetMap） ---------- */
 var REGION = {
-  au:{base:'sea', polys:[{cls:'poly-land', pts:AUS},{cls:'poly-land', pts:TAS}], water:[{t:'塔斯曼海',ll:[-36.3,153.2]},{t:'珊瑚海',ll:[-24.8,155.2]},{t:'巴斯海峡',ll:[-39.35,147.3]}], note:'海岸线为简化轮廓。点城市进入当天行程。'},
-  gor:{base:'land', polys:[{cls:'poly-sea', pts:GOR_SEA}], water:[{t:'菲利普港湾',ll:[-38.08,144.82]},{t:'巴斯海峡',ll:[-38.98,144.15]}], note:'海岸线为简化轮廓，路线是示意，不是真实道路。'},
-  gc:{base:'land', polys:[{cls:'poly-sea', pts:GC_SEA}], water:[{t:'太平洋',ll:[-28.045,153.478]}], note:'海岸线为简化轮廓；景点按真实坐标定位。'},
-  plain:{base:'land', polys:[], water:[], note:'景点按真实坐标定位，没有街道底图。导航点每站的「地图」。'}
+  au:{note:'航线弧线是示意。点城市进入当天行程。'},
+  gor:{note:'大洋路按途经点连线，是示意，不是真实道路。'},
+  gc:{note:'路线按顺序直线连接，是示意；导航请点每站的「地图」。'},
+  plain:{note:'路线按顺序直线连接，是示意；导航请点每站的「地图」。', ferry:'路线按顺序直线连接，渡轮按大致航线画，都是示意；导航请点每站的「地图」。'}
 };
 
 /* ---------- 候选酒店 ---------- */
@@ -609,174 +619,215 @@ function syncRail(){
 }
 function reduce(){ return window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches; }
 
-/* ---------- 地图 ---------- */
-var NS='http://www.w3.org/2000/svg';
-var svg=document.getElementById('svg'), mapBox=document.getElementById('map'), callout=document.getElementById('callout'), mapnote=document.getElementById('mapnote');
-function E(tag, attrs, parent){ var e=document.createElementNS(NS,tag); if(attrs) for(var k in attrs) e.setAttribute(k, attrs[k]); if(parent) parent.appendChild(e); return e; }
-var T={k:1,x:0,y:0}, FIT=null, scene=null, W=0, H=0;
-function sx(p){ return T.x+T.k*p[0]; } function sy(p){ return T.y+T.k*p[1]; }
-function textW(s, fs){ var w=0; for(var i=0;i<s.length;i++){ var c=s.charCodeAt(i); w += (c>0x2E80) ? fs : (c===32? fs*.3 : fs*.58); } return w; }
+/* ---------- 地图（Leaflet + CARTO 底图） ---------- */
+var mapBox=document.getElementById('map'), mapEl=document.getElementById('lmap'), mapnote=document.getElementById('mapnote'), mapmsg=document.getElementById('mapmsg'), btnHotels=document.getElementById('btnHotels');
+// Leaflet 固定 1.9.4。先试 unpkg，失败或超时换 cdnjs；integrity 保证文件没被改过
+var LEAFLET = {
+  sri:{css:'sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=', js:'sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo='},
+  src:[{css:'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css', js:'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js'},
+       {css:'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css', js:'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js'}]
+};
+var TILE_ATTR = '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions" target="_blank" rel="noopener">CARTO</a>';
+var LF=null, map=null, tiles=null, tileUrlNow='', tileStat={ok:0,err:0}, cssOk=false;
+var scene=null, FITB=null, FITZ=0, lastKey=null;
 var BED = 'M-5.5 3.5V-3.5M-5.5 1.2H5.5V3.5M-5.5 1.2V-.6H-.6V1.2M.2 -.6H3.6A1.9 1.9 0 0 1 5.5 1.3';
+var BED_SVG = '<svg viewBox="-10 -10 20 20" aria-hidden="true"><path d="'+BED+'"/></svg>';
+
+/* 底图跟随页面浅色 / 深色 */
+var darkMq = window.matchMedia ? window.matchMedia('(prefers-color-scheme: dark)') : null;
+function isDark(){ var t=document.documentElement.getAttribute('data-theme'); return t==='dark' || (t!=='light' && !!(darkMq && darkMq.matches)); }
+function tileUrl(){ return 'https://{s}.basemaps.cartocdn.com/'+(isDark()?'dark_all':'light_all')+'/{z}/{x}/{y}{r}.png'; }
+function syncTiles(){ if(!tiles) return; var u=tileUrl(); if(u===tileUrlNow) return; tileUrlNow=u; tileStat={ok:0,err:0}; setTileWarn(false); tiles.setUrl(u); }
+
+/* 加载：loading → ready；失败时地图区收成一行提示，列表照常可用 */
+function setMapState(st){
+  mapBox.classList.toggle('ready', st==='ready');
+  mapBox.classList.toggle('nomap', st==='failed');
+  document.querySelector('.legend').hidden = st==='failed';
+  if(st==='ready'){ mapmsg.hidden=true; return; }
+  mapmsg.hidden=false;
+  mapmsg.innerHTML = st==='failed'
+    ? '<p>地图没有加载出来，可能是网络限制。下面的行程、酒店和每站的「地图」链接照常可用。</p><button class="tbtn" type="button">重试</button>'
+    : '<p>地图加载中…</p>';
+  var b=mapmsg.querySelector('button'); if(b) b.addEventListener('click', function(){ loadLeaflet(0); });
+}
+function loadLeaflet(i){
+  var src=LEAFLET.src[i];
+  if(!src){ setMapState('failed'); return; }
+  setMapState('loading');
+  var done=false, timer=setTimeout(next, 10000);
+  function next(){ if(done) return; done=true; clearTimeout(timer); if(!tryInit()) loadLeaflet(i+1); }
+  function loaded(){ if(tryInit()){ done=true; clearTimeout(timer); } }
+  function add(tag, at, onload){
+    var e=document.createElement(tag); for(var k in at) e[k]=at[k]; e.crossOrigin='anonymous';
+    e.onload=onload; e.onerror=function(){ e.remove(); next(); };
+    // 样式表放在最前面，页面自己的样式才能覆盖 Leaflet 默认样式
+    if(tag==='link') document.head.insertBefore(e, document.head.firstChild); else document.head.appendChild(e);
+  }
+  if(!cssOk) add('link', {rel:'stylesheet', href:src.css, integrity:LEAFLET.sri.css}, function(){ cssOk=true; loaded(); });
+  if(!window.L) add('script', {src:src.js, integrity:LEAFLET.sri.js}, loaded);
+  loaded();
+}
+function tryInit(){ if(map) return true; if(!cssOk || !window.L || !window.L.map) return false; initMap(); return true; }
+
+function initMap(){
+  LF = window.L;
+  setMapState('ready');
+  var still = reduce();
+  map = LF.map(mapEl, {zoomControl:false, keyboard:false, trackResize:false, zoomSnap:.25, minZoom:3, maxZoom:19, zoomAnimation:!still, markerZoomAnimation:!still, fadeAnimation:!still});
+  map.attributionControl.setPrefix('<a href="https://leafletjs.com" target="_blank" rel="noopener">Leaflet</a>');
+  LF.control.scale({imperial:false, maxWidth:100}).addTo(map);
+  map.createPane('lbl').style.zIndex = 620;
+  map.setView([-30,147], 4);
+  tileUrlNow = tileUrl();
+  tiles = LF.tileLayer(tileUrlNow, {subdomains:'abcd', maxZoom:20, attribution:TILE_ATTR}).addTo(map);
+  // 瓦片加载失败：地图照常显示路线和景点，只在提示里说明一句
+  tiles.on('tileload', function(){ tileStat.ok++; setTileWarn(false); });
+  tiles.on('tileerror', function(){ tileStat.err++; if(!tileStat.ok && tileStat.err>=4) setTileWarn(true); });
+  map.on('zoomend moveend', placeLabels);
+  map.on('popupclose', clearSel);
+  if(darkMq){ if(darkMq.addEventListener) darkMq.addEventListener('change', syncTiles); else if(darkMq.addListener) darkMq.addListener(syncTiles); }
+  if(window.MutationObserver) new MutationObserver(syncTiles).observe(document.documentElement, {attributes:true, attributeFilter:['data-theme']});
+  if(window.ResizeObserver) new ResizeObserver(onResize).observe(mapBox); else window.addEventListener('resize', onResize);
+  if(document.fonts && document.fonts.ready) document.fonts.ready.then(placeLabels);
+  drawMap(false);
+}
+function onResize(){
+  if(!map) return;
+  var a=map.getSize(); map.invalidateSize({animate:false}); var b=map.getSize();
+  if(scene && (Math.abs(a.x-b.x)>1 || Math.abs(a.y-b.y)>1)) fitTo(false);
+}
+function setNote(t){ mapnote.innerHTML = esc(t)+'<span class="tw">底图没加载出来（网络受限时会这样），路线和景点照常显示。</span>'; }
+function setTileWarn(on){ if(mapnote.classList.contains('warn')!==on){ mapnote.classList.toggle('warn', on); placeLabels(); } }
+function mapNote(d){
+  if(!d) return REGION.au.note;
+  var reg = REGION[d.region || (d.city==='gc'?'gc':'plain')];
+  var ferry = dayStops(d).some(function(s){ return s.mode==='ferry'; });
+  return ferry && reg.ferry ? reg.ferry : reg.note;
+}
+
+/* 图层 */
+function addMarker(ll, cls, html, size, name, z, group){
+  var mk = LF.marker(ll, {icon:LF.divIcon({className:cls, html:html, iconSize:[size,size]}), zIndexOffset:z||0, riseOnHover:true});
+  mk.on('add', function(){ var el=mk.getElement(); if(el) el.setAttribute('aria-label', name); });
+  mk.addTo(group || scene.group);
+  return mk;
+}
+function onActivate(mk, fn){
+  mk.on('click', fn);
+  mk.on('keydown', function(e){ var k=e.originalEvent.key; if(k==='Enter'||k===' '){ e.originalEvent.preventDefault(); fn(); } });
+}
+function addRoute(pts, mode, extra){ LF.polyline(pts, {className:'rt '+MCLS[mode]+(extra?' '+extra:''), interactive:false}).addTo(scene.group); }
+// 标签是挂在锚点上的零尺寸 marker，位置由 placeLabels 避让后再定
+function addLabel(text, cls, ll, r, prio, isHotel, dyn){
+  var m = LF.marker(ll, {icon:LF.divIcon({className:'lbm', html:'<span class="lb'+(cls?' '+cls:'')+'">'+esc(text)+'</span>', iconSize:[0,0]}), pane:'lbl', interactive:false, keyboard:false});
+  m.addTo(scene.group);
+  scene.labels.push({m:m, ll:ll, r:r, prio:prio, hotel:!!isHotel, dyn:dyn});
+}
+// 航线弧线：在墨卡托平面上取二次贝塞尔曲线，任何缩放下形状都一样
+function arcPts(a, b, bend){
+  var A=proj(a), B=proj(b), dx=B[0]-A[0], dy=B[1]-A[1], C=[(A[0]+B[0])/2 - dy*bend, (A[1]+B[1])/2 + dx*bend], out=[];
+  for(var i=0;i<=32;i++){ var t=i/32, u=1-t; out.push([unprojY(u*u*A[1]+2*u*t*C[1]+t*t*B[1]), u*u*A[0]+2*u*t*C[0]+t*t*B[0]]); }
+  return out;
+}
 
 function buildScene(){
-  svg.innerHTML=''; callout.hidden=true; S.sel=null;
-  var L = {}; ['base','area','grid','water','ctx','routes','marks','labels','hud'].forEach(function(n){ L[n]=E('g',{'class':n==='grid'?'grid':n},svg); });
-  var sc = {L:L, polys:[], routes:[], marks:[], labels:[], fit:[], water:[], ctx:[], intl:[]};
+  if(scene){ map.removeLayer(scene.group); map.removeLayer(scene.hotelGroup); }
+  map.closePopup();
+  var sc = scene = {group:LF.layerGroup().addTo(map), hotelGroup:LF.layerGroup(), marks:[], labels:[], fit:[], hasHotels:false};
   var isOv = S.view==='overview', d = isOv?null:byId[S.view];
-  var reg = REGION[isOv ? 'au' : (d.region || (d.city==='gc'?'gc':'plain'))];
-  sc.reg = reg;
-  sc.baseRect = E('rect',{'class':reg.base==='sea'?'base-sea':'base-land', x:0,y:0,width:'100%',height:'100%'},L.base);
-  reg.polys.forEach(function(p){ sc.polys.push({el:E('path',{'class':p.cls},L.area), pts:p.pts.map(proj)}); });
-  reg.water.forEach(function(w){ var t=E('text',{'class':'water'},L.water); t.textContent=w.t; sc.water.push({el:t, p:proj(w.ll)}); });
-  mapnote.textContent = reg.note;
+  setNote(mapNote(d));
 
   if(isOv){
     OV_LEGS.forEach(function(g){
-      var el=E('path',{'class':'rt '+MCLS[g.mode]+(g.mode==='train'?' gc':'')},L.routes);
-      var r={el:el, a:proj(g.a), b:proj(g.b), bend:g.bend, arc:true}; sc.routes.push(r);
-      addLabel(sc, g.lb, 'f', function(){ var m=arcMid(r); return {x:m[0], y:m[1], r:2}; }, 3);
+      var pts=arcPts(g.a, g.b, g.bend);
+      addRoute(pts, g.mode, g.mode==='train'?'gc':'');
+      addLabel(g.lb, 'f', pts[16], 2, 3);
     });
     [{a:JINAN, b:[-33.9366,151.1658], lb:'济南 → 悉尼 10/23–24'},{a:[-27.3842,153.1175], b:JINAN, lb:'布里斯班 → 济南 11/3–4'}].forEach(function(g,i){
-      var el=E('path',{'class':'rt m-flight'},L.routes);
-      var r={el:el, a:proj(g.a), b:proj(g.b), line:true}; sc.routes.push(r);
-      var cityEnd = i===0 ? r.b : r.a, far = i===0 ? r.a : r.b;
-      addLabel(sc, g.lb, 'f', function(){ var x1=sx(cityEnd), y1=sy(cityEnd), x2=sx(far), y2=sy(far); var dx=x2-x1, dy=y2-y1, l=Math.hypot(dx,dy)||1; var dd=Math.min(l*.5, 95); return {x:x1+dx/l*dd, y:y1+dy/l*dd, r:2}; }, 4);
+      addRoute([g.a, g.b], 'flight');
+      var cityEnd = i===0 ? g.b : g.a, far = i===0 ? g.a : g.b;
+      addLabel(g.lb, 'f', cityEnd, 2, 4, false, function(){
+        var p1=map.latLngToContainerPoint(cityEnd), p2=map.latLngToContainerPoint(far), dx=p2.x-p1.x, dy=p2.y-p1.y, l=Math.hypot(dx,dy)||1, dd=Math.min(l*.5, 95);
+        return map.containerPointToLatLng([p1.x+dx/l*dd, p1.y+dy/l*dd]);
+      });
     });
     OV_CITIES.forEach(function(oc){
-      var c=CITY[oc.c], p=proj(oc.ll);
-      var g=E('g',{'class':'mk city '+oc.c, tabindex:0, role:'button', 'aria-label':c.name},L.marks);
-      E('circle',{'class':'ring', r:17},g); E('circle',{'class':'dot', r:12},g);
-      var t=E('text',{'class':'num'},g); t.textContent=oc.o;
-      var m={g:g, p:p, r:13, go:oc.go}; sc.marks.push(m); sc.fit.push(p);
-      g.addEventListener('click', function(){ setView(oc.go); });
-      g.addEventListener('keydown', function(e){ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); setView(oc.go); } });
-      addLabel(sc, c.name+' · '+c.nights+' 晚', 'c', function(){ return {x:sx(p), y:sy(p), r:14}; }, 1);
+      var c=CITY[oc.c];
+      var mk=addMarker(oc.ll, 'mk city '+oc.c, '<span class="ring"></span><span class="dot">'+oc.o+'</span>', 26, c.name, 300);
+      sc.marks.push({mk:mk, ll:oc.ll, r:14}); sc.fit.push(oc.ll);
+      onActivate(mk, function(){ setView(oc.go); });
+      addLabel(c.name+' · '+c.nights+' 晚', 'c', oc.ll, 14, 1);
     });
-    sc.fit.push(proj([-38.9,146.4]), proj([-26.9,153.7]));
+    sc.fit.push([-38.9,146.4], [-26.9,153.7]);
   } else {
-    var city=d.city, stops=dayStops(d), st=startPt(d), en=endPt(d);
+    var city=d.city, stops=dayStops(d), st=startPt(d), en=endPt(d), onMap = !d.region || d.region==='gc';
     // 同城其他天的点（淡显）
-    if(!d.region || d.region==='gc'){
+    if(onMap){
       DAYS.forEach(function(o){ if(o===d || o.city!==city || o.region==='gor') return;
         var arr = o.options ? o.options.reduce(function(a,op){return a.concat(op.stops);},[]) : o.stops;
-        arr.forEach(function(s){ if(s.kind==='air'||s.kind==='stay') return; sc.ctx.push({el:E('circle',{'class':'ctx', r:3.5},L.ctx), p:proj(s.ll)}); });
+        arr.forEach(function(s){ if(s.kind==='air'||s.kind==='stay') return; LF.circleMarker(s.ll, {radius:3.5, className:'ctx', interactive:false, stroke:false, fillOpacity:1}).addTo(sc.group); });
       });
     }
     var prevLL = st ? st.ll : null;
-    stops.forEach(function(s,i){
+    stops.forEach(function(s){
       var from = s.from!=null ? stops[s.from].ll : (s.fromLL || prevLL);
-      if(from){
-        var pts=[from].concat(s.via||[]).concat([s.ll]).map(proj);
-        var mode = s.mode || 'walk';
-        sc.routes.push({el:E('path',{'class':'rt '+MCLS[mode]+' '+city+(s.opt?' opt':'')},L.routes), pts:pts});
-      }
+      if(from) addRoute([from].concat(s.via||[]).concat([s.ll]), s.mode||'walk', city+(s.opt?' opt':''));
       if(!s.opt) prevLL = s.ll;
     });
-    if(en){ var pts2=[prevLL].concat(en.via||[]).concat([en.ll]).map(proj); sc.routes.push({el:E('path',{'class':'rt '+MCLS[en.mode||'walk']+' '+city},L.routes), pts:pts2}); }
+    if(en) addRoute([prevLL].concat(en.via||[]).concat([en.ll]), en.mode||'walk', city);
     // 住处
     if(st || en){
-      var bp = proj((st||en).ll), same = st && en && st.ll[0]===en.ll[0] && st.ll[1]===en.ll[1];
+      var same = st && en && st.ll[0]===en.ll[0] && st.ll[1]===en.ll[1];
       var bset = [st]; if(en && !same) bset.push(en);
-      bset.forEach(function(b,bi){ if(!b) return; var bpp=proj(b.ll);
-        var g=E('g',{'class':'mk base'},L.marks); E('rect',{'class':'box', x:-9,y:-9,width:18,height:18,rx:5},g); E('path',{'class':'bed', d:BED},g);
-        sc.marks.push({g:g, p:bpp, r:10}); sc.fit.push(bpp);
+      bset.forEach(function(b){ if(!b) return;
         var lab = b.n && b.n!=='住处出发' && b.n!=='回住处' ? b.n : '住处';
-        addLabel(sc, lab, 'dim', function(){ return {x:sx(bpp), y:sy(bpp), r:10}; }, 6);
-        g.addEventListener('click', function(ev){ ev.stopPropagation(); showCallout({n:lab, en:b.en||'', note:b.note||'每天从住处出发；具体位置看你们最后订的酒店。', p:bpp}); });
+        var mk = addMarker(b.ll, 'mk base', '<span class="ring"></span><span class="box">'+BED_SVG+'</span>', 18, lab, 100);
+        var m = {mk:mk, ll:b.ll, r:10}; sc.marks.push(m); sc.fit.push(b.ll);
+        addLabel(lab, 'dim', b.ll, 10, 6);
+        onActivate(mk, function(){ openPop({n:lab, en:b.en||'', note:b.note||'每天从住处出发；具体位置看你们最后订的酒店。'}, b.ll, 10); markSel(m); S.sel={type:'b'}; });
       });
     }
     var num=0;
     stops.forEach(function(s,i){
-      var p=proj(s.ll); var label = s.kind==='stay' ? '宿' : (s.kind==='air' ? '机' : String(++num));
-      var cls='mk '+city+(s.opt?' opt':'');
-      var g=E('g',{'class':cls, tabindex:0, role:'button', 'aria-label':s.n, 'data-i':i},L.marks);
-      E('circle',{'class':'ring', r:16},g); E('circle',{'class':'dot', r:11},g);
-      var t=E('text',{'class':'num'},g); t.textContent = label;
-      var m={g:g, p:p, r:12, i:i}; sc.marks.push(m);
-      if(!s.nofit && !s.opt && s.kind!=='air') sc.fit.push(p);
-      g.addEventListener('click', function(ev){ ev.stopPropagation(); select(i, false); });
-      g.addEventListener('keydown', function(e){ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); select(i,false); } });
-      addLabel(sc, s.n, s.opt?'dim':'', function(){ return {x:sx(p), y:sy(p), r:12}; }, 2);
+      var label = s.kind==='stay' ? '宿' : (s.kind==='air' ? '机' : String(++num));
+      var mk = addMarker(s.ll, 'mk '+city+(s.opt?' opt':'')+(s.kind?' '+s.kind:''), '<span class="ring"></span><span class="dot">'+label+'</span>', 22, s.n, 300);
+      sc.marks.push({mk:mk, ll:s.ll, r:12, i:i});
+      if(!s.nofit && !s.opt && s.kind!=='air') sc.fit.push(s.ll);
+      onActivate(mk, function(){ select(i, false); });
+      addLabel(s.n, s.opt?'dim':'', s.ll, 12, 2);
     });
-    // 酒店
-    var hs = HOTELS[city] || [];
-    if(!d.region || d.region==='gc'){
-      hs.forEach(function(h,hi){
-        var p=proj(h.ll);
-        var g=E('g',{'class':'mk htl'+(h.areaOnly?' area':''), tabindex:0, role:'button', 'aria-label':h.n},L.marks);
-        E('circle',{'class':'ring', r:15},g); E('rect',{'class':'box', x:-10,y:-10,width:20,height:20,rx:5},g); E('path',{'class':'bed', d:BED},g);
-        var m={g:g, p:p, r:11, hotel:hi}; sc.marks.push(m);
-        g.addEventListener('click', function(ev){ ev.stopPropagation(); selectHotel(hi,false); });
-        g.addEventListener('keydown', function(e){ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); selectHotel(hi,false); } });
-        addLabel(sc, h.s||h.n, 'h', function(){ return {x:sx(p), y:sy(p), r:11}; }, 5, true);
+    // 候选酒店
+    if(onMap){
+      (HOTELS[city]||[]).forEach(function(h,hi){
+        var mk = addMarker(h.ll, 'mk htl'+(h.areaOnly?' area':''), '<span class="ring"></span><span class="box">'+BED_SVG+'</span>', 20, h.n, 0, sc.hotelGroup);
+        sc.marks.push({mk:mk, ll:h.ll, r:11, hotel:hi}); sc.hasHotels=true;
+        onActivate(mk, function(){ selectHotel(hi, false); });
+        addLabel(h.s||h.n, 'h', h.ll, 11, 5, true);
       });
     }
   }
-  // HUD：比例尺 + 指北
-  sc.scale = E('g',{'class':'scale'},L.hud); sc.scaleLine=E('path',{fill:'none',stroke:'currentColor'},sc.scale); sc.scaleText=E('text',{},sc.scale);
-  sc.scaleLine.setAttribute('style','stroke:var(--ink);stroke-width:1.5');
-  sc.north = E('g',{'class':'north'},L.hud); E('path',{d:'M0 -9 L5 5 L0 2 L-5 5 Z'},sc.north); var nt=E('text',{y:17},sc.north); nt.textContent='N';
-  scene=sc;
-  applyHotelVis();
+  if(S.hotels) sc.hotelGroup.addTo(map);
+  btnHotels.setAttribute('aria-pressed', S.hotels?'true':'false');
 }
-function addLabel(sc, text, cls, anchor, prio, isHotel){
-  var t=E('text',{'class':'lb'+(cls?' '+cls:'')}, sc.L.labels); t.textContent=text;
-  var fs = cls==='c'?13.5:(cls==='f'?10.5:(cls==='h'?11.5:12));
-  sc.labels.push({el:t, w:textW(text,fs)+4, h:fs+4, anchor:anchor, prio:prio, hotel:!!isHotel});
-}
-function arcCtrl(r){ var x1=sx(r.a),y1=sy(r.a),x2=sx(r.b),y2=sy(r.b); var mx=(x1+x2)/2,my=(y1+y2)/2, dx=x2-x1, dy=y2-y1; return [x1,y1,mx - dy*r.bend, my + dx*r.bend, x2,y2]; }
-function arcMid(r){ var c=arcCtrl(r); return [.25*c[0]+.5*c[2]+.25*c[4], .25*c[1]+.5*c[3]+.25*c[5]]; }
-function pathFrom(pts, close){ var s=''; for(var i=0;i<pts.length;i++){ s+=(i?'L':'M')+(T.x+T.k*pts[i][0]).toFixed(1)+','+(T.y+T.k*pts[i][1]).toFixed(1); } return s+(close?'Z':''); }
+function markVisible(m){ return m.hotel==null || S.hotels; }
 
-function draw(){
-  if(!scene) return;
-  var sc=scene;
-  sc.polys.forEach(function(p){ p.el.setAttribute('d', pathFrom(p.pts,true)); });
-  drawGrid();
-  sc.water.forEach(function(w){ w.el.setAttribute('x',sx(w.p).toFixed(1)); w.el.setAttribute('y',sy(w.p).toFixed(1)); });
-  sc.ctx.forEach(function(c){ c.el.setAttribute('cx',sx(c.p).toFixed(1)); c.el.setAttribute('cy',sy(c.p).toFixed(1)); });
-  sc.routes.forEach(function(r){
-    if(r.arc){ var c=arcCtrl(r); r.el.setAttribute('d','M'+c[0].toFixed(1)+','+c[1].toFixed(1)+'Q'+c[2].toFixed(1)+','+c[3].toFixed(1)+' '+c[4].toFixed(1)+','+c[5].toFixed(1)); }
-    else if(r.line){ r.el.setAttribute('d', pathFrom([r.a,r.b])); }
-    else r.el.setAttribute('d', pathFrom(r.pts));
-  });
-  sc.marks.forEach(function(m){ m.g.setAttribute('transform','translate('+sx(m.p).toFixed(1)+','+sy(m.p).toFixed(1)+')'); });
-  placeLabels();
-  drawHud();
-  posCallout();
-}
-var GRID_STEPS=[0.005,0.01,0.02,0.05,0.1,0.2,0.5,1,2,5,10];
-function drawGrid(){
-  var g=scene.L.grid; g.innerHTML='';
-  var x0=(0-T.x)/T.k, x1=(W-T.x)/T.k, y0=(0-T.y)/T.k, y1=(H-T.y)/T.k;
-  var span=(x1-x0)/5, step=GRID_STEPS[GRID_STEPS.length-1];
-  for(var i=0;i<GRID_STEPS.length;i++){ if(GRID_STEPS[i]>=span){ step=GRID_STEPS[i]; break; } }
-  var dec = step<0.01?3:(step<0.1?2:(step<1?1:0));
-  for(var lon=Math.ceil(x0/step)*step; lon<=x1; lon+=step){ var X=sx([lon,0]); E('line',{x1:X.toFixed(1),y1:0,x2:X.toFixed(1),y2:H},g); var t=E('text',{x:(X+3).toFixed(1), y:H-6},g); t.textContent=lon.toFixed(dec)+'°E'; }
-  var latTop=unprojY(y0), latBot=unprojY(y1);
-  for(var lat=Math.ceil(latBot/step)*step; lat<=latTop; lat+=step){ var Y=sy(proj([lat,0])); E('line',{x1:0,y1:Y.toFixed(1),x2:W,y2:Y.toFixed(1)},g); var t2=E('text',{x:W-4, y:(Y-3).toFixed(1), 'text-anchor':'end'},g); t2.textContent=Math.abs(lat).toFixed(dec)+'°S'; }
-}
-var NICE=[50,100,200,500,1000,2000,5000,10000,20000,50000,100000,200000,500000];
-function drawHud(){
-  var cy=(H/2-T.y)/T.k, lat=unprojY(cy);
-  var mpp = 111320*Math.cos(lat*D2R)/T.k;
-  var len=NICE[0]; for(var i=0;i<NICE.length;i++){ if(NICE[i]/mpp<=110) len=NICE[i]; }
-  var px=len/mpp, x=14, y=H-30;
-  scene.scaleLine.setAttribute('d','M'+x+','+(y-5)+'V'+y+'H'+(x+px).toFixed(1)+'V'+(y-5));
-  scene.scaleText.setAttribute('x',x); scene.scaleText.setAttribute('y',y-9);
-  scene.scaleText.textContent = len>=1000 ? (len/1000)+' km' : len+' m';
-  scene.north.setAttribute('transform','translate('+(x+8)+','+(y-48)+')');
-}
+/* 标签避让：按优先级依次找不和点、其他标签、地图按钮重叠的位置，放不下就隐藏 */
 function placeLabels(){
-  var boxes=[];
-  scene.marks.forEach(function(m){ if(m.g.style.display==='none') return; var X=sx(m.p),Y=sy(m.p); boxes.push([X-m.r,Y-m.r,X+m.r,Y+m.r]); });
-  boxes.push([0,H-92,140,H]);
-  if(mapnote.textContent){ boxes.push([0,0,mapnote.offsetWidth+16,mapnote.offsetHeight+16]); }
-  var tl=document.querySelector('.tools'); if(tl){ boxes.push([W-tl.offsetWidth-16,0,W,tl.offsetHeight+16]); }
-  var order=scene.labels.slice().sort(function(a,b){ return a.prio-b.prio; });
+  if(!map || !scene) return;
+  var sz=map.getSize(), W=sz.x, H=sz.y, boxes=[], base=mapEl.getBoundingClientRect();
+  scene.marks.forEach(function(m){ if(!markVisible(m)) return; var p=map.latLngToContainerPoint(m.ll); boxes.push([p.x-m.r, p.y-m.r, p.x+m.r, p.y+m.r]); });
+  [mapnote, document.querySelector('.tools'), mapEl.querySelector('.leaflet-control-scale'), mapEl.querySelector('.leaflet-control-attribution')].forEach(function(el){
+    if(!el || !el.offsetParent) return; var r=el.getBoundingClientRect();
+    boxes.push([r.left-base.left-4, r.top-base.top-4, r.right-base.left+4, r.bottom-base.top+4]);
+  });
+  var order = scene.labels.slice().sort(function(a,b){ return a.prio-b.prio; });
+  order.forEach(function(lb){ var el=lb.m.getElement(); lb.el = el && el.firstChild; if(lb.el){ lb.w=lb.el.offsetWidth; lb.h=lb.el.offsetHeight; } });
   order.forEach(function(lb){
-    if(lb.hotel && !S.hotels){ lb.el.style.display='none'; return; }
-    var a=lb.anchor(), w=lb.w, h=lb.h, r=a.r+4;
+    if(!lb.el) return;
+    if(lb.hotel && !S.hotels){ lb.el.style.visibility='hidden'; return; }
+    if(lb.dyn){ lb.ll=lb.dyn(); lb.m.setLatLng(lb.ll); }
+    var a=map.latLngToContainerPoint(lb.ll), w=lb.w, h=lb.h, r=lb.r+4;
     var cands=[[a.x+r, a.y-h/2],[a.x-r-w, a.y-h/2],[a.x-w/2, a.y-r-h],[a.x-w/2, a.y+r],[a.x+r-2, a.y-h-2],[a.x+r-2, a.y+2],[a.x-r-w+2, a.y-h-2],[a.x-r-w+2, a.y+2]];
     var ok=null;
     for(var i=0;i<cands.length;i++){
@@ -785,128 +836,84 @@ function placeLabels(){
       var hit=false; for(var j=0;j<boxes.length;j++){ var o=boxes[j]; if(bx[0]<o[2]&&bx[2]>o[0]&&bx[1]<o[3]&&bx[3]>o[1]){ hit=true; break; } }
       if(!hit){ ok=bx; break; }
     }
-    if(ok){ lb.el.style.display=''; lb.el.setAttribute('x',(ok[0]+2).toFixed(1)); lb.el.setAttribute('y',(ok[1]+h/2).toFixed(1)); boxes.push(ok); }
-    else lb.el.style.display='none';
+    if(ok){ lb.el.style.left=(ok[0]-a.x).toFixed(1)+'px'; lb.el.style.top=(ok[1]-a.y).toFixed(1)+'px'; lb.el.style.visibility='visible'; boxes.push(ok); }
+    else lb.el.style.visibility='hidden';
   });
 }
 function applyHotelVis(){
-  if(!scene) return;
-  scene.marks.forEach(function(m){ if(m.hotel!=null) m.g.style.display = S.hotels?'':'none'; });
-  var b=document.getElementById('btnHotels'); b.setAttribute('aria-pressed', S.hotels?'true':'false');
+  btnHotels.setAttribute('aria-pressed', S.hotels?'true':'false');
+  if(!map || !scene) return;
+  if(S.hotels) scene.hotelGroup.addTo(map);
+  else { map.removeLayer(scene.hotelGroup); if(S.sel && S.sel.type==='h') map.closePopup(); }
+  placeLabels();
 }
 
-/* 视图适配与动画 */
-function computeFit(){
-  var pts=scene.fit; if(!pts.length) return {k:1,x:0,y:0};
-  var minx=Infinity,miny=Infinity,maxx=-Infinity,maxy=-Infinity;
-  pts.forEach(function(p){ minx=Math.min(minx,p[0]); maxx=Math.max(maxx,p[0]); miny=Math.min(miny,p[1]); maxy=Math.max(maxy,p[1]); });
-  var padL=40, padR=W<520?56:70, padT=W<520?82:60, padB=58;
-  var dx=Math.max(maxx-minx, 0.004), dy=Math.max(maxy-miny, 0.004);
-  var k=Math.min((W-padL-padR)/dx, (H-padT-padB)/dy);
-  var x=padL + ((W-padL-padR) - (maxx-minx)*k)/2 - minx*k;
-  var y=padT + ((H-padT-padB) - (maxy-miny)*k)/2 - miny*k;
-  return {k:k,x:x,y:y};
+/* 视图适配：上方留出提示条的位置，右侧留出按钮列 */
+function fitPad(){ var W=map.getSize().x, nb=mapnote.offsetTop+mapnote.offsetHeight; return {tl:[40, Math.max(W<520?82:60, nb+26)], br:[W<520?56:70, 58]}; }
+function fitTo(anim){
+  if(!scene || !scene.fit.length) return;
+  var p=fitPad(), o={paddingTopLeft:p.tl, paddingBottomRight:p.br, maxZoom:16};
+  FITB = LF.latLngBounds(scene.fit);
+  FITZ = Math.min(16, map.getBoundsZoom(FITB, false, LF.point(p.tl).add(p.br)));
+  if(anim && !reduce()) map.flyToBounds(FITB, Object.assign({duration:.5}, o));
+  else map.fitBounds(FITB, Object.assign({animate:false}, o));
+  placeLabels();
 }
-var anim=null;
-function animateTo(t, ms){
-  if(anim) cancelAnimationFrame(anim.id);
-  if(reduce() || !ms){ T={k:t.k,x:t.x,y:t.y}; draw(); return; }
-  var t0={k:T.k,x:T.x,y:T.y}, start=performance.now();
-  // 以视图中心插值
-  var c0=[(W/2-t0.x)/t0.k,(H/2-t0.y)/t0.k], c1=[(W/2-t.x)/t.k,(H/2-t.y)/t.k];
-  function step(now){
-    var u=Math.min(1,(now-start)/ms), e=u<.5?2*u*u:1-Math.pow(-2*u+2,2)/2;
-    var k=Math.exp(Math.log(t0.k)*(1-e)+Math.log(t.k)*e);
-    var cx=c0[0]*(1-e)+c1[0]*e, cy=c0[1]*(1-e)+c1[1]*e;
-    T={k:k, x:W/2-cx*k, y:H/2-cy*k}; draw();
-    if(u<1) anim={id:requestAnimationFrame(step)}; else anim=null;
-  }
-  anim={id:requestAnimationFrame(step)};
+function drawMap(anim){
+  if(!map) return;
+  buildScene();
+  var dv = S.view==='overview' ? null : byId[S.view];
+  var key = dv ? dv.city+'|'+(dv.region||'') : 'ov';
+  fitTo(anim && lastKey!==null && key===lastKey);
+  lastKey = key;
+  btnHotels.hidden = !scene.hasHotels;
 }
-function clampK(k){ return Math.max(FIT.k/4, Math.min(FIT.k*14, k)); }
-function zoomAt(f, x, y){ var k=clampK(T.k*f); var wx=(x-T.x)/T.k, wy=(y-T.y)/T.k; T={k:k, x:x-wx*k, y:y-wy*k}; draw(); }
+document.getElementById('btnIn').addEventListener('click', function(){ if(map) map.zoomIn(); });
+document.getElementById('btnOut').addEventListener('click', function(){ if(map) map.zoomOut(); });
+document.getElementById('btnFit').addEventListener('click', function(){ if(!map) return; map.closePopup(); fitTo(true); });
+btnHotels.addEventListener('click', function(){ S.hotels=!S.hotels; store('hotels',S.hotels); applyHotelVis(); });
 
-/* 平移 / 缩放手势 */
-var ptrs=new Map(), gest=null;
-function rel(e){ var r=svg.getBoundingClientRect(); return {x:e.clientX-r.left, y:e.clientY-r.top}; }
-function beginGesture(){
-  var arr=Array.from(ptrs.values()); var t0={k:T.k,x:T.x,y:T.y};
-  if(arr.length===1){ gest={type:'pan', p0:arr[0], t0:t0}; }
-  else if(arr.length>=2){ var a=arr[0], b=arr[1]; var m={x:(a.x+b.x)/2,y:(a.y+b.y)/2}; gest={type:'pinch', d0:Math.hypot(a.x-b.x,a.y-b.y)||1, w:{x:(m.x-t0.x)/t0.k, y:(m.y-t0.y)/t0.k}, t0:t0}; }
-  else gest=null;
+/* 弹出说明 */
+function popHtml(o){ return '<div class="pop"><h4>'+esc(o.n)+'</h4>'+(o.en?'<div class="en">'+esc(o.en)+'</div>':'')+(o.note?'<p>'+esc(o.note)+'</p>':'')+(o.links?'<div class="links">'+o.links+'</div>':'')+'</div>'; }
+// 按钮列和左上角提示条盖在地图上面，弹窗自动平移时避开它们
+function openPop(o, ll, r){
+  var W=map.getSize().x, tl=document.querySelector('.tools'), top=mapnote.offsetTop+mapnote.offsetHeight+8, right=tl.offsetWidth+18;
+  map.openPopup(LF.popup({maxWidth:Math.min(260, W-right-24), minWidth:Math.min(200, W-right-24), offset:[0, 5-r], autoPanPaddingTopLeft:[12, top], autoPanPaddingBottomRight:[right, 12]}).setLatLng(ll).setContent(popHtml(o)));
 }
-svg.addEventListener('pointerdown', function(e){
-  if(e.target.closest && e.target.closest('.mk')) return;
-  if(anim){ cancelAnimationFrame(anim.id); anim=null; }
-  try{ svg.setPointerCapture(e.pointerId); }catch(_){}
-  ptrs.set(e.pointerId, rel(e)); beginGesture(); svg.classList.add('dragging');
-});
-svg.addEventListener('pointermove', function(e){
-  if(!ptrs.has(e.pointerId)) return;
-  ptrs.set(e.pointerId, rel(e));
-  if(!gest) return;
-  var arr=Array.from(ptrs.values());
-  if(gest.type==='pan' && arr.length===1){ T={k:gest.t0.k, x:gest.t0.x+(arr[0].x-gest.p0.x), y:gest.t0.y+(arr[0].y-gest.p0.y)}; gest.moved = gest.moved || Math.hypot(arr[0].x-gest.p0.x, arr[0].y-gest.p0.y)>4; }
-  else if(gest.type==='pinch' && arr.length>=2){ var a=arr[0], b=arr[1]; var d=Math.hypot(a.x-b.x,a.y-b.y); var k=clampK(gest.t0.k*d/gest.d0); var m={x:(a.x+b.x)/2,y:(a.y+b.y)/2}; T={k:k, x:m.x-gest.w.x*k, y:m.y-gest.w.y*k}; gest.moved=true; }
-  scheduleDraw();
-});
-function endPtr(e){ if(!ptrs.has(e.pointerId)) return; var moved = gest && gest.moved; ptrs.delete(e.pointerId); beginGesture(); if(!ptrs.size){ svg.classList.remove('dragging'); if(!moved && e.type==='pointerup') hideCallout(); } }
-svg.addEventListener('pointerup', endPtr); svg.addEventListener('pointercancel', endPtr);
-svg.addEventListener('wheel', function(e){ e.preventDefault(); var p=rel(e); zoomAt(Math.exp(-e.deltaY*(e.deltaMode===1?0.05:0.0016)), p.x, p.y); }, {passive:false});
-svg.addEventListener('dblclick', function(e){ e.preventDefault(); var p=rel(e); zoomAt(2, p.x, p.y); });
-var drawQueued=false; function scheduleDraw(){ if(drawQueued) return; drawQueued=true; requestAnimationFrame(function(){ drawQueued=false; draw(); }); }
-document.getElementById('btnIn').addEventListener('click', function(){ zoomAt(1.6, W/2, H/2); });
-document.getElementById('btnOut').addEventListener('click', function(){ zoomAt(1/1.6, W/2, H/2); });
-document.getElementById('btnFit').addEventListener('click', function(){ hideCallout(); animateTo(FIT, 420); });
-document.getElementById('btnHotels').addEventListener('click', function(){ S.hotels=!S.hotels; store('hotels',S.hotels); applyHotelVis(); if(S.sel && S.sel.type==='h' && !S.hotels) hideCallout(); draw(); });
-
-function measure(){ var r=svg.getBoundingClientRect(); W=Math.max(1,r.width); H=Math.max(1,r.height); }
-var ro = window.ResizeObserver ? new ResizeObserver(function(){ var w0=W,h0=H; measure(); if(Math.abs(w0-W)>1||Math.abs(h0-H)>1){ FIT=computeFit(); T=FIT; draw(); } }) : null;
-if(ro) ro.observe(mapBox); else window.addEventListener('resize', function(){ measure(); FIT=computeFit(); T=FIT; draw(); });
-
-/* 气泡 */
-function showCallout(o){
-  S.sel = S.sel || {}; S.sel.p = o.p;
-  var h='<button class="x" type="button" aria-label="关闭">×</button><h4>'+esc(o.n)+'</h4>'+(o.en?'<div class="en">'+esc(o.en)+'</div>':'')+(o.note?'<p>'+esc(o.note)+'</p>':'')+(o.links?'<div class="links">'+o.links+'</div>':'');
-  callout.innerHTML=h; callout.hidden=false;
-  callout.querySelector('.x').addEventListener('click', hideCallout);
-  posCallout();
+function markSel(sel){ if(scene) scene.marks.forEach(function(m){ var el=m.mk.getElement(); if(el) el.classList.toggle('sel', m===sel); }); }
+function setListOn(id, fromList){
+  document.querySelectorAll('.stop.on,.hotel.on').forEach(function(x){ x.classList.remove('on'); });
+  var el=document.getElementById(id); if(el){ el.classList.add('on'); if(!fromList && !isNarrow()) el.scrollIntoView({block:'nearest', behavior: reduce()?'auto':'smooth'}); }
 }
-function hideCallout(){ callout.hidden=true; if(scene) scene.marks.forEach(function(m){ m.g.classList.remove('sel'); }); document.querySelectorAll('.stop.on,.hotel.on').forEach(function(x){ x.classList.remove('on'); }); S.sel=null; }
-function posCallout(){
-  if(callout.hidden || !S.sel || !S.sel.p) return;
-  var X=sx(S.sel.p), Y=sy(S.sel.p), cw=callout.offsetWidth, ch=callout.offsetHeight;
-  var left=Math.max(12, Math.min(W-cw-12, X-cw/2));
-  var top = Y-ch-20; if(top<8) top=Y+20; if(top+ch>H-8) top=Math.max(8,H-ch-8);
-  callout.style.left=left+'px'; callout.style.top=top+'px';
+function clearSel(){ markSel(null); document.querySelectorAll('.stop.on,.hotel.on').forEach(function(x){ x.classList.remove('on'); }); S.sel=null; }
+function hideCallout(){ if(map) map.closePopup(); clearSel(); }
+// 从列表点进来：点不在视野里就先移过去，再弹出说明
+function focusOn(ll, show){
+  var p=map.latLngToContainerPoint(ll), sz=map.getSize(), sc=scene;
+  if(p.x<50||p.x>sz.x-50||p.y<80||p.y>sz.y-60){
+    map.once('moveend', function(){ if(scene===sc) show(); });
+    map.setView(ll, Math.max(map.getZoom(), FITZ-.25), {animate:!reduce()});
+  } else show();
 }
 function stopLinks(s){ var l=''; if(s.q) l+='<a class="lk" href="'+gmSearch(s.q)+'" target="_blank" rel="noopener">地图</a>'; if(s.link) l+='<a class="lk" href="'+esc(s.link.u)+'" target="_blank" rel="noopener">'+esc(s.link.l)+'</a>'; return l; }
 function hotelLinks(h, c){ return '<a class="lk" href="'+gmSearch(h.q)+'" target="_blank" rel="noopener">地图</a>'+(h.areaOnly?'':'<a class="lk" href="'+booking(h,c)+'" target="_blank" rel="noopener">Booking 按日期查价</a>'); }
 
 function isNarrow(){ return window.matchMedia && window.matchMedia('(max-width: 899px)').matches; }
+function findMark(f){ for(var i=0;i<scene.marks.length;i++){ if(f(scene.marks[i])) return scene.marks[i]; } return null; }
 function select(i, fromList){
-  var d=byId[S.view]; if(!d) return; var s=dayStops(d)[i]; var p=proj(s.ll);
-  scene.marks.forEach(function(m){ m.g.classList.toggle('sel', m.i===i); });
-  document.querySelectorAll('.stop.on,.hotel.on').forEach(function(x){ x.classList.remove('on'); });
-  var li=document.getElementById('stop-'+i); if(li){ li.classList.add('on'); if(!fromList && !isNarrow()) li.scrollIntoView({block:'nearest', behavior: reduce()?'auto':'smooth'}); }
-  S.sel={type:'s', i:i, p:p};
-  showCallout({n:s.n, en:s.en, note:s.note, p:p, links:stopLinks(s)});
-  if(fromList){ ensureVisible(p); if(isNarrow()) revealMap(); }
+  var d=byId[S.view]; if(!d) return; var s=dayStops(d)[i];
+  if(!map || !scene){ setListOn('stop-'+i, true); return; }
+  var m=findMark(function(m){ return m.i===i; });
+  function show(){ openPop({n:s.n, en:s.en, note:s.note, links:stopLinks(s)}, s.ll, 12); markSel(m); setListOn('stop-'+i, fromList); S.sel={type:'s', i:i}; }
+  if(fromList){ focusOn(s.ll, show); if(isNarrow()) revealMap(); } else show();
 }
 function selectHotel(hi, fromList){
-  var d=byId[S.view]; if(!d) return; var h=(HOTELS[d.city]||[])[hi]; var p=proj(h.ll);
+  var d=byId[S.view]; if(!d) return; var h=(HOTELS[d.city]||[])[hi]; if(!h) return;
+  if(!map || !scene){ setListOn('hotel-'+hi, true); return; }
   if(!S.hotels){ S.hotels=true; store('hotels',true); applyHotelVis(); }
-  scene.marks.forEach(function(m){ m.g.classList.toggle('sel', m.hotel===hi); });
-  document.querySelectorAll('.stop.on,.hotel.on').forEach(function(x){ x.classList.remove('on'); });
-  var el=document.getElementById('hotel-'+hi); if(el){ el.classList.add('on'); if(!fromList && !isNarrow()) el.scrollIntoView({block:'nearest', behavior: reduce()?'auto':'smooth'}); }
-  S.sel={type:'h', i:hi, p:p};
-  showCallout({n:h.n, en:h.area, note:h.note, p:p, links:hotelLinks(h, CITY[d.city])});
-  if(fromList){ ensureVisible(p); if(isNarrow()) revealMap(); }
-}
-function ensureVisible(p){
-  var X=sx(p), Y=sy(p);
-  if(X<50||X>W-50||Y<80||Y>H-60){ var k=Math.max(T.k, FIT.k*0.9); animateTo({k:k, x:W/2-p[0]*k, y:H/2-p[1]*k}, 380); }
-  else draw();
+  var m=findMark(function(m){ return m.hotel===hi; });
+  function show(){ openPop({n:h.n, en:h.area, note:h.note, links:hotelLinks(h, CITY[d.city])}, h.ll, 11); markSel(m); setListOn('hotel-'+hi, fromList); S.sel={type:'h', i:hi}; }
+  if(fromList){ focusOn(h.ll, show); if(isNarrow()) revealMap(); } else show();
 }
 function revealMap(){ var r=mapBox.getBoundingClientRect(); if(r.bottom<120 || r.top<0){ mapBox.scrollIntoView({block:'start', behavior: reduce()?'auto':'smooth'}); } }
 
@@ -988,25 +995,16 @@ function renderOverview(){
   h+='<li><div class="drow static"><span class="md">11/04</span><span class="wd">三</span><span class="tt"><b>11:30 到济南</b><span>11/5 上班</span></span><span class="nt">到家</span></div></li></ol>';
   h+='<h3 class="sec">交通</h3><div class="tblwrap"><table class="ftable"><tbody>'+FLIGHTS.map(function(f){ return '<tr><td>'+f.d+'</td><td><b>'+esc(f.code)+'</b> <span class="r">'+esc(f.r)+'</span><span class="sub">'+esc(f.who)+(f.sub?' · '+esc(f.sub):'')+'</span></td><td class="r" style="text-align:right;white-space:nowrap">'+esc(f.p)+'</td></tr>'; }).join('')+'</tbody></table></div>';
   h+='<h3 class="sec">住宿</h3><div class="stays">'+['syd','mel','gc','bne'].map(function(k){ var c=CITY[k]; return '<div style="border-top:3px solid var(--'+k+')"><b>'+c.name+'</b><span class="n">'+c.nights+'</span> <span>晚</span><br><span>'+c.cin.slice(5).replace('-','/')+' → '+c.cout.slice(5).replace('-','/')+'</span></div>'; }).join('')+'</div>';
-  h+='<p class="fine">地图是示意图：景点和酒店按真实坐标放置，但没有街道底图，路线用直线连接。实际导航请点每一站的「地图」，在 Google 地图里打开。机票价格是之前查到的参考价，购买前重新查。</p>';
+  h+='<p class="fine">底图来自 OpenStreetMap / CARTO，景点和酒店按真实坐标放置；路线按顺序直线连接，渡轮和大洋路按途经点画，都是示意。实际导航请点每一站的「地图」，在 Google 地图里打开。机票价格是之前查到的参考价，购买前重新查。</p>';
   panel.innerHTML=h;
   panel.querySelectorAll('[data-go]').forEach(function(b){ b.addEventListener('click', function(){ setView(b.getAttribute('data-go')); if(isNarrow()) window.scrollTo({top:0}); }); });
 }
 
 /* ---------- 切换 ---------- */
-var lastKey=null;
 function render(){
-  measure();
-  buildScene();
-  var nf=computeFit();
   if(S.view==='overview') renderOverview(); else renderDay(byId[S.view]);
-  var dv = S.view==='overview' ? null : byId[S.view];
-  var key = dv ? dv.city+'|'+(dv.region||'') : 'ov';
-  var same = lastKey!==null && key===lastKey;
-  FIT=nf; animateTo(nf, same ? 450 : 0);
-  lastKey=key;
-  document.getElementById('btnHotels').hidden = !scene.marks.some(function(m){ return m.hotel!=null; });
   syncRail();
+  drawMap(true);
 }
 function setView(v){
   if(v!=='overview' && !byId[v]) v='overview';
@@ -1027,7 +1025,8 @@ buildRail();
 var initial = (location.hash||'').replace('#','');
 if(!byId[initial] && initial!=='overview'){ initial = byId['d'+TODAY.slice(5).replace('-','')] ? 'd'+TODAY.slice(5).replace('-','') : load('view','overview'); }
 S.view = (initial==='overview'||byId[initial]) ? initial : 'overview';
-measure(); render();
+render();
+loadLeaflet(0);
 })();
 </script>
 
