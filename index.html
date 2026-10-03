@@ -123,12 +123,17 @@ button{font:inherit;color:inherit}
 .mk.base .box{background:var(--surface);border:1.6px solid var(--muted)}
 .mk.base .box svg{stroke:var(--muted)}
 .mk.base .ring{border-radius:9px}
+.mk.htl.booked .box{background:var(--c);border-width:2.5px;box-shadow:0 0 0 2px var(--c),0 2px 8px rgba(0,0,0,.35)}
+.mk.htl.booked .ring{inset:-7px;border-radius:12px}
+.mk.htl.booked .ck{position:absolute;right:-7px;top:-7px;width:16px;height:16px;border-radius:50%;background:var(--ink);color:var(--surface);border:1.5px solid var(--surface);font:700 10px/13px var(--f-body);text-align:center}
 /* 标签：零尺寸锚点里的文字，位置由脚本避让后决定 */
 .lbm .lb{position:absolute;left:0;top:0;padding:0 2px;white-space:nowrap;font:500 12px/16px var(--f-body);color:var(--ink);visibility:hidden;text-shadow:0 0 1px var(--halo),0 0 2px var(--halo),0 0 3px var(--halo),0 0 4px var(--halo),0 0 6px var(--halo)}
 .lbm .lb.h{font-size:11.5px;font-weight:400}
 .lbm .lb.c{font-size:13.5px;font-weight:700;line-height:18px}
 .lbm .lb.f{font:500 10.5px/14px var(--f-mono);color:var(--muted)}
 .lbm .lb.dim{color:var(--muted);font-weight:400}
+.lbm .lb.bk{font-weight:700;color:var(--c)}
+.lbm .lb.syd{--c:var(--syd)} .lbm .lb.mel{--c:var(--mel)} .lbm .lb.gc{--c:var(--gc)} .lbm .lb.bne{--c:var(--bne)}
 .legend{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:12px;color:var(--muted);padding:8px 2px 0}
 .legend span{display:inline-flex;align-items:center;gap:6px}
 .legend svg{width:30px;height:8px;overflow:visible}
@@ -196,6 +201,9 @@ h3.sec::after{content:"";flex:1;height:1px;background:var(--line)}
 .hstay b{font-family:var(--f-mono);font-weight:500;color:var(--ink)}
 .hotel{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 12px;cursor:pointer}
 .hotel.on{border-color:var(--ink)}
+.hotel.booked{border-color:var(--c);box-shadow:inset 3px 0 0 var(--c)}
+.hotel .hn .bk{font-size:11.5px;font-weight:700;line-height:1.6;padding:0 7px;border-radius:5px;background:var(--c);color:var(--surface);align-self:center}
+.hstay .bkn{font-weight:700;color:var(--ink)}
 .hotel .hn{display:flex;flex-wrap:wrap;gap:2px 8px;align-items:baseline}
 .hotel .hn b{font-size:14.5px}
 .hotel .hn span{font-size:12.5px;color:var(--muted)}
@@ -228,6 +236,7 @@ h3.sec::after{content:"";flex:1;height:1px;background:var(--line)}
 .stays b{display:block;font-size:14px}
 .stays .n{font-family:var(--f-mono);font-size:22px;font-weight:600;line-height:1.2}
 .stays span{font-size:12.5px;color:var(--muted)}
+.stays .bkd{display:block;margin-top:4px;color:var(--ink);font-weight:500}
 .fine{font-size:12.5px;color:var(--muted);max-width:64ch;margin:18px 0 0}
 
 @media (min-width: 900px){
@@ -302,31 +311,33 @@ var REGION = {
   plain:{note:'路线按顺序直线连接，是示意；导航请点每站的「地图」。', ferry:'路线按顺序直线连接，渡轮按大致航线画，都是示意；导航请点每站的「地图」。'}
 };
 
-/* ---------- 候选酒店 ---------- */
+/* ---------- 候选酒店 ----------
+   订好以后把那家的 booked 改成 true（每个城市一家）。地图上它会醒目显示、列表里置顶标「已订」，
+   当天从住处出发 / 回住处、「酒店放行李 / 取行李」这些点也会自动挪到它的位置。区域备选（areaOnly）不能标。 */
 var HOTELS = {
   syd:[
-    {n:'Song Hotel Sydney', area:'Hyde Park 南端', ll:[-33.8770,151.2112], tags:['双床房 Deluxe Twin','估价 A$170–250'], note:'参考攻略同款位置，去 Museum 站和唐人街都近。', q:'Song Hotel Sydney'},
-    {n:'ibis Sydney World Square', s:'ibis World Square', area:'Town Hall · 唐人街', ll:[-33.8778,151.2077], tags:['双床房','估价 A$180–250'], note:'连锁酒店，有前台，退房后寄存行李方便（订前确认）。', q:'ibis Sydney World Square'},
-    {n:'Great Southern Hotel', area:'Central 站旁', ll:[-33.8807,151.2047], tags:['双床房','估价 A$160–220'], note:'偏经济，离 Central 站近，去机场方便。', q:'Great Southern Hotel Sydney'},
+    {n:'Song Hotel Sydney', booked:false, area:'Hyde Park 南端', ll:[-33.8770,151.2112], tags:['双床房 Deluxe Twin','估价 A$170–250'], note:'参考攻略同款位置，去 Museum 站和唐人街都近。', q:'Song Hotel Sydney'},
+    {n:'ibis Sydney World Square', booked:false, s:'ibis World Square', area:'Town Hall · 唐人街', ll:[-33.8778,151.2077], tags:['双床房','估价 A$180–250'], note:'连锁酒店，有前台，退房后寄存行李方便（订前确认）。', q:'ibis Sydney World Square'},
+    {n:'Great Southern Hotel', booked:false, area:'Central 站旁', ll:[-33.8807,151.2047], tags:['双床房','估价 A$160–220'], note:'偏经济，离 Central 站近，去机场方便。', q:'Great Southern Hotel Sydney'},
     {n:'North Sydney', area:'区域备选', ll:[-33.8395,151.2075], areaOnly:true, tags:['周末可能更便宜'], note:'10/24、10/25 是周末，商务区酒店可以和市中心比价；去 Bondi 要多换一次车。', q:'hotels North Sydney'}
   ],
   mel:[
-    {n:'ibis Melbourne Hotel and Apartments', s:'ibis Melbourne', area:'Therry St · 近 QVM', ll:[-37.8082,144.9606], tags:['两卧公寓','估价 A$260 起'], note:'两卧公寓一间 Queen 床、一间两张单人床，适合一男一女各住一间。', q:'ibis Melbourne Hotel and Apartments'},
-    {n:'Mercure Welcome Melbourne', s:'Mercure Welcome', area:'Little Bourke St · CBD 中心', ll:[-37.8124,144.9648], tags:['双床房','估价 A$160–220'], note:'步行可到大部分 City Walk 景点。', q:'Mercure Welcome Melbourne'},
-    {n:'ibis Styles Kingsgate', s:'Kingsgate', area:'King St · 近 Southern Cross', ll:[-37.8165,144.9560], tags:['双床房','估价 A$130–180'], note:'便宜；部分房型共用卫浴，订的时候选带独立卫浴的。', q:'ibis Styles Kingsgate Hotel Melbourne'},
-    {n:'Nesuto Docklands', area:'Docklands', ll:[-37.8165,144.9420], tags:['两卧公寓','估价 A$250–320'], note:'靠近 Southern Cross 机场大巴站；订前确认有没有洗衣机。', q:'Nesuto Docklands Melbourne'},
-    {n:'Quest NewQuay', area:'Docklands NewQuay', ll:[-37.8132,144.9380], tags:['两卧公寓','估价 A$280 起'], note:'NewQuay 一带可能在免费电车区边缘，订前在地图上核对。', q:'Quest NewQuay Docklands'}
+    {n:'ibis Melbourne Hotel and Apartments', booked:false, s:'ibis Melbourne', area:'Therry St · 近 QVM', ll:[-37.8082,144.9606], tags:['两卧公寓','估价 A$260 起'], note:'两卧公寓一间 Queen 床、一间两张单人床，适合一男一女各住一间。', q:'ibis Melbourne Hotel and Apartments'},
+    {n:'Mercure Welcome Melbourne', booked:false, s:'Mercure Welcome', area:'Little Bourke St · CBD 中心', ll:[-37.8124,144.9648], tags:['双床房','估价 A$160–220'], note:'步行可到大部分 City Walk 景点。', q:'Mercure Welcome Melbourne'},
+    {n:'ibis Styles Kingsgate', booked:false, s:'Kingsgate', area:'King St · 近 Southern Cross', ll:[-37.8165,144.9560], tags:['双床房','估价 A$130–180'], note:'便宜；部分房型共用卫浴，订的时候选带独立卫浴的。', q:'ibis Styles Kingsgate Hotel Melbourne'},
+    {n:'Nesuto Docklands', booked:false, area:'Docklands', ll:[-37.8165,144.9420], tags:['两卧公寓','估价 A$250–320'], note:'靠近 Southern Cross 机场大巴站；订前确认有没有洗衣机。', q:'Nesuto Docklands Melbourne'},
+    {n:'Quest NewQuay', booked:false, area:'Docklands NewQuay', ll:[-37.8132,144.9380], tags:['两卧公寓','估价 A$280 起'], note:'NewQuay 一带可能在免费电车区边缘，订前在地图上核对。', q:'Quest NewQuay Docklands'}
   ],
   gc:[
-    {n:'Novotel Surfers Paradise', s:'Novotel', area:'Surfers 中心北', ll:[-27.9995,153.4290], tags:['双床房 Deluxe Twin','估价 A$150–250'], note:'连锁酒店，有前台，深夜入住和寄存行李都方便。', q:'Novotel Surfers Paradise'},
-    {n:'Orchid Residences', area:'Orchid Ave · Hilton 同楼', ll:[-28.0040,153.4305], tags:['两卧公寓','参考 A$255/晚'], note:'私人公寓房源，提前确认深夜入住方式和能否寄存行李。', q:'Orchid Residences Surfers Paradise'},
-    {n:'Mantra Legends', area:'Surfers 南段', ll:[-28.0085,153.4298], tags:['酒店 / 公寓','估价 A$150–250'], note:'离 Cavill Ave 不远，周边吃饭方便。', q:'Mantra Legends Hotel Surfers Paradise'},
+    {n:'Novotel Surfers Paradise', booked:false, s:'Novotel', area:'Surfers 中心北', ll:[-27.9995,153.4290], tags:['双床房 Deluxe Twin','估价 A$150–250'], note:'连锁酒店，有前台，深夜入住和寄存行李都方便。', q:'Novotel Surfers Paradise'},
+    {n:'Orchid Residences', booked:false, area:'Orchid Ave · Hilton 同楼', ll:[-28.0040,153.4305], tags:['两卧公寓','参考 A$255/晚'], note:'私人公寓房源，提前确认深夜入住方式和能否寄存行李。', q:'Orchid Residences Surfers Paradise'},
+    {n:'Mantra Legends', booked:false, area:'Surfers 南段', ll:[-28.0085,153.4298], tags:['酒店 / 公寓','估价 A$150–250'], note:'离 Cavill Ave 不远，周边吃饭方便。', q:'Mantra Legends Hotel Surfers Paradise'},
     {n:'Broadbeach', area:'区域备选', ll:[-28.0310,153.4310], areaOnly:true, tags:['两卧公寓多'], note:'比 Surfers 安静，轻轨直达。', q:'Broadbeach apartments Gold Coast'}
   ],
   bne:[
-    {n:'Mercure Brisbane', area:'North Quay', ll:[-27.4700,153.0190], tags:['双床房','估价 A$160–220'], note:'步行到 Roma St 站约 10 分钟，坐 Airtrain 去机场方便。', q:'Mercure Brisbane North Quay'},
-    {n:'ibis Styles Brisbane Elizabeth Street', s:'ibis Styles', area:'市中心 · 近 Queen St Mall', ll:[-27.4720,153.0250], tags:['双床房','估价 A$160–220'], note:'吃饭、逛街都在步行范围。', q:'ibis Styles Brisbane Elizabeth Street'},
-    {n:'Hotel Grand Chancellor Brisbane', s:'Grand Chancellor', area:'Spring Hill · 近 Roma St', ll:[-27.4630,153.0225], tags:['双床房','估价 A$150–210'], note:'Spring Hill 一带有坡，拖行李去车站注意选路线。', q:'Hotel Grand Chancellor Brisbane'}
+    {n:'Mercure Brisbane', booked:false, area:'North Quay', ll:[-27.4700,153.0190], tags:['双床房','估价 A$160–220'], note:'步行到 Roma St 站约 10 分钟，坐 Airtrain 去机场方便。', q:'Mercure Brisbane North Quay'},
+    {n:'ibis Styles Brisbane Elizabeth Street', booked:false, s:'ibis Styles', area:'市中心 · 近 Queen St Mall', ll:[-27.4720,153.0250], tags:['双床房','估价 A$160–220'], note:'吃饭、逛街都在步行范围。', q:'ibis Styles Brisbane Elizabeth Street'},
+    {n:'Hotel Grand Chancellor Brisbane', booked:false, s:'Grand Chancellor', area:'Spring Hill · 近 Roma St', ll:[-27.4630,153.0225], tags:['双床房','估价 A$150–210'], note:'Spring Hill 一带有坡，拖行李去车站注意选路线。', q:'Hotel Grand Chancellor Brisbane'}
   ]
 };
 
@@ -579,13 +590,17 @@ var byId = {}; DAYS.forEach(function(d){ byId[d.id]=d; });
 function todayStr(){ var d=new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
 var TODAY = todayStr();
 
+function bookedHotel(city){ var hs=HOTELS[city]||[]; for(var i=0;i<hs.length;i++){ if(hs[i].booked && !hs[i].areaOnly) return hs[i]; } return null; }
+// 住处：订了酒店就用酒店的位置，否则用城市的默认落脚点
+function home(city){ var c=CITY[city], b=bookedHotel(city); return b ? {en:b.n, ll:b.ll, q:b.q, booked:true} : {en:'Hotel', ll:c.base, q:c.baseQ}; }
 function dayStops(d){
   var base = d.options ? d.options[Math.min(S.opt[d.id]||0, d.options.length-1)].stops : d.stops;
-  return base.concat(d.tail||[]);
+  var all = base.concat(d.tail||[]), b = bookedHotel(d.city);
+  return b ? all.map(function(s){ return s.kind==='stay' ? Object.assign({}, s, {en:b.n, ll:b.ll, q:b.q}) : s; }) : all;
 }
 function dayGm(d){ return d.options ? d.options[Math.min(S.opt[d.id]||0, d.options.length-1)].gm : d.gm; }
-function startPt(d){ if(!d.start) return null; var c=CITY[d.city]; return d.start===true ? {n:'住处出发', en:'Hotel', ll:c.base, base:true, q:c.baseQ} : Object.assign({base:true}, d.start); }
-function endPt(d){ if(!d.end) return null; var c=CITY[d.city]; return Object.assign({n:'回住处', en:'Hotel', ll:c.base, base:true, q:c.baseQ}, d.end); }
+function startPt(d){ if(!d.start) return null; return d.start===true ? Object.assign({n:'住处出发', base:true}, home(d.city)) : Object.assign({base:true}, d.start); }
+function endPt(d){ if(!d.end) return null; return d.end.ll ? Object.assign({base:true}, d.end) : Object.assign({n:'回住处', base:true}, home(d.city), d.end); }
 
 /* ---------- 链接 ---------- */
 function gmSearch(q){ return 'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(q); }
@@ -776,11 +791,12 @@ function buildScene(){
       if(!s.opt) prevLL = s.ll;
     });
     if(en) addRoute([prevLL].concat(en.via||[]).concat([en.ll]), en.mode||'walk', city);
-    // 住处
+    // 住处（订了酒店时由下面的已订酒店标记代替）
     if(st || en){
       var same = st && en && st.ll[0]===en.ll[0] && st.ll[1]===en.ll[1];
       var bset = [st]; if(en && !same) bset.push(en);
       bset.forEach(function(b){ if(!b) return;
+        if(b.booked){ sc.fit.push(b.ll); return; }
         var lab = b.n && b.n!=='住处出发' && b.n!=='回住处' ? b.n : '住处';
         var mk = addMarker(b.ll, 'mk base', '<span class="ring"></span><span class="box">'+BED_SVG+'</span>', 18, lab, 100);
         var m = {mk:mk, ll:b.ll, r:10}; sc.marks.push(m); sc.fit.push(b.ll);
@@ -797,20 +813,25 @@ function buildScene(){
       onActivate(mk, function(){ select(i, false); });
       addLabel(s.n, s.opt?'dim':'', s.ll, 12, 2);
     });
-    // 候选酒店
+    // 酒店：已订的始终显示、样式醒目；候选的跟随「酒店」开关
     if(onMap){
       (HOTELS[city]||[]).forEach(function(h,hi){
-        var mk = addMarker(h.ll, 'mk htl'+(h.areaOnly?' area':''), '<span class="ring"></span><span class="box">'+BED_SVG+'</span>', 20, h.n, 0, sc.hotelGroup);
-        sc.marks.push({mk:mk, ll:h.ll, r:11, hotel:hi}); sc.hasHotels=true;
+        var bk = isBooked(h);
+        var mk = bk
+          ? addMarker(h.ll, 'mk htl booked '+city, '<span class="ring"></span><span class="box">'+BED_SVG+'</span><span class="ck">✓</span>', 28, '已订 · '+h.n, 250)
+          : addMarker(h.ll, 'mk htl'+(h.areaOnly?' area':''), '<span class="ring"></span><span class="box">'+BED_SVG+'</span>', 20, h.n, 0, sc.hotelGroup);
+        sc.marks.push({mk:mk, ll:h.ll, r:bk?16:11, hotel:hi, booked:bk});
+        if(bk) sc.fit.push(h.ll); else sc.hasHotels=true;
         onActivate(mk, function(){ selectHotel(hi, false); });
-        addLabel(h.s||h.n, 'h', h.ll, 11, 5, true);
+        addLabel(bk ? '已订 · '+(h.s||h.n) : (h.s||h.n), bk?'bk '+city:'h', h.ll, bk?16:11, bk?1.5:5, !bk);
       });
     }
   }
   if(S.hotels) sc.hotelGroup.addTo(map);
   btnHotels.setAttribute('aria-pressed', S.hotels?'true':'false');
 }
-function markVisible(m){ return m.hotel==null || S.hotels; }
+function isBooked(h){ return !!h.booked && !h.areaOnly; }
+function markVisible(m){ return m.hotel==null || m.booked || S.hotels; }
 
 /* 标签避让：按优先级依次找不和点、其他标签、地图按钮重叠的位置，放不下就隐藏 */
 function placeLabels(){
@@ -844,7 +865,7 @@ function applyHotelVis(){
   btnHotels.setAttribute('aria-pressed', S.hotels?'true':'false');
   if(!map || !scene) return;
   if(S.hotels) scene.hotelGroup.addTo(map);
-  else { map.removeLayer(scene.hotelGroup); if(S.sel && S.sel.type==='h') map.closePopup(); }
+  else { map.removeLayer(scene.hotelGroup); if(S.sel && S.sel.type==='h' && !S.sel.booked) map.closePopup(); }
   placeLabels();
 }
 
@@ -910,9 +931,10 @@ function select(i, fromList){
 function selectHotel(hi, fromList){
   var d=byId[S.view]; if(!d) return; var h=(HOTELS[d.city]||[])[hi]; if(!h) return;
   if(!map || !scene){ setListOn('hotel-'+hi, true); return; }
-  if(!S.hotels){ S.hotels=true; store('hotels',true); applyHotelVis(); }
+  var bk=isBooked(h);
+  if(!S.hotels && !bk){ S.hotels=true; store('hotels',true); applyHotelVis(); }
   var m=findMark(function(m){ return m.hotel===hi; });
-  function show(){ openPop({n:h.n, en:h.area, note:h.note, links:hotelLinks(h, CITY[d.city])}, h.ll, 11); markSel(m); setListOn('hotel-'+hi, fromList); S.sel={type:'h', i:hi}; }
+  function show(){ openPop({n:h.n, en:(bk?'已订 · ':'')+h.area, note:h.note, links:hotelLinks(h, CITY[d.city])}, h.ll, bk?16:11); markSel(m); setListOn('hotel-'+hi, fromList); S.sel={type:'h', i:hi, booked:bk}; }
   if(fromList){ focusOn(h.ll, show); if(isNarrow()) revealMap(); } else show();
 }
 function revealMap(){ var r=mapBox.getBoundingClientRect(); if(r.bottom<120 || r.top<0){ mapBox.scrollIntoView({block:'start', behavior: reduce()?'auto':'smooth'}); } }
@@ -963,12 +985,14 @@ function renderDay(d){
   // 住宿
   var nightCity = d.night ? CITY[d.night] : null;
   if(nightCity){
-    var hs=HOTELS[d.night], onMap = d.night===d.city && (!d.region || d.region==='gc');
+    var hs=HOTELS[d.night], onMap = d.night===d.city && (!d.region || d.region==='gc'), bkh=bookedHotel(d.night);
     h+='<h3 class="sec">今晚住宿 · '+nightCity.name+'</h3>';
-    h+='<p class="hstay"><b>'+nightCity.cin.slice(5).replace('-','/')+'</b> 入住 → <b>'+nightCity.cout.slice(5).replace('-','/')+'</b> 退房，共 '+nightCity.nights+' 晚。全部是候选，还没有预订。'+(onMap?'':' 酒店位置在 '+firstDayOf(d.night)+' 的地图上看。')+'</p>';
-    h+='<div class="hotels">'+hs.map(function(ho,hi){
-      var dist = haversine(ho.ll, nightCity.anchor.ll);
-      return '<div class="hotel"'+(onMap?' id="hotel-'+hi+'"':'')+' data-h="'+(onMap?hi:'')+'"><div class="hn"><b>'+esc(ho.n)+'</b><span>'+esc(ho.area)+'</span></div>'+
+    h+='<p class="hstay"><b>'+nightCity.cin.slice(5).replace('-','/')+'</b> 入住 → <b>'+nightCity.cout.slice(5).replace('-','/')+'</b> 退房，共 '+nightCity.nights+' 晚。'+(bkh ? '已订 <span class="bkn">'+esc(bkh.n)+'</span>，其余是候选。' : '全部是候选，还没有预订。')+(onMap?'':' 酒店位置在 '+firstDayOf(d.night)+' 的地图上看。')+'</p>';
+    // 已订的排在最前；id / data-h 仍用 HOTELS 里的原序号，和地图标记对应
+    var order = hs.map(function(ho,hi){ return {ho:ho, hi:hi}; }).sort(function(a,b){ return isBooked(b.ho) - isBooked(a.ho); });
+    h+='<div class="hotels" style="--c:var(--'+d.night+')">'+order.map(function(x){
+      var ho=x.ho, hi=x.hi, bk=isBooked(ho), dist = haversine(ho.ll, nightCity.anchor.ll);
+      return '<div class="hotel'+(bk?' booked':'')+'"'+(onMap?' id="hotel-'+hi+'"':'')+' data-h="'+(onMap?hi:'')+'"><div class="hn">'+(bk?'<span class="bk">已订</span>':'')+'<b>'+esc(ho.n)+'</b><span>'+esc(ho.area)+'</span></div>'+
         '<div class="tags">'+ho.tags.map(function(t){return '<span class="tag'+(/A\$/.test(t)?' d':'')+'">'+esc(t)+'</span>';}).join('')+'<span class="tag d">距 '+esc(nightCity.anchor.n)+' '+dist.toFixed(1)+' km</span></div>'+
         '<p>'+esc(ho.note)+'</p><div class="links">'+hotelLinks(ho, nightCity)+'</div></div>';
     }).join('')+'</div>';
@@ -994,7 +1018,7 @@ function renderOverview(){
   });
   h+='<li><div class="drow static"><span class="md">11/04</span><span class="wd">三</span><span class="tt"><b>11:30 到济南</b><span>11/5 上班</span></span><span class="nt">到家</span></div></li></ol>';
   h+='<h3 class="sec">交通</h3><div class="tblwrap"><table class="ftable"><tbody>'+FLIGHTS.map(function(f){ return '<tr><td>'+f.d+'</td><td><b>'+esc(f.code)+'</b> <span class="r">'+esc(f.r)+'</span><span class="sub">'+esc(f.who)+(f.sub?' · '+esc(f.sub):'')+'</span></td><td class="r" style="text-align:right;white-space:nowrap">'+esc(f.p)+'</td></tr>'; }).join('')+'</tbody></table></div>';
-  h+='<h3 class="sec">住宿</h3><div class="stays">'+['syd','mel','gc','bne'].map(function(k){ var c=CITY[k]; return '<div style="border-top:3px solid var(--'+k+')"><b>'+c.name+'</b><span class="n">'+c.nights+'</span> <span>晚</span><br><span>'+c.cin.slice(5).replace('-','/')+' → '+c.cout.slice(5).replace('-','/')+'</span></div>'; }).join('')+'</div>';
+  h+='<h3 class="sec">住宿</h3><div class="stays">'+['syd','mel','gc','bne'].map(function(k){ var c=CITY[k]; return '<div style="border-top:3px solid var(--'+k+')"><b>'+c.name+'</b><span class="n">'+c.nights+'</span> <span>晚</span><br><span>'+c.cin.slice(5).replace('-','/')+' → '+c.cout.slice(5).replace('-','/')+'</span>'+(bookedHotel(k)?'<span class="bkd">已订 · '+esc(bookedHotel(k).s||bookedHotel(k).n)+'</span>':'')+'</div>'; }).join('')+'</div>';
   h+='<p class="fine">底图来自 OpenStreetMap / CARTO，景点和酒店按真实坐标放置；路线按顺序直线连接，渡轮和大洋路按途经点画，都是示意。实际导航请点每一站的「地图」，在 Google 地图里打开。机票价格是之前查到的参考价，购买前重新查。</p>';
   panel.innerHTML=h;
   panel.querySelectorAll('[data-go]').forEach(function(b){ b.addEventListener('click', function(){ setView(b.getAttribute('data-go')); if(isNarrow()) window.scrollTo({top:0}); }); });
