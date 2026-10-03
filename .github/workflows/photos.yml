@@ -1,0 +1,51 @@
+# Pick a photo for every place (from Wikipedia / Wikimedia Commons, freely licensed only)
+# and write it into index.html (the PHOTO block).
+# Run it from the Actions tab after adding places or changing their `img`; on main it also
+# redeploys the site. It runs by itself when the photo script changes on a claude/ branch.
+name: Update photos
+
+on:
+  workflow_dispatch:
+  push:
+    branches: ['claude/**']
+    paths: ['tools/fetch-photos.mjs', '.github/workflows/photos.yml']
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: photos-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  photos:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - name: Pick photos from Wikimedia Commons
+        run: node tools/fetch-photos.mjs
+      - name: Commit changes
+        id: commit
+        run: |
+          if git diff --quiet -- index.html; then
+            echo "No photo changes."
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Update place photos from Wikimedia Commons" -- index.html
+          # someone may have pushed while photos were being picked
+          git pull --rebase origin "$GITHUB_REF_NAME"
+          git push origin "HEAD:$GITHUB_REF_NAME"
+          echo "changed=true" >> "$GITHUB_OUTPUT"
+      # Pushes made with the workflow token don't trigger other workflows, so start the deploy explicitly.
+      - name: Redeploy the site
+        if: github.ref == 'refs/heads/main' && steps.commit.outputs.changed == 'true'
+        run: gh workflow run pages.yml --ref main
+        env:
+          GH_TOKEN: ${{ github.token }}
