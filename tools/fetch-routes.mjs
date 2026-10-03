@@ -4,7 +4,8 @@
 // - 公共交通（有 osm 提示的段）：用 Overpass API 找这条线路的 relation，拼成一条线，
 //   截取上车点到下车点之间那一段（方向要对）。找不到时巴士 / 电车 / 轻轨退回按公路规划。
 // - 步行、打车、自驾、旅行团：用 FOSSGIS 提供的 OSRM 路线规划（routing.openstreetmap.de）。
-// - 这次没取到、但以前取到过的段沿用旧的；都没有的段，网页按直线画。
+// - 已经有形状的步行 / 公路段直接沿用（坐标变了就是新的段，会重新取）；公共交通每次都重新查，
+//   查不到就沿用旧的。都没有的段，网页按直线画。设环境变量 FORCE=1 可以全部重取。
 //
 // 用法：node tools/fetch-routes.mjs
 // 一般不用手动跑：GitHub Actions 里的 “Update route shapes” 会跑它并提交结果。
@@ -128,7 +129,8 @@ async function request(url, opts = {}, tries = 2, timeoutMs = 30000) {
   let err;
   for (let k = 0; k < tries; k++) {
     try {
-      const res = await fetch(url, { ...opts, headers: { 'User-Agent': UA, ...(opts.headers || {}) }, signal: AbortSignal.timeout(timeoutMs) });
+      const signal = opts.signal ? AbortSignal.any([opts.signal, AbortSignal.timeout(timeoutMs)]) : AbortSignal.timeout(timeoutMs);
+      const res = await fetch(url, { ...opts, headers: { 'User-Agent': UA, ...(opts.headers || {}) }, signal });
       if (res.ok) return await res.json();
       err = new Error(`HTTP ${res.status}`);
       if (res.status !== 429 && res.status < 500) break;
@@ -137,19 +139,15 @@ async function request(url, opts = {}, tries = 2, timeoutMs = 30000) {
   }
   throw err;
 }
-let opIdx = 0;
+// 三个 Overpass 服务器同时问，谁先答用谁，其余的取消（公共服务器经常很忙）
 async function overpass(q) {
-  let err;
-  for (let k = 0; k < OVERPASS.length; k++) {
-    const url = OVERPASS[(opIdx + k) % OVERPASS.length];
-    try {
-      const j = await request(url, { method: 'POST', body: 'data=' + encodeURIComponent(q), headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }, 1, 100000);
-      opIdx = (opIdx + k) % OVERPASS.length;
-      await sleep(1500);
-      return j;
-    } catch (e) { err = e; console.log(`  · ${url.split('/')[2]} 失败：${e.message}（${elapsed()}）`); }
-  }
-  throw err;
+  const ctrl = new AbortController();
+  const asks = OVERPASS.map(url => request(url, { method: 'POST', body: 'data=' + encodeURIComponent(q), headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, signal: ctrl.signal }, 1, 100000)
+    .then(j => { if (!Array.isArray(j.elements)) throw new Error('返回格式不对'); ctrl.abort(); console.log(`  · ${url.split('/')[2]} 答了（${elapsed()}）`); return j; },
+          e => { if (!ctrl.signal.aborted) console.log(`  · ${url.split('/')[2]} 失败：${e.message}（${elapsed()}）`); throw e; }));
+  try { return await Promise.any(asks); }
+  catch (e) { throw new Error('三个服务器都没答'); }
+  finally { await sleep(1000); }
 }
 async function osrm(profile, pts) {
   const url = OSRM[profile] + pts.map(p => `${p[1].toFixed(6)},${p[0].toFixed(6)}`).join(';') + '?overview=full&geometries=geojson';
@@ -228,13 +226,18 @@ const { segs, oldGeo, gb, ge } = readPage(html);
 groupSegs(segs);
 const geo = {}, report = [];
 let ok = 0, kept = 0, none = 0;
-for (const [k, { g, day }] of segs) {
+const FORCE = process.env.FORCE === '1';
+// 先做快的（步行、公路），再查公共交通线路
+const todo = [...segs].sort((x, y) => (x[1].g.osm ? 1 : 0) - (y[1].g.osm ? 1 : 0));
+for (const [k, { g, day }] of todo) {
   let res = null, how = '';
+  if (!g.osm && oldGeo[k] && !FORCE) { geo[k] = oldGeo[k]; kept++; continue; }
   if (Date.now() - T0 > BUDGET_MS) res = { reject: '时间预算用完，下次再取' };
   else try {
     if (g.osm) {
       try { res = await transitShape(g); } catch (e) { how = `（线路查询失败：${e.message}）`; }
-      if (!res && /^(bus|tram|lrt)$/.test(g.mode)) { res = await roadShape(g, 'car'); if (res && res.part) how += '（线路没找到，按公路）'; }
+      // 查不到线路：有旧形状就沿用，没有的巴士 / 电车 / 轻轨按公路画
+      if (!res && !oldGeo[k] && /^(bus|tram|lrt)$/.test(g.mode)) { res = await roadShape(g, 'car'); if (res && res.part) how += '（线路没找到，按公路）'; }
     } else if (g.mode === 'walk') res = await roadShape(g, 'foot');
     else if (/^(taxi|car|tour|bus|tram|lrt)$/.test(g.mode)) res = await roadShape(g, 'car');
   } catch (e) { res = { reject: '请求失败：' + e.message }; }
@@ -251,10 +254,11 @@ for (const [k, { g, day }] of segs) {
   }
   console.log(report[report.length - 1]);
 }
-console.log(`\n共 ${segs.size} 段：新取到 ${ok}，沿用旧的 ${kept}，没有 ${none}。`);
+console.log(`\n共 ${segs.size} 段：新取到 ${ok}，沿用已有的 ${kept}，没有 ${none}。`);
 
 fs.writeFileSync(FILE, writeGeo(html, gb, ge, geo));
-if (!ok && !kept) { console.error('一段都没取到，可能是网络问题。'); process.exit(1); }
+if (!ok && !kept) { console.error('一段都没取到，可能是网络问题。'); process.exitCode = 1; }
 }
 
-if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) main();
+// 直接运行时：跑完就退出（不等被取消的请求收尾）
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) main().then(() => process.exit(process.exitCode || 0), e => { console.error(e); process.exit(1); });
