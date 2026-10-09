@@ -49,7 +49,7 @@ export function readPage(html) {
   const places = new Map();
   const add = s => { if (s && s.img) { const c = [].concat(s.img); if (!places.has(c[0])) places.set(c[0], { cands: c.slice(), name: s.n }); } };
   for (const d of ctx.__.DAYS) {
-    [].concat(d.stops || [], d.tail || [], ...(d.options || []).map(o => o.stops)).forEach(add);
+    [].concat(d.head || [], d.stops || [], d.tail || [], ...(d.options || []).map(o => o.stops)).forEach(add);
     if (typeof d.start === 'object') add(d.start);
     if (typeof d.end === 'object') add(d.end);
   }

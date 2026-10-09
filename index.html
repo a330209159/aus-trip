@@ -355,7 +355,7 @@ function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(c){retur
 /* @data-begin（tools/fetch-routes.mjs 会读取这段，到 @data-end 为止） */
 /* ---------- 城市 ---------- */
 var CITY = {
-  syd:{name:'悉尼', en:'Sydney', baseQ:'Museum Station Sydney', tz:11, sun:[-33.8688,151.2093], base:[-33.8775,151.2095], anchor:{n:'Circular Quay', ll:[-33.8614,151.2109]}, cin:'2026-10-24', cout:'2026-10-27', nights:3},
+  syd:{name:'悉尼', en:'Sydney', baseQ:'25 Woodlands Rd, Ashbury NSW 2193', tz:11, sun:[-33.8688,151.2093], base:[-33.8967,151.1218], anchor:{n:'Ashfield 站', ll:[-33.8877,151.1258]}, cin:'2026-10-24', cout:'2026-10-27', nights:3},
   mel:{name:'墨尔本', en:'Melbourne', baseQ:'Melbourne Central', tz:11, sun:[-37.8136,144.9631], base:[-37.8120,144.9620], anchor:{n:'Southern Cross 站', ll:[-37.8183,144.9526]}, cin:'2026-10-27', cout:'2026-10-31', nights:4},
   gc:{name:'黄金海岸', en:'Gold Coast', baseQ:'Cavill Avenue Surfers Paradise', tz:10, sun:[-28.0167,153.4000], base:[-28.0040,153.4300], anchor:{n:'Cavill Ave 海滩', ll:[-28.0024,153.4315]}, cin:'2026-10-31', cout:'2026-11-02', nights:2},
   bne:{name:'布里斯班', en:'Brisbane', baseQ:'Roma Street Station Brisbane', tz:10, sun:[-27.4698,153.0251], base:[-27.4690,153.0215], anchor:{n:'Roma St 站', ll:[-27.4659,153.0193]}, cin:'2026-11-02', cout:'2026-11-03', nights:1}
@@ -375,10 +375,7 @@ var REGION = {
    当天从住处出发 / 回住处、「酒店放行李 / 取行李」这些点也会自动挪到它的位置。区域备选（areaOnly）不能标。 */
 var HOTELS = {
   syd:[
-    {n:'Song Hotel Sydney', booked:false, area:'Hyde Park 南端', ll:[-33.8770,151.2112], tags:['双床房 Deluxe Twin','估价 A$170–250'], note:'参考攻略同款位置，去 Museum 站和唐人街都近。', q:'Song Hotel Sydney'},
-    {n:'ibis Sydney World Square', booked:false, s:'ibis World Square', area:'Town Hall · 唐人街', ll:[-33.8778,151.2077], tags:['双床房','估价 A$180–250'], note:'连锁酒店，有前台，退房后寄存行李方便（订前确认）。', q:'ibis Sydney World Square'},
-    {n:'Great Southern Hotel', booked:false, area:'Central 站旁', ll:[-33.8807,151.2047], tags:['双床房','估价 A$160–220'], note:'偏经济，离 Central 站近，去机场方便。', q:'Great Southern Hotel Sydney'},
-    {n:'North Sydney', area:'区域备选', ll:[-33.8395,151.2075], areaOnly:true, tags:['周末可能更便宜'], note:'10/24、10/25 是周末，商务区酒店可以和市中心比价；去 Bondi 要多换一次车。', q:'hotels North Sydney'}
+    {n:'Ashbury 民宿', booked:true, area:'25 Woodlands Rd, Ashbury', ll:[-33.8967,151.1218], tags:['两间房'], note:'房东同意 10/24 上午先放行李、10/27 退房后行李留到下午。离 Ashfield 站步行约 20 分钟，附近 King St 有 491 路到车站。', q:'25 Woodlands Rd, Ashbury NSW 2193'}
   ],
   mel:[
     {n:'ibis Melbourne Hotel and Apartments', booked:false, s:'ibis Melbourne', area:'Therry St · 近 QVM', ll:[-37.8082,144.9606], tags:['两卧公寓','估价 A$260 起'], note:'两卧公寓一间 Queen 床、一间两张单人床，适合一男一女各住一间。', q:'ibis Melbourne Hotel and Apartments'},
@@ -401,15 +398,15 @@ var HOTELS = {
 };
 
 /* ---------- 渡轮 / 旅行团途经点（示意） ---------- */
-var FERRY_MANLY = [[-33.8555,151.2140],[-33.8545,151.2330],[-33.8505,151.2560],[-33.8390,151.2700],[-33.8180,151.2780],[-33.8060,151.2835]];
 var FERRY_WATSONS = [[-33.8555,151.2140],[-33.8550,151.2255],[-33.8545,151.2520],[-33.8500,151.2700],[-33.8455,151.2790]];
 var CITYCAT = [[-27.4745,153.0185],[-27.4785,153.0225],[-27.4800,153.0285],[-27.4745,153.0325],[-27.4680,153.0315],[-27.4640,153.0345]];
 
 /* ---------- 车站和码头（交通段的上下车点，坐标 [纬度, 经度]） ---------- */
 var STN = {
-  sydIntl:[-33.9350,151.1664], sydDom:[-33.9334,151.1810], museum:[-33.8764,151.2097], cqStn:[-33.8613,151.2107],
-  cqW2:[-33.8604,151.2113], cqW3:[-33.8606,151.2121], barangarooM:[-33.8630,151.2032], gadigal:[-33.8745,151.2078],
-  museumBus:[-33.8762,151.2099], coogeeBus:[-33.9205,151.2565], bondiBus:[-33.8906,151.2750], bondiJn:[-33.8915,151.2477], townHall:[-33.8731,151.2068],
+  sydIntl:[-33.9350,151.1664], sydDom:[-33.9334,151.1810], museum:[-33.8764,151.2097], cqStn:[-33.8613,151.2107], cqW2:[-33.8604,151.2113],
+  townHall:[-33.8731,151.2068], wynyard:[-33.8660,151.2058], central:[-33.8840,151.2063], ashfield:[-33.8877,151.1258],
+  museumBus:[-33.8762,151.2099], coogeeBus:[-33.9205,151.2565], bondi380:[-33.8906,151.2747], gap380:[-33.8473,151.2861],
+  kiama:[-34.6726,150.8545], gerringong:[-34.7447,150.8177],
   melCentral:[-37.8100,144.9646], latrobeEliz:[-37.8095,144.9612], latrobeSwan:[-37.8101,144.9640], nicholsonVic:[-37.8089,144.9733], nicholsonJohnston:[-37.7985,144.9738],
   acland96:[-37.8679,144.9792], lunaPark:[-37.8680,144.9772], fitzroyEsp:[-37.8622,144.9747],
   spencerLatrobe:[-37.8135,144.9516], spencerBourke:[-37.8167,144.9538], swanstonBourke:[-37.8136,144.9658],
@@ -423,23 +420,36 @@ var STN = {
    字段：mode 方式（walk 步行 / train 火车 / metro 地铁 / tram 电车 / lrt 轻轨 / bus 巴士 / ferry 渡轮 / taxi 打车），
    line 线路号，dir 方向，on / off 上车 / 下车站，a / b 上车 / 下车点坐标，time 时间，freq 班次，note 补充，
    osm 让 tools/fetch-routes.mjs 去 OpenStreetMap 找这条线的走向。线路号和班次是 2026 年 10 月查的。 */
+// 悉尼住 Ashbury：每天先走到 Ashfield 站（或坐 491 路），坐 T2 / T3 进城；回来反过来
+var ASHFIELD_WALK = {mode:'walk', b:STN.ashfield, time:'步行约 20 分钟到 Ashfield 站', note:'不想走可以在 King St（Trevenar St 路口）坐 491 路往 Five Dock，几分钟到 Ashfield 站。'};
+var HOME_WALK = {mode:'walk', time:'从 Ashfield 站步行约 20 分钟回住处', note:'不想走可以坐 491 路往 Hurstville，在 King St（Trevenar St 路口）下车，或者叫 Uber。'};
+function t2In(off, b, time){ return {mode:'train', line:'T2/T3', dir:'往 City', on:'Ashfield 站', off:off, a:STN.ashfield, b:b, time:time, freq:'T2、T3 都进城，班次很密', note:'进城后绕 City Circle：Central、Town Hall、Wynyard、Circular Quay、St James、Museum 都停。', osm:{route:'train', ref:'T2'}}; }
+function t2Out(on, a, time){ return {mode:'train', line:'T2/T3', dir:'出城 · 往 Parramatta、Leppington 或 Liverpool', on:on, off:'Ashfield 站', a:a, b:STN.ashfield, time:time, note:'看站台屏幕，停 Ashfield 的车都行。', osm:{route:'train', ref:'T2'}}; }
+var BUS373 = {mode:'bus', line:'373', dir:'往 Coogee', on:'Museum Station（Elizabeth St）', off:'Coogee Beach', a:STN.museumBus, b:STN.coogeeBus, time:'约 35–40 分钟', freq:'白天约每 10 分钟', note:'上车、下车都要刷卡。', osm:{route:'bus', ref:'373'}};
+var SCO_KIAMA = {mode:'train', line:'SCO', dir:'South Coast Line · 往 Kiama', on:'Central 站（城际车站台）', off:'Kiama 站', a:STN.central, b:STN.kiama, time:'约 2 小时–2 小时 20 分', freq:'周末约每小时一班', note:'有的车只到 Wollongong 或 Dapto，看清车头写 Kiama。往南坐左边能看到海。', osm:{route:'train', ref:'SCO'}};
+
 var TX = {
   // 悉尼：火车、地铁、巴士、渡轮都刷银行卡或手机（Opal）
   sydIntlDom:{mode:'train', line:'T8', dir:'机场线 · 往 City', on:'International 站', off:'Domestic 站', a:STN.sydIntl, b:STN.sydDom, time:'约 2 分钟（1 站）', freq:'约每 10 分钟', note:'只坐 1 站也要付机场站点费。', osm:{route:'train', ref:'T8'}},
-  sydDomCity:{mode:'train', line:'T8', dir:'往 City', on:'Domestic 站', off:'Museum 站', a:STN.sydDom, b:STN.museum, time:'约 15 分钟', freq:'约每 10 分钟', note:'过 Central 后下一站就是 Museum。出机场站加收站点费。', osm:{route:'train', ref:'T8'}},
-  sydMuseumCQ:{mode:'train', line:'T2/T3/T8', dir:'City Circle · 往 St James', on:'Museum 站 1 号站台', off:'Circular Quay 站', a:STN.museum, b:STN.cqStn, time:'约 5 分钟（2 站）', note:'1 号站台来的车都绕 City Circle，任意一班都行。', osm:{route:'train', ref:'T8'}},
-  sydCQMuseum:{mode:'train', line:'T2/T3/T8', dir:'City Circle · 往 St James', on:'Circular Quay 站 2 号站台', off:'Museum 站', a:STN.cqStn, b:STN.museum, time:'约 5 分钟（2 站）', osm:{route:'train', ref:'T8'}},
-  sydMuseumDom:{mode:'train', line:'T8', dir:'往机场', on:'Museum 站 2 号站台', off:'Domestic 站', a:STN.museum, b:STN.sydDom, time:'约 15 分钟', freq:'约每 10 分钟', note:'看清车头写经机场（via Airport），有的 T8 不经过机场。出机场站加收站点费。', osm:{route:'train', ref:'T8'}},
-  watsons:{mode:'ferry', line:'F9', dir:'往 Watsons Bay', on:'Circular Quay 2 号码头', off:'Watsons Bay', a:STN.cqW2, time:'约 25 分钟', note:'部分班次经停 Double Bay、Rose Bay。', osm:{route:'ferry', ref:'F9'}},
-  barangarooHome:[
-    {mode:'walk', time:'步行约 5 分钟到地铁站'},
-    {mode:'metro', line:'M1', dir:'往 Sydenham', on:'Barangaroo 站', off:'Gadigal 站', a:STN.barangarooM, b:STN.gadigal, time:'约 5 分钟（2 站）', note:'Sydney Metro，刷卡和火车一样。Gadigal 站在 Pitt St，出站步行约 8 分钟到 Hyde Park 南端。', osm:{route:'subway|train', ref:'M1'}}],
-  coogee:{mode:'bus', line:'373', dir:'往 Coogee', on:'Museum Station（Elizabeth St）', off:'Coogee Beach', a:STN.museumBus, b:STN.coogeeBus, time:'约 35–40 分钟', freq:'白天约每 10 分钟', note:'上车、下车都要刷卡。', osm:{route:'bus', ref:'373'}},
-  bondiHome:[
-    {mode:'bus', line:'333', dir:'往 City（经 Bondi Junction）', on:'Bondi Beach（Campbell Pde）', off:'Bondi Junction', a:STN.bondiBus, b:STN.bondiJn, time:'约 10 分钟', freq:'很频繁', note:'380、381 也到 Bondi Junction。333 本身也直达城里，不想换车可以一直坐。', osm:{route:'bus', ref:'333'}},
-    {mode:'train', line:'T4', dir:'往 City', on:'Bondi Junction 站', off:'Town Hall 站', a:STN.bondiJn, b:STN.townHall, time:'约 15 分钟', note:'出站步行约 10 分钟到 Hyde Park 南端。', osm:{route:'train', ref:'T4'}}],
-  manly:{mode:'ferry', line:'F1', dir:'往 Manly', on:'Circular Quay 3 号码头', off:'Manly', a:STN.cqW3, time:'约 30 分钟', note:'另有私营的 Manly Fast Ferry，更快但更贵。', osm:{route:'ferry', ref:'F1'}},
-  manlyBack:{mode:'ferry', line:'F1', dir:'往 Circular Quay', on:'Manly', off:'Circular Quay 3 号码头', b:STN.cqW3, time:'约 30 分钟', osm:{route:'ferry', ref:'F1'}},
+  airportHome:{mode:'taxi', line:'打车', on:'国内航站楼 T2', off:'Ashbury 住处', time:'约 20 分钟', note:'两个人带行李，打车或 Uber 最省事；坐火车要在 Central 换车，还要付机场站点费。'},
+  homeAirport:{mode:'taxi', line:'打车', on:'Ashbury 住处', off:'国内航站楼 T2', time:'约 20 分钟', note:'也可以叫 Uber。'},
+  homeMuseum:[ASHFIELD_WALK, t2In('Museum 站', STN.museum, '约 20–25 分钟')],
+  homeTownHall:[ASHFIELD_WALK, t2In('Town Hall 站', STN.townHall, '约 20 分钟')],
+  homeCoogee:[ASHFIELD_WALK, t2In('Museum 站', STN.museum, '约 20–25 分钟'), BUS373],
+  wynyardHome:[{mode:'walk', b:STN.wynyard, time:'步行约 10 分钟到 Wynyard 站'}, t2Out('Wynyard 站', STN.wynyard, '约 25 分钟'), HOME_WALK],
+  centralHome:[{mode:'walk', b:STN.central, time:'步行约 10 分钟到 Central 站'}, t2Out('Central 站', STN.central, '约 16 分钟'), HOME_WALK],
+  homeGerringong:[ASHFIELD_WALK, t2In('Central 站', STN.central, '约 16 分钟'), SCO_KIAMA,
+    {mode:'train', line:'SCO', dir:'往 Bomaderry', on:'Kiama 站', off:'Gerringong 站', a:STN.kiama, b:STN.gerringong, time:'约 10 分钟（1 站）', freq:'周末约 2 小时一班', note:'Kiama 往南是柴油小火车，一般和悉尼来的车在 Kiama 对接；接不上就打车，约 15 分钟。', osm:{route:'train', ref:'SCO'}},
+    {mode:'walk', time:'步行约 25 分钟到岬角', note:'穿过 Gerringong 镇上，顺路买午饭。'}],
+  gerringongKiama:[{mode:'walk', b:STN.gerringong, time:'步行约 30 分钟回 Gerringong 站'},
+    {mode:'train', line:'SCO', dir:'往 Kiama', on:'Gerringong 站', off:'Kiama 站', a:STN.gerringong, b:STN.kiama, time:'约 10 分钟（1 站）', freq:'周末约 2 小时一班', note:'先查好时间；不想等就打车，约 15 分钟。', osm:{route:'train', ref:'SCO'}},
+    {mode:'walk', time:'步行约 15 分钟到喷水洞'}],
+  kiamaHome:[{mode:'walk', b:STN.kiama, time:'步行约 15 分钟到 Kiama 站'},
+    {mode:'train', line:'SCO', dir:'往 Sydney', on:'Kiama 站', off:'Central 站', a:STN.kiama, b:STN.central, time:'约 2 小时–2 小时 20 分', freq:'周末约每小时一班', note:'悉尼方向的车从 Kiama 发车，上车就有座。', osm:{route:'train', ref:'SCO'}},
+    t2Out('Central 站', STN.central, '约 16 分钟'), HOME_WALK],
+  bondiGap:{mode:'bus', line:'380', dir:'往 Watsons Bay', on:'Bondi Beach（Campbell Pde，C 站台）', off:'Gap Park（Old South Head Rd）', a:STN.bondi380, b:STN.gap380, time:'约 20 分钟', note:'沿海边开，坐右边看海。上下车都要刷卡。', osm:{route:'bus', ref:'380'}},
+  watsonsHome:[{mode:'ferry', line:'F9', dir:'往 Circular Quay', on:'Watsons Bay', off:'Circular Quay 2 号码头', b:STN.cqW2, via:FERRY_WATSONS.slice().reverse(), time:'约 25 分钟', note:'部分班次经停 Rose Bay、Double Bay。晚上班次少，先查好末班；赶不上就在 Trip Planner 查巴士回城。', osm:{route:'ferry', ref:'F9'}},
+    t2Out('Circular Quay 站', STN.cqStn, '约 30 分钟'), HOME_WALK],
 
   // 墨尔本：市中心免费电车区不用刷卡，出了区要刷 myki 或银行卡
   reb:[
@@ -496,71 +506,79 @@ var TX = {
 /* ---------- 每日行程 ---------- */
 var DAYS = [
  {id:'d1024', date:'2026-10-24', wd:'周六', city:'syd', night:'syd', tag:'悉尼 · 第 1 天', title:'悉尼海港',
-  lede:'朋友刚下长途航班，第一天沿着海港慢慢走，不赶景点。',
+  lede:'朋友刚下长途航班。先去住处放行李，再从海德公园一路走到海港边，看完日落回去。',
   before:[
     {who:'朋友', code:'东航', dep:'TNA 10/23 13:05', arr:'SYD T1 09:00', note:'武汉转机 4h35m'},
     {who:'我', code:'JQ403', dep:'OOL 07:10', arr:'SYD 09:40', note:'到国内航站楼'}],
   stops:[
     {n:'悉尼机场 T1 国际', en:'Sydney Airport T1', ll:[-33.9366,151.1658], t:'09:00', kind:'air', note:'朋友入境、取行李，大约 1 小时。', q:'Sydney International Airport T1', img:'Sydney Airport'},
     {n:'国内航站楼 T2', en:'Domestic Terminal T2', ll:[-33.9331,151.1796], t:'09:40', kind:'air', mode:'train', tx:TX.sydIntlDom, note:'我落地。两个航站楼之间坐机场线火车 1 站，或坐航站楼摆渡巴士会合。', q:'Sydney Airport T2 Domestic', img:'Sydney Airport'},
-    {n:'酒店放行李', en:'Hotel · Hyde Park 一带', ll:[-33.8775,151.2095], t:'约 10:30', kind:'stay', mode:'train', tx:TX.sydDomCity, note:'机场线火车到 Museum 或 Central 站约 15 分钟；机场两站进出会加收站点费。', q:'Museum Station Sydney'},
-    {n:'环形码头', en:'Circular Quay', ll:[-33.8614,151.2109], t:'约 11:30', mode:'train', tx:TX.sydMuseumCQ, note:'火车 2 站，或穿过 Hyde Park 步行约 25 分钟。', q:'Circular Quay Sydney', img:'Circular Quay'},
+    {n:'住处放行李', en:'Ashbury', ll:[-33.8967,151.1218], t:'约 10:30', kind:'stay', mode:'taxi', tx:TX.airportHome, note:'房东同意上午先放行李。'},
+    {n:'海德公园', en:'Hyde Park', ll:[-33.8731,151.2111], t:'约 11:45', mode:'train', tx:TX.homeMuseum, note:'Museum 站出来就是公园南端，往北穿过公园到 Archibald 喷泉。', q:'Hyde Park Sydney', img:'Hyde Park, Sydney'},
+    {n:'圣玛丽大教堂', en:"St Mary's Cathedral", ll:[-33.8712,151.2133], q:"St Mary's Cathedral Sydney", img:"St Mary's Cathedral, Sydney"},
+    {n:'麦考利夫人椅', en:"Mrs Macquarie's Chair", ll:[-33.8597,151.2228], note:'穿过 The Domain 过去。歌剧院和海港大桥同框的经典机位；累了可以跳过。', q:"Mrs Macquarie's Chair Sydney", img:"Mrs Macquarie's Chair"},
+    {n:'皇家植物园', en:'Royal Botanic Garden', ll:[-33.8642,151.2166], note:'沿 Farm Cove 往歌剧院方向走，累了就在草地上歇一会。', q:'Royal Botanic Garden Sydney', img:'Royal Botanic Garden, Sydney'},
     {n:'悉尼歌剧院', en:'Sydney Opera House', ll:[-33.8568,151.2153], note:'外观、大台阶，以及和海港大桥同框的角度。想进内部可以订导览。', q:'Sydney Opera House', img:'Sydney Opera House'},
-    {n:'皇家植物园', en:'Royal Botanic Garden', ll:[-33.8642,151.2166], note:'午后慢逛，累了就在草地上歇一会。', q:'Royal Botanic Garden Sydney', img:'Royal Botanic Garden, Sydney'},
-    {n:'麦考利夫人椅', en:"Mrs Macquarie's Chair", ll:[-33.8597,151.2228], note:'歌剧院和海港大桥同框的经典机位。', q:"Mrs Macquarie's Chair Sydney", img:"Mrs Macquarie's Chair"},
+    {n:'环形码头', en:'Circular Quay', ll:[-33.8614,151.2109], q:'Circular Quay Sydney', img:'Circular Quay'},
     {n:'岩石区', en:'The Rocks', ll:[-33.8593,151.2085], note:'老街区，周末有 The Rocks Markets。晚饭可以在这里解决。', q:'The Rocks Sydney', img:['The Rocks, Sydney', 'The Rocks, New South Wales']},
     {n:'天文台山', en:'Observatory Hill', ll:[-33.8590,151.2045], sunset:true, note:'看海港大桥和日落。', q:'Observatory Hill Sydney', img:['Observatory Hill, Sydney', 'Sydney Observatory']},
-    {n:'屈臣氏湾（可选）', en:'Watsons Bay', ll:[-33.8432,151.2810], opt:true, mode:'ferry', tx:TX.watsons, from:3, via:FERRY_WATSONS, note:'体力特别好再考虑。从 Circular Quay 坐渡轮约 20–25 分钟，第一天不强求。', q:'Watsons Bay Wharf', img:['Watsons Bay', 'Watsons Bay, New South Wales']}
+    {n:'Barangaroo（可选）', en:'Barangaroo', ll:[-33.8630,151.2018], opt:true, from:10, note:'从天文台山往下走约 10 分钟，海边餐厅多。体力好再去，吃完从 Wynyard 站坐车回去。', q:'Barangaroo Sydney', img:['Barangaroo Reserve', 'Barangaroo']}
   ],
-  gm:{mode:'walking', list:[3,4,5,6,7,8]},
-  tips:['悉尼的火车、渡轮、巴士都可以直接刷信用卡或手机进出站，不用专门买卡。','第一天别暴走，晚饭后早点回酒店倒时差。']},
-
- {id:'d1025', date:'2026-10-25', wd:'周日', city:'syd', night:'syd', tag:'悉尼 · 第 2 天', title:'CBD 城市漫步',
-  lede:'从唐人街一路往北走到海边，中间穿插两个馆，各控制在 1–1.5 小时。',
-  start:true, end:{mode:'train', tx:TX.barangarooHome},
-  stops:[
-    {n:'唐人街', en:'Chinatown · Dixon St', ll:[-33.8786,151.2041], t:'10:00', note:'早午饭可以在这里吃。', q:'Dixon Street Chinatown Sydney', img:'Chinatown, Sydney'},
-    {n:'维多利亚女王大厦 · 市政厅', en:'QVB · Town Hall', ll:[-33.8718,151.2067], q:'Queen Victoria Building Sydney', img:'Queen Victoria Building'},
-    {n:'海德公园', en:'Hyde Park', ll:[-33.8731,151.2111], q:'Hyde Park Sydney', img:'Hyde Park, Sydney'},
-    {n:'圣玛丽大教堂', en:"St Mary's Cathedral", ll:[-33.8712,151.2133], q:"St Mary's Cathedral Sydney", img:"St Mary's Cathedral, Sydney"},
-    {n:'澳大利亚博物馆', en:'Australian Museum', ll:[-33.8743,151.2131], note:'控制在 1–1.5 小时。', q:'Australian Museum Sydney', img:'Australian Museum'},
-    {n:'新州图书馆', en:'State Library of NSW', ll:[-33.8661,151.2131], note:'Mitchell 阅览室很出片。', q:'State Library of NSW', img:'State Library of New South Wales'},
-    {n:'新州美术馆', en:'Art Gallery of NSW', ll:[-33.8688,151.2174], note:'常设展免费。博物馆和美术馆不必都深度逛。', q:'Art Gallery of New South Wales', img:'Art Gallery of New South Wales'},
-    {n:'Barangaroo', en:'Barangaroo', ll:[-33.8630,151.2018], note:'海边散步、晚饭。从美术馆过去步行约 30 分钟，也可以坐火车到 Wynyard。', q:'Barangaroo Sydney', img:['Barangaroo Reserve', 'Barangaroo']}
+  end:{mode:'train', tx:TX.wynyardHome},
+  gm:{mode:'walking', list:[3,4,5,6,7,8,9,10]},
+  tips:['悉尼的火车、渡轮、巴士都可以直接刷信用卡或手机进出站，不用专门买卡。','第一天别暴走，晚饭后早点回去倒时差。','从 Ashfield 站走回住处约 20 分钟；不想走就坐 491 路，或者叫 Uber。']},
+ {id:'d1025', date:'2026-10-25', wd:'周日', city:'syd', region:'kiama', night:'syd', tag:'悉尼 · 南海岸一日', title:'Gerringong 和 Kiama',
+  lede:'坐火车去南海岸：上午在 Gerringong 岬角的草坡上看 Werri Beach，下午回到 Kiama 看喷水洞。下午走步道还是坐车，到时候看天气和体力。',
+  optLabel:'下午怎么回 Kiama：',
+  start:true, end:{mode:'train', tx:TX.kiamaHome},
+  head:[
+    {n:'Gerringong 岬角', en:'Gerringong Headland', ll:[-34.7452,150.8360], t:'约 11:00', mode:'train', tx:TX.homeGerringong, note:'就是那张躺在草坡上看海的照片的位置，往北看是 Werri Beach。午饭在车站和岬角之间的镇上买，带到草坡上吃。', q:'Gerringong Headland', img:['search:Gerringong headland Werri Beach', 'Gerringong, New South Wales']},
+    {n:'Werri Beach', en:'Werri Beach', ll:[-34.7360,150.8341], note:'沿沙滩往北走，北头是 Werri Lagoon 的出海口。', q:'Werri Beach', img:['search:intitle:"Werri Beach"', 'Werri Beach']}
   ],
-  gm:{mode:'walking', list:[0,1,2,3,4,5,6,7]},
-  tips:['周日不少商店营业时间较短，想购物尽量放在白天。']},
-
- {id:'d1026', date:'2026-10-26', wd:'周一', city:'syd', night:'syd', tag:'悉尼 · 第 3 天', title:'Coogee 到 Bondi 海岸步道',
-  lede:'约 6 km 的悬崖步道，一路经过五个海滩。',
-  start:true, end:{mode:'bus', tx:TX.bondiHome},
+  options:[
+    {label:'徒步版', stops:[
+      {n:'Loves Bay', en:'Kiama Coast Walk', ll:[-34.6978,150.8541], t:'约 14:00', via:[[-34.72856,150.83889],[-34.72601,150.84236],[-34.72207,150.84648],[-34.71798,150.84598],[-34.71398,150.85113],[-34.70997,150.85011],[-34.70603,150.85167],[-34.70170,150.85282]], note:'Kiama Coast Walk 南段：从 Werri Lagoon 出海口往北，一路是海边悬崖和牧场草坡，约 2 小时。下过大雨潟湖口可能过不去，就改走轻松版。', q:'Loves Bay Kiama Heights', img:['search:intitle:"Kiama Coast Walk"', 'search:Kiama coast walk', 'search:Loves Bay Kiama']},
+      {n:'小喷水洞', en:'Little Blowhole', ll:[-34.6867,150.8592], via:[[-34.69399,150.85705],[-34.68985,150.85363]], note:'比 Kiama 喷水洞小，但浪大时更常喷。走到这里累了就叫车去 Kiama，约 10 分钟。', q:'Little Blowhole Kiama', img:['search:intitle:"Little Blowhole" Kiama', 'Kiama, New South Wales']},
+      {n:'Kiama 喷水洞 · 灯塔', en:'Kiama Blowhole · Lighthouse', ll:[-34.6719,150.8632], t:'约 16:00', via:[[-34.68167,150.85523],[-34.67797,150.85546],[-34.67398,150.85856]], note:'这段经过 Kendalls Beach，后半段走镇上的路。喷水要看浪，等几分钟一般能看到。', q:'Kiama Blowhole', img:['search:intitle:"Kiama Blowhole"', 'Kiama, New South Wales']}],
+     gm:{mode:'walking', list:[0,1,2,3,4]}},
+    {label:'轻松版', stops:[
+      {n:'Kiama 喷水洞 · 灯塔', en:'Kiama Blowhole · Lighthouse', ll:[-34.6719,150.8632], t:'约 14:00', mode:'train', tx:TX.gerringongKiama, note:'喷水要看浪，等几分钟一般能看到。', q:'Kiama Blowhole', img:['search:intitle:"Kiama Blowhole"', 'Kiama, New South Wales']},
+      {n:'Kiama 港口', en:'Kiama Harbour', ll:[-34.6693,150.8586], note:'港口边走走，在 Terralong St 一带喝咖啡，再去车站。', q:'Kiama Harbour', img:['search:intitle:"Kiama Harbour"', 'Kiama, New South Wales']}],
+     gm:{mode:'walking', list:[2,3]}}
+  ],
+  tips:['周日一天公交最多扣约 A$9.65（2025 年 7 月起的价格），这一天怎么坐都不会超。','周末悉尼火车常有维修停运。出发前几天在 Transport for NSW 的 Trip Planner 查 10/25 的 South Coast Line，停运就和 10/26 对调。','悉尼开来的火车到 Kiama 为止，往南去 Gerringong 要换柴油小火车，周末大约 2 小时一班，赶不上就打车。','徒步版全天走路约 20 km（含进出 Ashfield 站），轻松版约 12 km。南风大或下雨就走轻松版。','带水、防晒和外套，海边风大。']},
+ {id:'d1026', date:'2026-10-26', wd:'周一', city:'syd', night:'syd', tag:'悉尼 · 第 3 天', title:'Bondi 海岸步道 + Watsons Bay',
+  lede:'上午走 Coogee 到 Bondi 的悬崖步道，下午坐 380 路沿海去 Watsons Bay，傍晚坐渡轮回城。',
+  start:true, end:{mode:'ferry', tx:TX.watsonsHome},
   stops:[
-    {n:'库吉海滩', en:'Coogee Beach', ll:[-33.9205,151.2577], t:'约 09:30', mode:'bus', tx:TX.coogee, note:'从市区坐巴士约 30–40 分钟，步道从这里往北走。', q:'Coogee Beach Sydney', img:['Coogee Beach', 'Coogee, New South Wales']},
+    {n:'库吉海滩', en:'Coogee Beach', ll:[-33.9205,151.2577], t:'约 09:30', mode:'bus', tx:TX.homeCoogee, note:'步道从这里往北走。', q:'Coogee Beach Sydney', img:['Coogee Beach', 'Coogee, New South Wales']},
     {n:'克洛夫利', en:'Clovelly Beach', ll:[-33.9140,151.2680], q:'Clovelly Beach Sydney', img:['Clovelly Beach', 'Clovelly, New South Wales']},
     {n:'勃朗特海滩', en:'Bronte Beach', ll:[-33.9036,151.2683], q:'Bronte Beach Sydney', img:['Bronte Beach', 'Bronte, New South Wales']},
-    {n:'塔玛拉玛', en:'Tamarama Beach', ll:[-33.8990,151.2710], note:'Sculpture by the Sea 如果今年照常举办，展品主要在 Tamarama 到 Bondi 这一段。', q:'Tamarama Beach Sydney', img:['Tamarama Beach', 'Tamarama, New South Wales']},
-    {n:'邦迪海滩', en:'Bondi Beach', ll:[-33.8908,151.2743], note:'Bondi Icebergs 泳池是经典机位。回程坐巴士到 Bondi Junction 换火车。', q:'Bondi Beach Sydney', img:'Bondi Beach'}
+    {n:'塔玛拉玛', en:'Tamarama Beach', ll:[-33.8990,151.2710], note:'Sculpture by the Sea 今年 10/16–11/2 举办，展品在 Tamarama 到 Bondi 这一段，周一比周末人少。', q:'Tamarama Beach Sydney', img:['Tamarama Beach', 'Tamarama, New South Wales']},
+    {n:'邦迪海滩', en:'Bondi Beach', ll:[-33.8908,151.2743], t:'约 12:30', note:'Bondi Icebergs 泳池是经典机位。午饭在这里吃。', q:'Bondi Beach Sydney', img:'Bondi Beach'},
+    {n:'悬崖 The Gap', en:'The Gap · Gap Park', ll:[-33.8457,151.2852], mode:'bus', tx:TX.bondiGap, note:'南岬的海边悬崖，看外海。', q:'The Gap Watsons Bay', img:['search:intitle:"The Gap" Watsons Bay', 'Watsons Bay']},
+    {n:'Camp Cove', en:'Camp Cove', ll:[-33.8397,151.2790], note:'安静的小海湾，水很平。往北沿 South Head 步道可以走到红白条纹的灯塔，来回约 1 小时，可选。', q:'Camp Cove Beach', img:['Camp Cove', 'search:intitle:"Camp Cove"']},
+    {n:'屈臣氏湾码头', en:'Watsons Bay Wharf', ll:[-33.8435,151.2810], t:'约 17:30', note:'码头边吃 fish & chips。天气好可以等日落，晚上渡轮班次少，先查好末班；赶不上可以坐巴士回城。', q:'Watsons Bay Wharf', img:['Watsons Bay', 'Watsons Bay, New South Wales']}
   ],
   gm:{mode:'walking', list:[0,1,2,3,4]},
-  tips:['含拍照大约 2.5–3 小时，台阶多，穿运动鞋，带水和防晒。','上午走比较凉快，光线也顺。']},
-
- {id:'d1027', date:'2026-10-27', wd:'周二', city:'syd', night:'mel', tag:'悉尼 → 墨尔本', title:'Manly 半日 + 晚班机',
-  lede:'早上退房寄存行李，坐渡轮去 Manly，下午回来取行李飞墨尔本。',
+  tips:['步道含拍照大约 2.5–3 小时，台阶多，穿运动鞋，带水和防晒。','上午走比较凉快，光线也顺。','380 路沿海边开，往 Watsons Bay 方向坐右边能看到海。']},
+ {id:'d1027', date:'2026-10-27', wd:'周二', city:'syd', night:'mel', tag:'悉尼 → 墨尔本', title:'CBD 半日 + 晚班机',
+  lede:'退房后行李先留在住处，上午逛 CBD，下午回去取行李，打车去机场。',
   start:true,
   stops:[
-    {n:'环形码头', en:'Circular Quay', ll:[-33.8605,151.2112], t:'约 09:30', mode:'train', tx:TX.sydMuseumCQ, q:'Circular Quay Sydney', img:'Circular Quay'},
-    {n:'曼利码头', en:'Manly Wharf', ll:[-33.8000,151.2845], mode:'ferry', tx:TX.manly, via:FERRY_MANLY, note:'渡轮约 30 分钟，坐露天甲板看海港和歌剧院。', q:'Manly Wharf', img:['Manly Wharf', 'Manly ferry services']},
-    {n:'曼利海滩', en:'Manly Beach · The Corso', ll:[-33.7969,151.2878], q:'Manly Beach', img:['Manly Beach', 'Manly, New South Wales']},
-    {n:'雪莉海滩', en:'Shelly Beach', ll:[-33.7998,151.2973], note:'沿海边步道走过去约 15–20 分钟，海水很清。午饭在 Manly 吃。', q:'Shelly Beach Manly', img:['Cabbage Tree Bay Aquatic Reserve', 'Shelly Beach, Manly']},
-    {n:'回环形码头', en:'Circular Quay', ll:[-33.8615,151.2105], t:'约 14:30', mode:'ferry', tx:TX.manlyBack, fromLL:[-33.8000,151.2845], via:FERRY_MANLY.slice().reverse(), q:'Circular Quay Sydney', img:'Circular Quay'},
-    {n:'酒店取行李', en:'Hotel', ll:[-33.8775,151.2095], t:'约 15:30', kind:'stay', mode:'train', tx:TX.sydCQMuseum, q:'Museum Station Sydney'},
-    {n:'国内航站楼 T2', en:'Sydney Domestic T2', ll:[-33.9331,151.1796], t:'约 16:45', kind:'air', mode:'train', tx:TX.sydMuseumDom, note:'国内线建议起飞前约 1 小时到。', q:'Sydney Airport T2 Domestic', img:'Sydney Airport'}
+    {n:'维多利亚女王大厦 · 市政厅', en:'QVB · Town Hall', ll:[-33.8718,151.2067], t:'约 10:00', mode:'train', tx:TX.homeTownHall, q:'Queen Victoria Building Sydney', img:'Queen Victoria Building'},
+    {n:'新州图书馆', en:'State Library of NSW', ll:[-33.8661,151.2131], note:'Mitchell 阅览室很出片。', q:'State Library of NSW', img:'State Library of New South Wales'},
+    {n:'澳大利亚博物馆', en:'Australian Museum', ll:[-33.8743,151.2131], note:'控制在 1 小时左右。想看画就换成新州美术馆，两个选一个。', q:'Australian Museum Sydney', img:'Australian Museum'},
+    {n:'新州美术馆（二选一）', en:'Art Gallery of NSW', ll:[-33.8688,151.2174], opt:true, from:1, note:'常设展免费。从图书馆穿过 The Domain 过去约 10 分钟。', q:'Art Gallery of New South Wales', img:'Art Gallery of New South Wales'},
+    {n:'唐人街', en:'Chinatown · Dixon St', ll:[-33.8786,151.2041], t:'约 12:30', note:'午饭。', q:'Dixon Street Chinatown Sydney', img:'Chinatown, Sydney'},
+    {n:'住处取行李', en:'Ashbury', ll:[-33.8967,151.1218], t:'约 15:00', kind:'stay', mode:'train', tx:TX.centralHome, note:'房东同意退房后行李留到下午。'},
+    {n:'国内航站楼 T2', en:'Sydney Domestic T2', ll:[-33.9331,151.1796], t:'约 15:45', kind:'air', mode:'taxi', tx:TX.homeAirport, note:'国内线建议起飞前约 1 小时到，行李托运起飞前 30 分钟截止。', q:'Sydney Airport T2 Domestic', img:'Sydney Airport'}
   ],
   after:[
     {who:'两人', code:'JQ533', dep:'SYD 18:25', arr:'MEL 20:05', note:'目标价 ≤ A$95/人'},
     {who:'', code:'SkyBus', dep:'MEL 机场', arr:'Southern Cross', note:'约 30–40 分钟，之后去酒店，大约 21:30 后入住'}],
-  gm:{mode:'walking', list:[1,2,3]},
-  tips:['退房时把行李寄存在前台，下午回来取。','不去 Featherdale，考拉留到黄金海岸的 Currumbin。']},
+  gm:{mode:'walking', list:[0,1,2,4]},
+  tips:['出门前把行李收好放在房间，下午回来拿了就走。','不去 Featherdale，考拉留到黄金海岸的 Currumbin。']},
 
  {id:'d1028', date:'2026-10-28', wd:'周三', city:'mel', night:'mel', tag:'墨尔本 · 第 1 天', title:'墨尔本 CBD City Walk',
   lede:'从州立图书馆往南，穿过拱廊和涂鸦巷，傍晚到亚拉河边。',
@@ -722,11 +740,11 @@ var PAY = [
 function bookedHotel(city){ var hs=HOTELS[city]||[]; for(var i=0;i<hs.length;i++){ if(hs[i].booked && !hs[i].areaOnly) return hs[i]; } return null; }
 // 住处：订了酒店就用酒店的位置，否则用城市的默认落脚点
 function home(city){ var c=CITY[city], b=bookedHotel(city); return b ? {en:b.n, ll:b.ll, q:b.q, booked:true} : {en:'Hotel', ll:c.base, q:c.baseQ}; }
-// 某天（第 oi 个白天方案）的站点；方案里的 back 会替换「回酒店」那一站的交通
+// 某天（第 oi 个方案）的站点：head（各方案共用的前几站）+ 方案的站 + tail；方案里的 back 会替换「回酒店」那一站的交通
 function stopsFor(d, oi){
   var op = d.options ? d.options[Math.min(oi||0, d.options.length-1)] : null, tail = (d.tail||[]).slice();
   if(op && op.back && tail.length) tail[0] = Object.assign({}, tail[0], op.back);
-  var all = (op ? op.stops : d.stops).concat(tail), b = bookedHotel(d.city);
+  var all = (d.head||[]).concat(op ? op.stops : d.stops, tail), b = bookedHotel(d.city);
   return b ? all.map(function(s){ return s.kind==='stay' ? Object.assign({}, s, {en:b.n, ll:b.ll, q:b.q}) : s; }) : all;
 }
 function startPt(d){ if(!d.start) return null; return d.start===true ? Object.assign({n:'住处出发', base:true}, home(d.city)) : Object.assign({base:true}, d.start); }
@@ -756,8 +774,8 @@ function segKey(g){ function r(p){ return p[0].toFixed(4)+','+p[1].toFixed(4); }
 
 /* ---------- 路线形状：tools/fetch-routes.mjs 从 OpenStreetMap 取来后写在这里，不要手改 ---------- */
 /* @geo-begin */var GEO = {
-"bus|333|-33.8906,151.2750|-33.8915,151.2477|0":"`gzmEm{hz[tGpH`ANr@n@dAT|A?bG_A`A@|Ap@\\nB_CjJ}Hf`AuBb[HxBuAt@iGpHf@nCfBvEt@pIwEZk@`LjCR",
 "bus|373|-33.8762,151.2099|-33.9205,151.2565|0":"fmwmE{d|y[GfAd@Bz@W\\m@F_Ld@iBxUk[xScChXaL~QsEd]aEjSeBfKeB~BaBzM{PhDyJ|FuRfGsLpBsBxJsE|BeBrAyAjCkAh@g@pB}Ib@wEhZeJhDmDd@gChAmK`DgLtC}^GQLI`CaZ{@M",
+"bus|380|-33.8906,151.2747|-33.8473,151.2861|0":"jgzmEazhz[uHyIc@mCFyDXqBnCiIHeAS{Ex@yBIo@g@{@mC{Bu@EyC~@w@O}CuDi@_@eCPeCr@aC~ByFpD_KCoARuDtEaB?c@Vk@tGK\\]LyZqD}AXmUwCaMsB{@vJ_I}@F{@aSgCeBhPaGn@eAMw@e@yDqE}MmM}@sBq@]iAgBgNcHiDs@qDwA}MgH_Be@_BA{Hl@a@Tc@dA",
 "bus|700|-28.0921,153.4521|-28.1365,153.4860|0":"pvmjDmorg\\tABhBd@fJpG|ANvAc@t@u@p@mAh@mE^uApM_QlGqTl@oAt@}@dAm@xSuHtr@qYn^{P`a@iT|NsIlLeEvCsCrVc]dAmBhBeGhAqBdLcJ",
 "bus|700|-28.1345,153.4872|-28.0921,153.4521|0":"pfvjDsbyg\\dB`G_KpHmAlAaAdBgB|FsAjCqVz\\aChCkB`AiJxCiNhIeb@~Tk]fPur@pYyThIgAbAy@|AuGpTuL|Ok@~Aq@xEu@vAcA|@eB`@aBS_JkGiBc@kBGeBNaBzA",
 "bus|705|-27.9570,153.4252|-28.0005,153.4270|0":"fjsiDozlg\\@aIxSF~Dg@pAVnG@rFc@pBs@hAPjFUrFv@jAMxDsAfBsAbA?tEq@dGVpBVpEjAhAx@Vt@rA|In@rAl@f@dGxClG~DrHfAjAx@`D{Ana@a[jD}AxI{BbEWpT`AtVlBpUdCJKMO",
@@ -769,28 +787,32 @@ function segKey(g){ function r(p){ return p[0].toFixed(4)+','+p[1].toFixed(4); }
 "car||-28.1690,153.2715|-28.2400,153.2650|0":"fw|jD{ynf\\_`@tp@`@r@}@pAnGjLlAx@xD?hClA|BR|VaFdBl@rD~EpLtAxC@nDv@fNo@pJ|DxSy@jCbF|FfBpErCdNzBdEaAhKL|E~CrAVtLg@fI_B`FNzHuD|CAbE_AxD~AbQrA|EnAhBY~GcFnJjBnEAfI{EvBuC\\iGlEmJlEsEpEExCeAdEBnJ{CdFnC`@zDbAxA~GBhCy@xEEnAyALsAlBqBzZePtC}DhJgCvK_@hEcBnEoDhGrGt@bDA~I",
 "car||-28.2400,153.2650|-28.0040,153.4300|0":"~rjkDgqmf\\@_Ju@cDiGsGoEnDiEbBwK^iJfCuC|D{ZdPmBpBMrAoAxAyEDiCx@_HCcAyAa@{DeFoCoJzCeECyCdAqEDmErEmElJ]hGwBtCgIzEoE@oJkB_HbFiBX}EoAcQsAyD_BcE~@}C@{HtDaFOgI~AuLf@sAW}E_DiKMeE`AeN{BqEsC}FgBkCcFySx@qJ}DgNn@oDw@yCAqLuAsD_FeBm@}V`F}BSiCmAyD?mAy@gGcLqNsJqDaFsEbBsFeC_LVqSmI_EeGsDeCm@wGi@e@gEbCmCo@qBj@{FuCwFRw@u@sGkAkBJwDxAuMnAI}@fDgD|CiKpM}DdDyDxB_IgBqCyMr@yAh@mA_BcD{AaC^qB_BiBKmC~A{Aq@uBJiEsBAk@`CoAxD}EbOsIfCcFHkAgEa@aAtCiA^iGmAoE?yAb@e@a@GoCkH_BsBgG`CwC{AyGdCuH{A_B{@FWtCqBt@}FrFeF_BcAkC}Be@}AHs@zBsDaC{H_@aEZ_EpBDqBzAcEeAkGuGeBuGaI{@{C_@uK`CeUO_EaA{BuDaAeD}ByE{HnAmDeCkMHu@zD}AdAuAa@aDqCk@`EeGEgCwBp@g@u@RsBzBkDCw@wFuC{@TmBfCcBsAiBM_EyFWwBx@sBkAqE}FaCyD`AqEi@kMkU_EqCoP}E{RrAsYkD{IaDiFyDkDoHeDuUaHaNeAmG?}L_JsU}CqCyKcAiBkAoAsB_DyPsBgR}EqS}@wAoIcCeCkCcCnAwMfAoFzAmHBaGr@wGeBuReAiBuAcA_C}VsCkEJuHpAuDG}JaFsFw@_Kz@gQPa[bI}CyKiAu@uAoDsN}cA}CuJeV}ZkTsM}RiQwC_GeIeYwBqCIeBj@{Ca@kRqEec@rGgq@lBwFjJ{MOsCw@_AwPoEkQ_Aoj@}Ggc@`BeIeAoAyA_Ig@Qm@tFyn@s@qGqFuR_HsHwHqE_B]eAeB_I{AiDXdBmRiJi@g@fGUC",
 "ferry|CityCat|-27.4712,153.0196|-27.4616,153.0358|6":"rltfDwu}d\\zEkDtAmBh@wEvDI`FwB`Aj@z@bBxAHnEyJpAg@pFeJ|@a@tDh@v@ObDiFbBcFHkDeBoIiBmCoDmC{NyCcIOqQr@iSfBwLxFgA_Ao@iCcKaEoCyDcA}DA}B",
-"ferry|F1|-33.8000,151.2845|-33.8606,151.2121|6":"xshmEerjz[bRbLrLpDhpAbVlv@nKrJhHv{@n|@hn@dSdUnJtM`KzI~JdGzJrA~HRlJcBv\\_Ip}@_@|IElUxAnj@h@dp@f@jAdCbB|QdIdDdCrBk@bDZ",
-"ferry|F1|-33.8606,151.2121|-33.8000,151.2845|6":"hltmEgn|y[cD[sBj@eDeC}QeIeCcBg@kAi@ep@yAoj@DmU^}I~Hq}@bBw\\SmJsA_IeG{J{I_KuMaKeUoJin@eSw{@o|@sJiHmv@oKipAcVsLqDcRcL",
-"ferry|F9|-33.8604,151.2113|-33.8432,151.2810|5":"vjtmEgq|y[wADmChB_D{CoPwI{AaDI_DlDamAxAySnDqR`XudAx@oHj@mc@p@_OXyDtAeG~CgEvHoEnLuE|SkG_P`CmlAfEeQe@uJqC{GqGwIuPqD}IkFiQoEoWuDki@",
+"ferry|F9|-33.8435,151.2810|-33.8604,151.2113|5":"`aqmEcajz[tDji@nEnWjFhQpD|IvItPzGpGtJpCdQd@llAgE~OaC}SjGoLtEwHnE_DfEuAdGYxDq@~Nk@lc@y@nHaXtdAoDpRyAxSmD`mAH~CzA`DnPvI~CzClCiBvAE",
 "lrt|G:link|-27.9217,153.3337|-28.0010,153.4285|0":"rmliDs~zf\\\\S\\t@gAn@j@dAzAT`@MJcA]sBwGwMtAeAxDoHrEtC`BjBjMbZrAtBxA~@n@FjAMpA_@pKoG\\FnIeEhIeDtf@iN`T}GvPkGra@{PlKgD^e@zS}F~EoCdC{BhCcDdCcFlBkHx@}GbQ{tB|EywA]iFcAyD}A{CkGkIsAaCwA}D}@}EUwDFaFzIuhABkBa@kBqQc`@ju@we@`JmE~J_Dld@uInHmCdH}EpXgTrFoCfHmBtFe@z_@rBjV`Cp@{GxD@dEv@d@CCa@",
 "lrt|G:link|-28.0010,153.4285|-27.9217,153.3337|0":"f}{iDcomg\\B`@~JmAo@bBSnBG|GcABcFqAuDi@w^sD}\\cBiDAyD`@uGfBaF~B_^rXoDrBiDhAek@pLyJfDsWbOuw@rg@eTrIuBXuA?kHs@iGIoIkAgFC{DXmLnBePCsE~@gIr@eAd@q@r@oG`PeC`F_@bBiApPRxTU|FySz|AaCt]o@hFsFdVgTj|@w@jByMxSy@bBaB`FwA|H_BzXg@lC{A`DeL`QaAdC_@hBWhDDvC^hCbA~C`A`BbBfBdL`HgDrG_B~AfGzLf@tCl@r@Ip@k@Hc@e@qB]k@eAfAo@]u@]R",
 "lrt|G:link|-28.0010,153.4285|-28.0275,153.4310|0":"l}{iDwmmg\\jIkAzCItCa@~EB~FgAne@mBfCH|N`BpN]|XvCpBEf[gE",
 "lrt|G:link|-28.0010,153.4285|-28.0921,153.4521|0":"l}{iDwmmg\\jIkAzCItCa@~EB~FgAne@mBfCH|N`BpN]lVpC`E?zSmCnYiEzDDzZwDd@Yf@uA`N}HrBs@rqBg[xCB`N~DxABlBW`NmElb@i[zKmEjIkChX_Hbi@}N`LyEfFeBp@o@^w@r@kH`@kAnBwAhBG",
 "lrt|G:link|-28.0347,153.4292|-28.0010,153.4285|0":"rnbjDu}mg\\{BHgL~AwDGoQtCq]hE}CGoUkCcOZgN_BaDMmIf@g[dAsFfAeFCqC`@gDJ_IhA",
 "lrt|G:link|-28.0921,153.4521|-28.0010,153.4285|0":"thmjDchrg\\gBB}@^k@l@c@jAw@vH_@r@u@n@cF`BuLfFqZ|HyKfD}c@rLsKnEcBfAg_@~XmO|EeDFmM{D}AQkAHcrBj[cA\\}NfIi@xAi@ZwZvDwDGoQtCc\\bEuD@eVoCcOZgN_BaDMmIf@g[dAsFfAeFCqC`@gDJ_IhA",
-"metro|M1|-33.8630,151.2032|-33.8745,151.2078|0":"twtmEm~zy[lAqCd@}Co@sNZuEpByE`EsCvEa@dQnAzNxDbUzA",
 "taxi|打车|-27.4785,153.0350|-27.4690,153.0215|0":"r{ufDws`e\\DlB~SbIpMGhD\\vDrAMdBk@nAeAl@cGIaGdBep@`e@}BxBaFlDi@Hm@QaEaFkP~OJN",
+"taxi|打车|-33.8967,151.1218|-33.9331,151.1796|0":"jm{mEg~jy[Hf@jEqAe@kCaI{Moa@gAqHuDsAY_ATSZmCbK]Na@QgYaQ}M_]eUxMiAeI}BmKyAqDmFgK]gEJcB`@yAp@uA|@{@lEuA`A_BKoBwBqMAsBmA}N]oMh@uLdByKrBwGrFgMzSqc@rJ{TbJwPfGwJxJcKxG}EdGuCft@_WnPeExx@}JvIK`DRvFtA|HzDrGpGfQjXzCxBvB\\lBAtMaCrAu@jAsAx@qBPuAD{EaAyJEiDzA{Mn@kDx@qBnBaClBi@fKt@pCUdCoBbDoH|@_@pDSvAVz@z@`AtEBfAg@xImAdLSNgBOSlC",
+"taxi|打车|-33.9331,151.1796|-33.8967,151.1218|0":"|pbnEogvy[RmCa@QbAwO[qAuGoA}AA{BtA_B\\{A?eH{@_Dh@eAr@_BtCkCrQIxDhAtNKzCg@dCuBpC}Az@sKxBuBNuDY_CsAaPuVcFaGgHuEkHwBkFc@iICsGdAkNzEqGtAcSPuIjAwCHc[xJu_@jNyFxC{J~HiHbIoQ|ZkJjTcX~j@qCzGoBzH}@pGo@jJ^bPb@dHjBrHlD|HP~Ca@|CoAhCeB|@wCl@iBlBy@bERbCjFzKvAhEt@bD~AjMt@lClPzb@bEtEjRdLfQxInBzAzH~Ch[v@j@YbFyLfBuBhNgEDUo@_EkEpAIg@",
 "tour||-37.8179,144.9690|-38.6656,143.1044|2":"zhyeFggysZsCdAlb@|zB`C|BzJOjErFuCfa@FpVjB~^tHhp@vE|SrYtr@xCrWo@rQeCrL{c@|_A_Iza@@tp@{Cja@i@v`@xCr}B{FbBiEa@_BpYcT`TpZ~aBbU|\\dIjV|Vla@pmAffDzGxMtNvIbzAlU~JnFdGhItFnUpJzuBh{@jkF|HrMhNpHhKl@n_@oD`k@tO~HtIxr@vjAtlC`}KhyEboKj`AhnBj{A|rDzwGh{Qxb@dz@`uAxeBpS|l@ta@`WfxBtqCxI|GzzCd^fE_@hNaIfvBpW`U}E`KyHdFqAdy@dHfLml@kCaAjC`AnBiKvRpGoCvN`pAbe@dyA~~AvDhAdtAp}A~`@|w@hPxx@nGxBt|@~_AhKxPhGrQnFzb@DrTkAnNcHr\\yQf^sHdU{DxYgAd\\~CzfFk@xcApIjrLn@hlFf@~m@|A~XbKvl@tiAjpEbN`z@xSd`CtF|uAzXjn@fRbLhBzC|}@~mEh[pfAt_@pcFpb@|jAvh@t`Bvn@p{CrSds@fI~g@nQda@hFrThE`i@xB|iAhHh]be@xsDd@vXyCjm@RtNfs@xpEjLba@lB|OVdsFmH`kBj@|d@lDhSpWzy@zTtcAlr@rwAv[tYfItO|C~O`I`{@rNxy@hDpJp@dq@}Qj}A{JdkBkBngAvO|tEjq@|tH`zKdlAqStkDFbJxBpH~L~Lb}@ryA~XjSfHfRPdNoNd~Bn@vOr`AbzBjTxwAhO``@hCpMyBr~BuF~cAfAxMlE`KvHzGb\\~E`FdD|DmA~iBrTfMrJbFdMtDr|@_En_@mNr_D\\poBrPfBlXaFvHL|lCfu@`s@~a@jGzIlOv`AlErNbs@tpBlI~ExHaBlYod@r`A_n@`oA}LlFlAdWtTrl@vAnWcMnV}YlT_F|DiCz]i{@~DsEn}@^dW_LrS~AniA|pApAbKeB~QzAbJtEjHhSjL~B|E`@vF}AxTnApJt]x\\fAziAzA|IpEhFpb@xRjFfd@nN`k@rC|EbEzBzRpAvLkDvPdBnJhHpH|AjO|It\\iChDtBnW~]zMhHxFb@n^_Ex\\v@pIsD[fF~A|Qk@|FgYbk@sGhWeEnGwDjBhCvM",
 "tour||-38.4630,144.0450|-37.8179,144.9690|2":"vhwiFgxdnZu@cSpIwCpJKvCaGN{GtCqJeAiTt@gOqC{KzFsAs@aGxCk@iByN|@cJmCqbCmBqGiH{GgD_Ka@aIlCwSsFaMeCqRqRuN}^_Hy~@g}@cUmKuR_UqEaSuOcJ}EkXuFcNoBiSoIka@iC{o@_EaVa@si@oAgP_GaSiHsKiWkSiQy[cGwCaB{SwNgSiEsRqDc@wMvJqPPuEcDoD{HP}M_AoCmGuBoFyF_KgSw[}QkIaOsMyJuDu@_OnAgCiBaG{M_GmC}CZqLfIoKaBcn@ehC|DgaAkAoKuC}FqGkEst@_Kkx@q^yGcIyQoi@}KwKeJ_C{e@{CwJku@jMc{BmFif@fGaxAaIk]}AoB`CwDoAeGjBu^nDcAyCa@|BkC}BzBxCp@wC~AoBdl@kEa@oHrEmgBuQo_@~DmhAqYeCj@}MyCasU_hCoEyZiFsGwc@aJ{TdKuSe@sG_H_bBml@^kBkCaAjC`AnBiKeEqAsOd{@os@iGkSxL}RdEmuBuWqDV}IfHuE`@erCuZ_RcJc{BguCuFyDeRaFeMyLaMoc@qT_]s}@qjAkd@u}@okGkcQcqB_|Eut@myAwlEowJmQaXiJsl@k~BwrJiq@uhAgHsHsj@qOo`@`EcK]}M}GaHoKs|@ynF{J{wB{EwS{FiIyJaGyyAeUuP{JgFgJ}nAahDqIkPsPiTqHuPyCiXQmtAiCwcA}A}{Bh@c_@hD}j@Q}h@`BoQfEsQvf@yfAfBwLR_OiDsVcYyp@mEsR}KkeAq@k^~Bug@wCoCeJLqBoAqJih@iKpDeZ{|A`LyDjAjGrCeA",
 "tour||-38.6460,143.0703|-38.7567,143.6711|3":"n`{jFklfhZ_AaBaEHiJeDvUgh@zy@yzAtRwe@jO}XnJcPdLuFfEyFnHwX`Xgh@pAyIyAyTvFin@hEsSdOu_@pSySrIgEhI]|RgPrMmCxHwEtJKfZe_@xSsf@zEqAxCjA{El@}GtGaHxKsFzOcPlUkDnBB}I{HqPyIuEcWoAwFyCyIeM{O{MkSu_@gMsLqD{NbCws@rM_]|y@{jAlVgTd^qa@j[e}@zMkRjAuGWcHuNc\\OmHxA_HzDyElr@m^dK_YtO}T~TwDh_@uS~UsBzB}Db@mGjDkKpTyDxA`DvDw@|O|K~CeApClB~E@x@iGtTwADkGvE}Dh@sDjIqHxCeHdHcAVaRmIuQtC_\\qAuE~BsFk@kFiCaDvIuIkCgMdAkZqOkMqYyh@sLqAyB{BqFoTwAoj@gC}KcOwOaCsP}CqEsNiHoMmBoEeDoNog@aEyHcNaGqFkFyLe@cKeHyEqOoF}GoBgGa@uPdEuK?eDgEkN_L_MaDiT_HeVsVsGeS{RcUyF{DuC_HsLmCoHoDqYeWs_@kEuZeAcT}LwIcEqSwI_ItBaQd@aOy@eDgEcEkIsCiC~EcOxCiJdHhCjJiCkJbAgAdH}EbOyChC_FdBFxDoEfGe@`PhO~MyCdFpAl]|`@vGQtR}I`HLlGvDfJvNhPb@~GvC~EWlE}Gq@eY~AmPnIiGhIwBvNfB~HcGdNaWmCoWlD}I`Fk@x]fDdPvGvJgBtJPhFqCp[ujAtB}[tBqG`EwChKmDpYwDxa@vD|NvKbK~@tJsDd^kZvFaCzi@pCf]_IbWhA`F_CfDoHM}H_CaEkLn@_MyExC_WsE{TdE{L{FwIaCuUZmPoLeQw@{NqEyFmAeQsG{Fk@}Q_S}`@yAoHmDyFgI_Fy@mCqBi_@l@cNyFcP{CcSvDiYyD_XhAwFdVcUjC_YtSic@jFcAbN`FhFkBdAqH}Lo\\TmIdJ{K`FwM|E{DvB{GhOgFxHyRxLgMpDkK?{JuB}DsIiFuI_MwXb@aQeKsFuGeFmXeI{FwHS}CuG_S`F}BsBeCeIyKsMqOUmHyFsJz@}HqAgJjDwFiAeCuFYkVsDuHkGwD}C}PyYuB{DmCcIa[{BwZx@}GxGyHpHk^vFkLdEiCdKiOxIM`KhGbHeBf^ge@zXgk@bDiRnCkEbTqNpb@B~NuEvEsDlAcFr@mVpTs]p@kOhFyOzGkh@hRut@S{QsUksAw\\{p@yE{BaWi@}NiEca@mXoFeLuLqAuAzDcLjF_ByG",
 "tour||-38.6656,143.1044|-38.6460,143.0703|0":"~z~jFoamhZiCwMmFrCsKxPeOtXuRve@{y@xzAwUfh@hJdD`EI~@`B",
 "tour||-38.7567,143.6711|-38.4630,144.0450|3":"jtpkFkw{kZ~AxGyNnCgJGub@}KaYiReSuRo\\mi@uIq[_CeUwQqh@}CaWeGqJoCaRcOkU]qJxBiOo@aGy]uq@cM_PoBcL|@kMyR_o@e@cU{GsUcAgN_IaRuKqJgEkH{Di@[_IzA_GgF{QwEmC~Be]tCyFQwEiG{JJoQiIoBoBuCyDiYsOsm@mJem@y@wf@iCwH_ImIw@eL_D}KmCcDbBuJeAoNaC}MaCiCKcEwB{Ei@wOrD}DHaGtBgGeAgMrAuo@{FcI}IkAiDrDwZkO_HX{BgGmOqBiKoI_BsYiMii@GeUmCaLaIsJoA_UeE`AsCvHiK|EaDA{GqKeUo@kYcVqDsHmJgBsKqIcL_RaAmKmEkOmEiI{CgBeB{IuRkL_HgL_AgIwBcEYoSeHn@sDrEmLAqMbEmFeBcBgDfAkIeA}EqEmIsNkMoAoGl@yIkNqVkHwI}HuEyG}@{NiNsKgAkRcWoE}@eL~D{EmHuD_@}W{PyK^kL_Ia^bJmFoHqFeByK{IaOcWaJah@qBgBiD`@q@qEsIgGqBiF}EcAmD_YoHeSwD_A{MyPqJ}@EyEzEeGo@_KnAkKeGuK^cSa\\_^qIa@wLeHIqBtBwDGqDmDySkCeF}JaDuO}KeJxAqKgBaC`FcCd@gJyENsD`Gs@MwHyB{OmHqKyFqAoFyEeSeBcQ~\\yEvNOkAn@HwAjJaD~Eg\\hBoJvImWgb@{XcToLqM_IaDoYiTwNcVa^o^yEsBsEeQoJ{JoKkBwJeFkQeBkOwXqFf@SnDeANi@cGnCuCJ{BoFcCgDgHgImBs@iFoDeDsKqD_A_FkDkEc@_T{Tsi@}Dn@yDnKy@`Vx@pG_CkAyAaTuOTDaCvDcBnBoJwCoJFeG~AeEmDaGgJbCyKuDkJ}MoI_VgMig@cOujByCj@r@`G{FrApCzKu@fOdAhTuCpJOzGwC`GqJJqIvCt@bS",
-"train|Airtrain|-27.4659,153.0193|-27.3842,153.1175|0":"|hsfDet}d\\zEgI|@uC`@oEAkESqB{@gByI_Mig@iYyYsXeEeC{M}EcGu@gc@dAaDOaPeH_GuDuHuAkIBuTdE{F?_EaBgG}FmCgBgg@oG}TgGgCyAcBaDmFcSGuDd@qIs@wFgB{CoAeAaFiCaJ}GuD{DuAeD[kFxAiQl@eCdEmKf@}D?kDc@{DaA{CwIcNsBwE{AwGc@sGBcEh@}Fr@eD~BcG~CqElScShC_EjB}ErAsHTwGa@oH{AaHqEwIwh@wp@}DyIaBwOw@iDiC}EqCsD{SmKePaGk~@ec@}KwH",
-"train|T2/T3/T8|-33.8613,151.2107|-33.8764,151.2097|0":"fptmE{i|y[n@uMx@aExCgDzDm@dBT~Av@nGlIrBrAve@tDjV|J",
-"train|T2/T3/T8|-33.8764,151.2097|-33.8613,151.2107|0":"rnwmE}c|y[sK{DuMyCcb@}DgCeBmFsH}DuAaBBgBh@qAdAkAlBm@hEg@zK",
-"train|T4|-33.8915,151.2477|-33.8731,151.2068|0":"~jzmEwqcz[}B|NwBtEmBvBeDjBiDp@_QQyEr@uCxA_KvJwCzDaCvGiCdRcGhL{A~EeDp`@iL`\\eHzM_QtLaDbEcBxDcBjIk@`MNbEt@vC|A`CpBvAzJtBxFpBhCX",
-"train|T8|-33.8764,151.2097|-33.9334,151.1810|0":"tnwmEed|y[nLtC`Ix@`VxEvFjExMxP`CdBfDjAj_@hE~G\\l`@{FxLgCrD@pDt@xEvC~B`DfBdF~BzLpDrGvw@|r@jEvB~StCpNh@jLy@fCD|WdFfCvAbCjCzBbFt@zFGjJ",
-"train|T8|-33.9334,151.1810|-33.8764,151.2097|0":"ftbnEapvy[H}J}@yF_A_CyB}CkEsC}WaFiPt@kMe@qRaCmG{Box@qs@qDyGcCsM}AkEiDeEmDqBgDq@kFDgKzBo[bFmEZ{d@wEwD}@mDuByGiH_GwHqFsDoGmB{M{BwFe@}L{C",
+"train|Airtrain|-27.4659,153.0193|-27.3842,153.1175|0":"|hsfDet}d\\zEgI|@uC`@oEAkESqB{@gByI_Mig@iYyYsXeEeC{M}EcGu@gc@dAaDOaPeH_GuDuHuAkIBuTdE{F?_EaBgG}FwCkBcZiDaOcC{QeFcDcCcA{BkF_SGuDd@qIs@wFgCyDqGqDyMsK{AoB_AsCSsExAiQl@eCdEmKf@}D?kDc@{DaA{CwIcNsBwE{AwGc@sGBcEh@}Fr@eD~BcG~CqElScShC_EjB}ErAsHTwGa@oH{AaHqEwIwh@wp@}DyIaBwOw@iDiC}EqCsD{SmKePaGk~@ec@}KwH",
+"train|SCO|-33.8840,151.2063|-34.6726,150.8545|0":"|}xmEgn{y[xDvC`FdIvCfDlG~FrNfKrEtFlEtHhHbUpDfHrErPnG`LjFzDnI~CzWnExElCjD~D`D|HdGt\\vDzK||@||AvDpE~DrCdDrAjMhAtGdCvJrHfHtHxFvH`JbJrC~Ave@bRtGhFzMnPrKvGlfAbd@jc@nLvM~BdGxDjDnEnCvG`B|JdK~{@LvFw@pI{DzQe@bEObEXzPM|DyAtGiMx\\iAfIGjGnBn]nAvIlA|NpAvEbC~FtCtEpDfElMlIhLnDvHbF~Bv@jFVjRuCnE@dEdAhJdGhDnApDZfI?tDx@nDvB`PnMbGvFrXnZdDjClDbB`IlAtFa@~DyApKwGzEiAbCCdC`@rB`AbOpPxEfCvCx@|Hb@nZcBxGX`HdA|DfA|FrCr{AhbA`GzCdIpB`G`@zGMlPgBzFB|F~@lF|BrGvFdDlFvArD`bAvhDxDjIbHhKtF~FlIjGrNlGtOvCfI`@nh@OfGp@hGpBnHfF~eA`jApMvInHxCzHnBhLnAr`BnEtUa@|kAgHtOpAjBMtMmF~BWft@nElD}@tBqBfEyGzDmAbBJbC|@~FfJxIbD~@z@pCbGxIpWdCfCxDv@hDe@jDmCxAmEAwG{AgEgFoFkFiLaFkGiAgEEsD^gClByD~KaKzBoAxB[pBHdB`@hBtA`BlCrB|JpAhCvClB`HnBtCfCjCpFxEhOpBpDbBbAxCVtCw@nBwBbAsEE{Bc@wBsF}HqDqKkH{HgAeC]{CLyCnAuEtPaYbBcC`BgAbC_@dAHjJfE~Kz@|@d@nCnCpDtIvAfK|@dDjCdDjBt@lAFtAC~CcAbPqPnCkG|@iK|AsC|BoAvCOjQz@xEhBzIbF`Fb@`D[fDgAbQgJfDUnBd@rAdAjDlGtAlA|Bp@zH@tBz@lArAp@zA^dCSrJVzD|MrZvBnD|BzA~KlApBz@xBpCnB~FzCfFfEnClG~BfB`B|BjFb@rCH`JWxMR~El@nCtA|BjCfBxKt@|B~@xAvAvA|CdBjGv@|Nf@|CrBzCnCxA`DNfD_AnCuCt@yBXaCk@iOv@}J@sKh@wDdBeDpCgBdD_@fDr@jCzBrFhJ|RzThDlFvAtFvI|f@zC`FvChAfDGlv@mQ|CKnBd@vAbAvHvK|NlKjE|A~LjBtCrAxDnDpUz^tAlFfA|JbApChCpDpBrA|Bn@|FNjDp@xC|BvErGdD`BvBV|N}@vDn@tCzBjApBjCbPfAtB|AbBb]fPzS~NxHzBxSbDtD~AdaAtoApGnFveAlv@xBr@`EH`WkFhIClr@lRzGf@~C]hE{A|LuJ|DwBnEq@tEZddBlf@tGrAhKpD`{Abc@t`Cby@`HpAvkEhk@~IzBnGbDdIpHzEbHpCjFlCnIzBtNpD`n@vAfK~ZfiAxDnLnDpIhG`LfIxKnv@ft@lFvGfFdJnE|KrCvKvVfyA~EhO~FdLxfAbqAlKxKpN`MnN~J~KxGl{Atv@nHpB~HlAzOZjmBiLtQqBbPqD`LyDdaC_cAzNyHjGqGtE{JxeAszDpG_LfMcM|DyF|C{GdI_V|BqEpD}DlEcClHsAtFLj~Bbg@tEh@hHD`IaAjHeCjVcQnFmHtGeSnD_Gpb@e_@`DkBpFyAfIMxFhAzDnBbYzQzC`AnCTvDYpC_Ax_@uVbEgExHsMdCyAtCg@xDX~BnAfKnMnE`DhD|A~ElAbg@hH~CLhFg@v_@mNbGPzBz@hBvA",
+"train|SCO|-34.6726,150.8545|-33.8840,151.2063|0":"v~rrEswvw[}EiD{FSw_@lNiFf@_DMcg@iH_FmAiD}AoEaDgKoM_CoAyDYuCf@eCxAyHrMcEfEy_@tVqC~@wDXoCU{CaAcY{Q{DoByFiAgILqFxAaDjBqb@d_@oD~FuGdSoFlHkVbQkHdCaI`AiHEuEi@k~Bcg@uFMmHrAmEbCqD|D}BpEeI~U}CzG}DxFgMbMqG~KyeArzDkCrGgCvDsDvDyI~EagCbfAaLxDcPpDuQpBkmBhL{O[_ImAoHqBcyA}t@qJqFoOmKiQsOmKyKyfAcqA_GeL_FiOwVgyAsCwKoE}KgFeJ_HiIss@op@iNiSgIeQyDoLa[iiAaBeN{Bad@eAyKyA_ImCoIqCkF{EcHiIkHoHqDcHeBsrEam@geCwz@otEirAaGIaEbA}PnMkE|A_E\\aGi@kr@kRgI@aWpFeEK{Bs@yeAwv@iGiFiDsD_|@cjAsD{AaUoDsGqBwOuKq_@gRkBuAuBqDmB}M{@{BuAeBiBiAqDo@}Lx@yDSeDcBqFoHaCeBiBc@}HY_Co@qBuAmCuDaAqCiA_KsAiFqU{^wDoDsCqA_MiBmE_ByNuKwHwKwAcAoBe@}CJmv@lQgDFwCiA{CaFaJyf@}CwIaBkCyRyTmF}IeC_CmDw@eD\\mCdBeB~Cc@lCG~Lw@`Mh@|MqAlF{AnByCvA_DLcDaAkB{AaAoBg@_DUqIa@mDeBiGyA}CeB}AkBs@eI[{Bo@cBqAyAeCk@eCUmFXuMI_Je@qC{BkFgBaBmG_CeEkC}CeFoB_GyBsCmDiA_J{@aC_ByBqD}MuZY_EVkJYuB}@wB_AcA{BaAqH@eCq@yAsAiDiGsAaAiBg@gDT}PdJkDjAcDVgFc@{IaFuEgBmQ}@sCR}BlAuAjC{@dKg@fBmBhDaPrPgDhAuABmAGmBu@oCgD}@iDq@cHo@aCiDwHkCkC_Bo@{Js@oJgEaET_BdAiBfCmP|XcAfDUbEVjCdAdCnH|HpDnKfGbIb@nBF~BeA|EaBlBoCbAwC?wBy@sBoCyFeQmCsFuCcCiJyC{BiC{CoMu@sA_BaB_Bq@aDWwBZwBhAaL~JiBrDa@lCDfDfAbEbFlGhFjLjG|Gx@|CNxBM~CyAxEqDlCiDb@aEy@gCmCyIoWoC}F_LcFeDaGyAaBwB}@cBKwDhAgEzGsBpBuD~@ws@sE_D`@mI|D}Dp@yPmA}kAhH}Q^aNKiuAeEkLmAgOqEeHuDsG{E}eAajAmHeFgGqBiGo@mh@LiI_@wOyCqNmGoIkGuF_GaFcHaE}HcD}I__AqaDuAsDeDkFsGuFkF}B{F_AuFCsVvByIc@_IoBiG_Ds{AibA{FqC{DgAcHeAyHYmYdB}Hc@yCy@{EkCcOqPuF_BaC@aCf@eP|IiEfAsFJcGkAoDcBeDiCsXsZcGuFaPmMmDuBsD{@gI?sD[kDoAiJaGeDu@eIDoOxBoFW_Cw@wHaFwQeGwGmFoEmFcC_EcC_GqAyE}CwYwBm]FoGhAkIzIiWpC}Fx@mDPoEYuMLmH|F}]Z}EKiDoE{_@iBmKa@kHiAuIoAqG_CuFkDmEaEsCoE{AmJsAe`@eKu[sLmGiDic@cRuKyG}MoPwE}DuHoDwHiBeGgDsPkHi^c`@mHuFcGsB_MeAiDuAaEuCwDqE{|@}|AwCaIeJkc@cBcEiD{DyEmCyWoEqI_DkF}DiHcLsEaQgCiFqGwScHqM}CkD{NoKgHwG_CqC_D}FyF{E",
+"train|SCO|-34.6726,150.8545|-34.7447,150.8177|0":"v~rrEswvw[x\\`YbEpC|JhEdM`CfGVnHOpqAgKvi@tCrNtBjDUzI{C|BDjBj@vQ~L`DvCde@hcArGlKbH|HrL~IrcBnaA`K`I",
+"train|SCO|-34.7447,150.8177|-34.6726,150.8545|0":"baasEgqow[aKaIscBoaAsL_JcH}HsGmKee@icAaDwCwQ_MkBk@}BE{IzCkDTsNuBwi@uCqqAfKoHNgGWeMaC}JiEcEqCy\\aY",
+"train|T2/T3|-33.8613,151.2107|-33.8877,151.1258|0":"rptmEyi|y[s@zOVxDpBhErA`A|Bl@~FQ`MwAhMClEm@tDmBhBa@vJWvNhAzCiA|F{GhDgAdGXxMvBhHjCxH`GjQrWzPpNnGzH~C`HvDpLpBnLbEvQfGjT|ClSj@`OCnF_@zKu@dFiBlGsFlL}ExQaA|FM|IbBjQJnE]jI_C|Li@vG|ApXM`HaAvKsAvH{Sh|@_@vEeAp^mJzd@",
+"train|T2/T3|-33.8660,151.2058|-33.8877,151.1258|0":"lmumEil{y[xOMlEm@nFeCvG]fDA~MfAzCiA|F{GhDgAdGXxMvBxG~BhIlGjQrWzPpNnGzH~C`HvDpLpBnLbEvQvGhV`DjVXxNe@vNu@dFmArEoGfN}ExQaA|FM|IbBjQH|G[|F_C|Li@vG|ApXE`Fk@hHeCdPwRnx@o@pGeAp^mJzd@",
+"train|T2/T3|-33.8840,151.2063|-33.8877,151.1258|0":"``ymEer{y[rEdEbP`VzPpN~ChDnBpC~C`HvDpLpBnLbEvQfGjT|ClSj@`Oc@jS]xCaCxIsFlLyFjTo@|FCjGbBjQH|G[|F_C|Lc@xECfD|A~WgAhPaCdNgRxv@o@pGeAp^mJzd@",
+"train|T2/T3|-33.8877,151.1258|-33.8731,151.2068|0":"xtymEkwky[vHu[`AcG`@wGf@qVp@uGfR{v@|BaNbAePwAsUAwDj@yG~B}L\\_IKwE{AmNEmJjAqI|EyQtFmL~BwI\\wCXaNa@iT}DwUmC}IiFwTcDqQoHsScGgIoScQcMwQwCeDeIoGaDoAmM_C}Gg@qBNiBx@sFpGoBbAcCTcLo@",
+"train|T2/T3|-33.8877,151.1258|-33.8764,151.2097|0":"xtymEkwky[vHu[`AcG`@wGf@qVp@uGbQqs@zCcPhAmQwAsUAwDj@yG~B}L\\_IKwE{AmNEmJjAqI|EyQtFmL~BwI\\wCV{KOqSeAwIgC}MmC}IiFwTcDqQoHsScGgIoScQyNuSgLwJyEcBuKkB{Ic@oDrAaFbGqCnAaBHoQeAqENuIbDaPXiUbBuC]mCiBsAcCi@sDlBoc@h@gBjAiBdBiArBa@rBH`CbAnGlIrBrAve@tDxUtJ",
+"train|T2/T3|-33.8877,151.1258|-33.8840,151.2063|0":"xtymEkwky[vHu[`AcG`@wGf@qVp@uGbQqs@zCcPhAmQwAsUAwDj@yG~B}L\\_IKwE{AmNEmJjAqI|EyQtFmL~BwIf@qGJ{T]uI}DwUmC}IiFwTcDqQeFkOoBeEcDmEqSeQoOkTiG}F",
 "train|T8|-33.9350,151.1664|-33.9334,151.1810|0":"n}bnEstsy[pBuJToIu@sFqHcSiBqIUoKv@mQ",
 "tram|16|-37.8100,144.9646|-37.8622,144.9747|0":"jxweFshxsZt}Amj@tCm@|Ea@pLZnIOvCc@~Am@zBgBbEeH`CmCdC{AlFaCv|Bsl@h@TdAxC~[|o@",
 "tram|16|-37.8680,144.9772|-37.8100,144.9646|0":"d|bfFq{zsZe@tCeBxFuHvMyApAoA^q@?}Dg@aAo@Ya@i`@cw@_AqCWSY@o|Bpl@mGtCmCpBeAvAq@dCuBfE{FpBkCd@gJRsL[{E^sCl@u}Alj@",
@@ -821,39 +843,45 @@ function segKey(g){ function r(p){ return p[0].toFixed(4)+','+p[1].toFixed(4); }
 "walk||-28.1327,153.4906|-28.1345,153.4872|0":"jtujDgsyg\\RNMTAl@g@Z?Fd@jArG_DVD`EtJQJGMcA^v@~BaBhB",
 "walk||-28.1360,153.4870|-28.1327,153.4906|0":"`ivjDw|xg\\F\\HIBUSSUiBmCqGJK[u@Q?cC}FgARkG~C]aAf@[@m@LUSO",
 "walk||-28.1365,153.4860|-28.1360,153.4870|0":"blvjDovxg\\q@_C]s@IHG]",
-"walk||-33.7969,151.2878|-33.7998,151.2973|0":"r}gmEwkkz[ESb@MEIXOSs@xBaApEoCrCmCXq@?cAc@aAIw@a@uA@_@jByAjAkA~@g@v@aAr@qBq@kHDsEZwBH{Gc@a@q@@UJO^YPY?k@zAm@bAd@`@",
-"walk||-33.8000,151.2845|-33.7969,151.2878|0":"~phmEcwjz[RHSdAoA_@kAeAwCgG?UwFuKeA`@DR",
-"walk||-33.8568,151.2153|-33.8642,151.2166|0":"~ssmEsf}y[j@qAfDn@tB[?RLJZ?lCmBbAqA~B_B`@Fv@KZj@d@XpIfBpBg@nBkAn@K@N",
+"walk||-33.8397,151.2790|-33.8435,151.2810|0":"bipmEwtiz[DQyBcBAW`KkHXIPBJIbA~Aj@_ApBsA~@c@rBc@BHIXRpBHBFZ",
+"walk||-33.8457,151.2852|-33.8397,151.2790|0":"rnqmEo{jz[WAUZsCP{EfCGRK?C^u@ROPm@|DeCpBaA`B}@~@gAv@QCk@RoJ`H@VxBbBEP",
+"walk||-33.8473,151.2861|-33.8457,151.2852|0":"nxqmEgakz[Ob@MG?e@KM@UIQFS}@~@_@U_DrDMVM@CPJ@",
+"walk||-33.8568,151.2153|-33.8614,151.2109|0":"~ssmEsf}y[j@qAjDn@k@pFtB`@b@Xh@t@Ft@Vv@b@b@hC\\rFZh@V\\j@Nh@[pFh@B",
+"walk||-33.8590,151.2045|-33.8630,151.2018|0":"vatmEcc{y[f@SASv@?FKx@A`@HHJJGZp@\\^z@P`Ah@@d@]@@\\L?DvBNLLCCJf@Ac@JdDQ@Xr@LGp@z@PTGh@NBR_@Tv@n@GHPR",
+"walk||-33.8590,151.2045|-33.8660,151.2058|0":"vatmEcc{y[f@SASxBM`@HHJJGZp@\\^z@P`Ah@@d@tG[F[f@k@PCn@Pd@uB`@]L?J[v@g@r@M~Hg@BP?If@CCk@f@C",
 "walk||-33.8593,151.2085|-33.8590,151.2045|0":"pctmEc|{y[KpAWDSXSzBOIDPjAb@GZWIk@hDDl@HGDFX?Px@ClALt@IL@z@g@R",
-"walk||-33.8597,151.2228|-33.8593,151.2085|0":"bftmEou~y[@VWHQRk@bBEd@LZxAx@pFnAjDlAhB|@hA|@bAlAXr@VnA\\tGb@tCo@zAO`ABj@UVg@\\eAPWnAqAzA}@v@e@TOVqA?U^Dl@r@vAa@CEj@n@DGhA_@j@Xz@s@fN_@Z}@?GbBOLLRAVG?GLa@EEf@wD_@I`@",
-"walk||-33.8605,151.2112|-33.8606,151.2121|0":"bktmE_m|y[ANp@LBLtALTwE{BQ?IMC",
-"walk||-33.8606,151.2121|-33.8615,151.2105|0":"xktmE}r|y[LB?HzBPKlB|@FCf@J@OhC",
-"walk||-33.8613,151.2107|-33.8605,151.2112|0":"bptmEyi|y[H@Bi@yBQCMq@M@O",
-"walk||-33.8614,151.2109|-33.8568,151.2153|0":"vptmEak|y[i@CZqFOi@]k@i@WsF[iC]c@c@Ww@Gu@i@u@c@YuBa@j@qFkDo@k@pA",
-"walk||-33.8614,151.2109|-33.8604,151.2113|0":"vptmEak|y[_CQCMw@MKc@",
-"walk||-33.8630,151.2018|-33.8630,151.2032|0":"tztmEerzy[QSFIGCl@{@AM~@EGaBNACu@aBJ?u@h@FB\\_@BAK",
-"walk||-33.8642,151.2166|-33.8597,151.2228|0":"fbumEwn}y[AO[By@^w@sE]uGa@eBw@oAeByAiB}@kDmAqFoAcBeACa@Ns@f@kAb@UAW",
+"walk||-33.8597,151.2228|-33.8642,151.2166|0":"bftmEou~y[@Vc@Tg@jAOr@B`@bBdApFnAjDlAhB|@dBxAv@nA`@dB\\tGv@rEx@_@ZC@N",
+"walk||-33.8604,151.2113|-33.8613,151.2107|0":"njtmEsm|y[Jb@v@LBLxBPCh@IA",
+"walk||-33.8614,151.2109|-33.8593,151.2085|0":"vptmEak|y[P@]bIu@Ag@f@_Af@AVG?GLa@EEf@wD_@I`@",
+"walk||-33.8642,151.2166|-33.8568,151.2153|0":"fbumEwn}y[AOo@JoBjAqBf@qIgBe@Y[k@w@Ja@G_C~AcApAmClB[?MK?SuBZgDo@k@pA",
 "walk||-33.8661,151.2131|-33.8688,151.2174|0":"bnumE{x|y[UCV}A`@o@b@KBa@bAkBv@_DR_@t@w@vAg@bCsDKK?Ux@y@",
-"walk||-33.8688,151.2174|-33.8630,151.2018|0":"~~umEws}y[y@x@?TJJcCrDwAf@u@v@S^w@~CSfFVd@CZ[ZGdAIRSCw@~LQjAeAlDG@KXDVSFK\\FF[hFqAIAb@F?KpHV`HMp@YT?b@e@\\c@L}AJWt@cBJBt@O@F`B_AD@Lm@z@FBGHPR",
-"walk||-33.8712,151.2133|-33.8743,151.2131|0":"~mvmEcz|y[Cp@~M|@FGbBV?GXBLsA",
-"walk||-33.8718,151.2067|-33.8731,151.2111|0":"vqvmE{p{y[lDCj@uAx@mOE?Bu@`@eEo@K",
-"walk||-33.8731,151.2068|-33.8775,151.2095|0":"xyvmEmq{y[\\H@SfAH@Ub@D@Yl@F?KP?v@F@YJ?NaDlK\\`@}E\\@PkCjBJ",
+"walk||-33.8661,151.2131|-33.8743,151.2131|0":"bnumE{x|y[UCCf@D^Z\\~TdBTOTeAXc@~@}@n@[xQrAFGbBV?GXBLsA",
+"walk||-33.8712,151.2133|-33.8597,151.2228|0":"~mvmEcz|y[Cf@cBKFoAOAJWUMUFQKo@u@mBgDYDmD{H}B}B}F_FiDeByBuBmEaDsBgCw@c@W@mC{@mFkAkEa@wB?KW?W^eAY]Bs@",
+"walk||-33.8718,151.2067|-33.8661,151.2131|0":"vqvmE{p{y[sC?UGc@[]o@P?I_QEOFgAOGuAqCc@mBIKm@KBm@kUcB[]E_@Bg@TB",
+"walk||-33.8731,151.2068|-33.8718,151.2067|0":"xyvmEmq{y[CHKI@e@_@Bq@n@aDB",
 "walk||-33.8731,151.2111|-33.8712,151.2133|0":"zyvmEkl|y[n@JJaA}Ec@c@eBFmDaEWBq@",
-"walk||-33.8743,151.2131|-33.8661,151.2131|0":"nawmE{x|y[MrAYC?FcBWGFyQsAo@Z_A|@Yb@UdAUN_UeB[]E_@Bg@TB",
-"walk||-33.8745,151.2078|-33.8775,151.2095|0":"jbwmEyw{y[@W~K^`@}E\\@PkCjBJ",
-"walk||-33.8764,151.2097|-33.8775,151.2095|0":"nnwmEsc|y[NJ`@SPXvCR",
-"walk||-33.8775,151.2095|-33.8762,151.2099|0":"juwmEmb|y[wCSYk@OV]OBMg@G",
-"walk||-33.8775,151.2095|-33.8764,151.2097|0":"juwmEmb|y[wCSQYa@ROK",
-"walk||-33.8775,151.2095|-33.8786,151.2041|0":"juwmEmb|y[xCPMnCiBdRZH]~D@~BxDQ",
-"walk||-33.8786,151.2041|-33.8718,151.2067|0":"f|wmEm`{y[yDPA_C\\_EoGyA]AASmJqBa@AAHkFg@@Sq@@q@n@aDB",
-"walk||-33.8908,151.2743|-33.8906,151.2750|0":"nhzmEkwhz[RYiAoAX]GI",
+"walk||-33.8743,151.2131|-33.8786,151.2041|0":"nawmE{x|y[MrAYC?FfDREbALHdAtBVfAEj@P@DV`@V`@BrB|CRG\\PO\\PXEv@J@k@tH^HhEhJIv@ZH]~D@~BxDQ",
+"walk||-33.8764,151.2097|-33.8731,151.2111|0":"nnwmEsc|y[DJqIi@EMYOcDeGgAKK`Ao@K",
+"walk||-33.8786,151.2041|-33.8840,151.2063|0":"f|wmEm`{y[zCQJkA^DN}BxCt@H?Fe@nAXNGn@NpAuCjAkBNLVw@Wf@CVr@p@h@kA~DvCzAkD",
+"walk||-33.8877,151.1258|-33.8967,151.1218|0":"buymEgwky[?MZLFI?JTBDRzCbCdCuDrB|@DJlA^fa@nAzHrM\\pB}DlAEU",
+"walk||-33.8908,151.2743|-33.8906,151.2747|0":"nhzmEkwhz[RYw@{@",
+"walk||-33.8967,151.1218|-33.8877,151.1258|0":"jm{mEg~jy[DT|DmA]qB{HsMga@oAmA_@EKsB}@eCtD{CcCESUC?KGH[M?L",
 "walk||-33.8990,151.2710|-33.8908,151.2743|0":"v{{mEwbhz[aCYJuAwDc@@MOCEf@cBk@qBWRqCsCVDk@Ug@e@i@c@SmAUgDf@_@C{AZcCCq@Se@u@g@JqCaDY^_AeASX",
 "walk||-33.9036,151.2683|-33.8990,151.2710|0":"nx|mE{qgz[CpA[Ao@GeCaBiAkFk@gAg@SyEH[RwBvCoAr@{@SS[Be@KGhAoAN[ZoBBcAU_@_Fg@BLhBR",
 "walk||-33.9140,151.2680|-33.9036,151.2683|0":"ny~mE_pgz[^BZo@GGP]Ka@@QXs@ICAH?K_Bd@Dw@OQc@HeAc@cD_@eC}@oAGUa@a@Ma@D_DQg@tAq@fAy@[KwAIIkB`@iCZs@AEF]UMHEM]PgAIKJGS]Wm@@wDnA}AjD]d@YD_@SmAbAqA`@u@FO?BqA",
 "walk||-33.9205,151.2565|-33.9205,151.2577|0":"bb`nEchez[E`@l@HRaCL@HmAOWiAi@DK",
 "walk||-33.9205,151.2577|-33.9140,151.2680|0":"bb`nEsoez[EJi@[EH{DsCBGoL{ACRa\\mEE_@z@oJGi@SBEgAJuA^oBQCZ{AWwCBm@Pk@Z]hBw@fAy@MWgARYVK?k@]?g@?MdAaB\\gAt@aB`@_@CGl@c@?Oc@E",
-"walk||-33.9331,151.1796|-33.9334,151.1810|0":"|pbnEogvy[b@_GZBBYIA",
 "walk||-33.9334,151.1810|-33.9331,151.1796|0":"vrbnEgpvy[H@CX[Cc@~F",
+"walk||-34.6693,150.8586|-34.6726,150.8545|0":"bjrrEgqww[qA~Ep@j@Rh@`@|DNh@`@f@F\\ELf@h@d@Fp@j@HTn@V~@}AjBX`DzCZ[b@TR_@QMEH",
+"walk||-34.6719,150.8632|-34.6693,150.8586|0":"jzrrE_nxw[Cf@[L]hA^|BPNBRB~GND@`HVdACjAEZGBJbCQZWQe@x@YG}@zAcDfCiBZo@I[[Oi@Y_DOs@}@_ApA_F",
+"walk||-34.6719,150.8632|-34.6726,150.8545|0":"jzrrE_nxw[Cf@[L]hA^|BPNBRB~GND@`HVdACjAEZGBJbCm@pANLGN~G~FYh@?Vu@pAA\\g@bAU]R_@QMEH",
+"walk||-34.6726,150.8545|-34.6719,150.8632|0":"p~rrE{wvw[DIPLS^T\\f@cA@]t@qA?WXi@_H_GFOOMl@qAKcCFCD[BkAWeAAaHOEC_HCSQO_@}B\\iAZMBg@",
+"walk||-34.6867,150.8592|-34.6719,150.8632|3":"zvurE_uww[r@r@CfB_@rFqAm@cD}@yGk@uCKbAzHoA^QZSa@g@WS_AOFAYIEm@h@_DzGmKpDIEAb@IMYCi@y@I]o@s@iBiAeAWQBUVGV?xAKdAoAzDBZEDISmAg@}BoBo@P_Ay@CDgAg@eAoAKYLQAg@Hq@\\aAl@oDI}Bw@uC]c@_B{@_@C[FeB`AgBD}AfAi@WmA{AQ}@AaHOEC_HCSQO_@}B\\iAZMBg@",
+"walk||-34.6978,150.8541|-34.6867,150.8592|2":"f|wrEcuvw[sFlBT~Aj@dBl@rCGd@l@|F?f@]n@g@NWCc@SGYwAcKa@eI]mAKM}@GWkEKi@a@c@o@MToDLYY[CQg@W_B@}AUg@@WNo@pBYzAi@xGBd@G\\Rn@a@z@Kn@B\\YFGLMKFu@EOmFpAoBEiBSmEaDKcC@aBFMg@w@uAKGkDgGkAh@oIk@K@W_Ac@i@m@",
+"walk||-34.7360,150.8341|-34.6978,150.8541|8":"~j_sEcxrw[]tByL{DuPqG}DqCcCeCaA_@Qa@y@ODe@WaA\\oBAkAUOq@\\m@I{@_Ac@u@Gi@}AyDiDcDYc@TkHKgB_BaAuC_@iAxAoAh@[@i@cAeAgAQoAq@wBOeCaCaBe@B}A^]CYi@WmCOOw@McCvCu@c@U?eCtA{A?_@Pi@p@_ANcCz@m@HmCAKcAUk@eAq@qAeBg@mDmAqCAoD{@aFqBoB_BUiAXkACsCp@i@B{@Zk@hA[TYFk@IkBj@gAO}AVoAjAyBxAeAC]Nc@h@e@F]AuB_AeAoAiAaDDcBGcCGWa@_@kA~AmApCm@z@aCjBcD`AUAiAu@IgAH{BeAmEWi@sCmDcCkG_A}@uA{BaAi@OLO^o@lDqBlHmA~@]n@K?U\\wBv@cAEm@VBs@k@iCk@eBU_BrFmB",
+"walk||-34.7360,150.8341|-34.7447,150.8177|0":"~j_sEcxrw[]tB|@l@nDdAdCd@d@\\x@FIl@SDMtACzBaBpWDVtBPKrAfCxFk@xHW|@XtA?ZKP~@nBCXDHhHz@?J^L|VzCc@rGz@xAIHGx@FVv@j@@\\MT?b@TZr@VAb@OUGHOO",
+"walk||-34.7447,150.8177|-34.7452,150.8360|0":"haasEqqow[NNFINT@c@s@WU[?c@LUA]w@k@GWFy@HIw@iAEYd@iGh@D?w@fBaW?OKA`AaNG?PwAm@Fo@mCfAu@IQDCgAgCIBCMZUa@yAJoCGw@Uq@_@a@mA[`@mFLBFe@CQTkDOk@JHJy@PCBKpCoBUmC",
+"walk||-34.7452,150.8360|-34.7360,150.8341|0":"ndasE_dsw[TlCqCnBCJQBKx@g@MaAzAc@z@Sv@iAtBk@f@gCrAgBd@yII}Fy@_Cm@u@Ek@_@wB_@aD{@sA{@\\uB",
 "walk||-37.7985,144.9668|-37.7985,144.9785|0":"roueFoyxsZxBqb@KCKcA}DqIJ_BKAlAaUL@",
 "walk||-37.7985,144.9785|-37.7985,144.9738|0":"roueF}b{sZMAmA`UJ@K~AtAxC",
 "walk||-37.8047,144.9717|-37.7985,144.9668|0":"jvveFcxysZ|ALYnFoAMAP[DWf@cCUEx@gISqAc@c@C{AP]TgKaAkAtU",
@@ -902,7 +930,7 @@ function segKey(g){ function r(p){ return p[0].toFixed(4)+','+p[1].toFixed(4); }
 "Bronte Beach":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/6/6a/AUS_Sydney%2C_Waverley%2C_Bronte_Beach_006.jpg/330px-AUS_Sydney%2C_Waverley%2C_Bronte_Beach_006.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:AUS Sydney, Waverley, Bronte Beach 006.jpg","credit":"-wuppertaler · CC BY 4.0"},
 "Brunswick Street, Melbourne":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/7/7a/Fitzroy_Melbourne.jpg/330px-Fitzroy_Melbourne.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Fitzroy Melbourne.jpg","credit":"Marcus Bichel Lindegaard · CC BY 2.0"},
 "Burleigh Head National Park":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/6/69/Burleigh_Heads_and_Tallebudgera_Creek.JPG/330px-Burleigh_Heads_and_Tallebudgera_Creek.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Burleigh Heads and Tallebudgera Creek.JPG","credit":"Shiftchange · Public domain"},
-"Cabbage Tree Bay Aquatic Reserve":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/0/07/Cabbage_Tree_Bay.jpg/330px-Cabbage_Tree_Bay.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Cabbage Tree Bay.jpg","credit":"MarineParkLover · CC BY-SA 4.0"},
+"Camp Cove":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/9/9a/Watsons_Bay_-_Camp_Cove_Beach%2C_Sydney_2_-_Nov_2008.jpg/330px-Watsons_Bay_-_Camp_Cove_Beach%2C_Sydney_2_-_Nov_2008.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Watsons Bay - Camp Cove Beach, Sydney 2 - Nov 2008.jpg","credit":"Diliff · CC BY-SA 3.0"},
 "Carlton Gardens":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/2/27/Aerial_Photo_of_Royal_Exhibition_Building%2C_Melbourne.jpg/330px-Aerial_Photo_of_Royal_Exhibition_Building%2C_Melbourne.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Aerial Photo of Royal Exhibition Building, Melbourne.jpg","credit":"Andrew Lukaris · CC BY-SA 2.0"},
 "Chinatown, Melbourne":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/2/26/Little_bourke_st.jpg/330px-Little_bourke_st.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Little bourke st.jpg","credit":"User:Bmra73 · Public domain"},
 "Chinatown, Sydney":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/2/2b/The_Sydney_Chinatown_in_Dixon_Street.jpg/330px-The_Sydney_Chinatown_in_Dixon_Street.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:The Sydney Chinatown in Dixon Street.jpg","credit":"Chen Hualin · CC BY-SA 4.0"},
@@ -924,8 +952,6 @@ function segKey(g){ function r(p){ return p[0].toFixed(4)+','+p[1].toFixed(4); }
 "Loch Ard Gorge":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/e/ea/Loch_Ard_Gorge_Panorama_July_2005.jpg/330px-Loch_Ard_Gorge_Panorama_July_2005.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Loch Ard Gorge Panorama July 2005.jpg","credit":"Diliff · CC BY-SA 3.0"},
 "Luna Park Melbourne":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/7/77/Luna_park_melboure.jpg/330px-Luna_park_melboure.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Luna park melboure.jpg","credit":"Adam.J.W.C. · CC BY-SA 2.5"},
 "Lygon Street":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/8/81/Lygon_Street%2C_Carlton.jpg/330px-Lygon_Street%2C_Carlton.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Lygon Street, Carlton.jpg","credit":"Tim J Keegan · CC BY-SA 2.0"},
-"Manly Beach":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/0/07/Summer_days_at_Manly_Beach.jpg/330px-Summer_days_at_Manly_Beach.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Summer days at Manly Beach.jpg","credit":"Hardlinerr · CC BY-SA 4.0"},
-"Manly Wharf":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/5/56/Entrance_to_Manly_Ferry_Wharf_July_2022_b.jpg/330px-Entrance_to_Manly_Ferry_Wharf_July_2022_b.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Entrance to Manly Ferry Wharf July 2022 b.jpg","credit":"File:Entrance to Manly Ferry Wharf July 2022.j… · CC BY-SA 4.0"},
 "Melbourne Airport":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8e/Tullamarine_International_terminal_Vabre-1.jpg/330px-Tullamarine_International_terminal_Vabre-1.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Tullamarine International terminal Vabre-1.jpg","credit":"Phil Vabre · GFDL"},
 "Melbourne Central Shopping Centre":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d6/Melbourne_Central_Coop%27s_Shot_Tower.jpg/330px-Melbourne_Central_Coop%27s_Shot_Tower.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Melbourne Central Coop's Shot Tower.jpg","credit":"Jordan from Singapore · CC BY-SA 2.0"},
 "Melbourne Town Hall":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a4/Melbourne_Town_Hall_October_2023.jpg/330px-Melbourne_Town_Hall_October_2023.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Melbourne Town Hall October 2023.jpg","credit":"Argmae · CC BY-SA 4.0"},
@@ -960,9 +986,16 @@ function segKey(g){ function r(p){ return p[0].toFixed(4)+','+p[1].toFixed(4); }
 "The Twelve Apostles (Victoria)":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e4/The_Twelve_Apostles_2011.jpg/330px-The_Twelve_Apostles_2011.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:The Twelve Apostles 2011.jpg","credit":"Michael J Fromholtz · CC BY-SA 4.0"},
 "Warner Bros. Movie World":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/5/59/Warner_Bros_Movie_World_-_panoramio_%285%29.jpg/330px-Warner_Bros_Movie_World_-_panoramio_%285%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Warner Bros Movie World - panoramio (5).jpg","credit":"caoyadong · CC BY-SA 3.0"},
 "Watsons Bay":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/7/7f/Watsons_Bay_-_Camp_Cove_Beach%2C_Sydney_-_Nov_2008.jpg/330px-Watsons_Bay_-_Camp_Cove_Beach%2C_Sydney_-_Nov_2008.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Watsons Bay - Camp Cove Beach, Sydney - Nov 2008.jpg","credit":"Diliff · CC BY-SA 3.0"},
-"search:Great Ocean Road arch":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/3/3d/Great_Ocean_Road_Arch_2018_-_3.jpg/330px-Great_Ocean_Road_Arch_2018_-_3.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Great Ocean Road Arch 2018 - 3.jpg","credit":"Orderinchaos · CC BY-SA 4.0"},
+"search:Gerringong headland Werri Beach":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f0/Gerringong_and_Werri_Beach.jpg/330px-Gerringong_and_Werri_Beach.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Gerringong and Werri Beach.jpg","credit":"Lzhou1 · CC BY-SA 4.0"},
+"search:Great Ocean Road arch":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/5/50/Great_Ocean_Road_Arch_2018_-_1.jpg/330px-Great_Ocean_Road_Arch_2018_-_1.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Great Ocean Road Arch 2018 - 1.jpg","credit":"Orderinchaos · CC BY-SA 4.0"},
 "search:intitle:\"Acland Street\" cake":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/1/1b/Acland_Street_cake_shop_window.jpg/330px-Acland_Street_cake_shop_window.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Acland Street cake shop window.jpg","credit":"VirtualSteve at English Wikipedia · CC BY-SA 3.0"},
+"search:intitle:\"Kiama Blowhole\"":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/9/98/Kiama_Blowhole_%288763219752%29.jpg/330px-Kiama_Blowhole_%288763219752%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Kiama Blowhole (8763219752).jpg","credit":"portengaround · CC BY-SA 2.0"},
+"search:intitle:\"Kiama Coast Walk\"":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c3/The_Kiama_coastal_walk%2C_nearing_Kiama_-_panoramio.jpg/330px-The_Kiama_coastal_walk%2C_nearing_Kiama_-_panoramio.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:The Kiama coastal walk, nearing Kiama - panoramio.jpg","credit":"Maurice van Creij · CC BY 3.0"},
+"search:intitle:\"Kiama Harbour\"":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/6/6f/Kiama_harbour_1.JPG/330px-Kiama_harbour_1.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Kiama harbour 1.JPG","credit":"Poyt448 Peter Woodard · Public domain"},
+"search:intitle:\"Little Blowhole\" Kiama":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8a/Little_Blowhole_Kiama_New_South_Wales.jpg/330px-Little_Blowhole_Kiama_New_South_Wales.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Little Blowhole Kiama New South Wales.jpg","credit":"Bluedawe · CC BY-SA 3.0"},
 "search:intitle:\"Royal Arcade\" Melbourne":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/b/bc/Melbourne_Royal_Arcade_Passage_to_Elizabeth_Street.jpg/330px-Melbourne_Royal_Arcade_Passage_to_Elizabeth_Street.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Melbourne Royal Arcade Passage to Elizabeth Street.jpg","credit":"Ymblanter · CC BY-SA 4.0"},
+"search:intitle:\"The Gap\" Watsons Bay":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e1/The_Gap%2C_Watsons_Bay%2C_Sydney%2C_2021.jpg/330px-The_Gap%2C_Watsons_Bay%2C_Sydney%2C_2021.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:The Gap, Watsons Bay, Sydney, 2021.jpg","credit":"Leoxiong · CC BY-SA 4.0"},
+"search:intitle:\"Werri Beach\"":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/9/9c/Looking_north_on_Werri_Beach_-_panoramio.jpg/330px-Looking_north_on_Werri_Beach_-_panoramio.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Looking north on Werri Beach - panoramio.jpg","credit":"Maurice van Creij · CC BY 3.0"},
 "search:intitle:Broadbeach beach":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/f/fb/Kurrawa_Beach%2C_Broadbeach%2C_Queensland_2019%2C_01.jpg/330px-Kurrawa_Beach%2C_Broadbeach%2C_Queensland_2019%2C_01.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Kurrawa Beach, Broadbeach, Queensland 2019, 01.jpg","credit":"Kgbo · CC BY-SA 4.0"}
 };/* @photo-end */
 function photoOf(s){ var k = s && s.img ? [].concat(s.img)[0] : null; return k && PHOTO[k] ? PHOTO[k] : null; }
@@ -995,7 +1028,15 @@ function segKm(g){ var l=geoLine(g); return l ? lineKm(l) : lineKm([g.A].concat(
 function fmtKm(km){ return km<1 ? Math.max(50, Math.round(km*20)*50)+' m' : km.toFixed(1)+' km'; }
 function walkText(km){ return '约 '+Math.max(1, Math.round(km/4.5*60))+' 分钟 · '+fmtKm(km); }
 // 一天要走多少：只算站与站之间的步行（不含可选的支线和景点里面逛）
-function dayWalkKm(d){ var km=0; dayLegs(d).forEach(function(l){ if(l.s.opt) return; legSegs(l).forEach(function(g){ if(g.mode==='walk') km+=segKm(g); }); }); return km; }
+function walkKmOf(d, oi){ var km=0; legsFor(d, oi).forEach(function(l){ if(l.s.opt) return; legSegs(l).forEach(function(g){ if(g.mode==='walk') km+=segKm(g); }); }); return km; }
+function dayWalkKm(d){ return walkKmOf(d, S.opt[d.id]||0); }
+// 总览用：有几个方案的天写成「a–b km」
+function walkRange(d){
+  var ks = d.options ? d.options.map(function(o, i){ return walkKmOf(d, i); }) : [walkKmOf(d, 0)];
+  var lo = Math.min.apply(null, ks), hi = Math.max.apply(null, ks);
+  if(hi < 0.1) return '';
+  return ' · 步行约 '+(hi-lo < 0.5 ? hi.toFixed(1) : lo.toFixed(1)+'–'+hi.toFixed(1))+' km';
+}
 function fmtSteps(km){ return (Math.round(km*STEPS_PER_KM/100)*100).toLocaleString('zh-CN'); }
 
 /* ---------- 日出日落（简化天文算法，约 ±2 分钟） ---------- */
@@ -1208,7 +1249,7 @@ function arcPts(a, b, bend){
 function buildScene(){
   if(scene){ map.removeLayer(scene.group); map.removeLayer(scene.hotelGroup); }
   map.closePopup();
-  var sc = scene = {group:LF.layerGroup().addTo(map), hotelGroup:LF.layerGroup(), marks:[], labels:[], fit:[], hasHotels:false};
+  var sc = scene = {group:LF.layerGroup().addTo(map), hotelGroup:LF.layerGroup(), marks:[], labels:[], fit:[], fitHome:[], hasHotels:false};
   var isOv = S.view==='overview', d = isOv?null:byId[S.view];
   setNote(mapNote(d));
 
@@ -1238,8 +1279,8 @@ function buildScene(){
     var city=d.city, stops=dayStops(d), st=startPt(d), en=endPt(d), onMap = !d.region || d.region==='gc';
     // 同城其他天的点（淡显）
     if(onMap){
-      DAYS.forEach(function(o){ if(o===d || o.city!==city || o.region==='gor') return;
-        var arr = o.options ? o.options.reduce(function(a,op){return a.concat(op.stops);},[]) : o.stops;
+      DAYS.forEach(function(o){ if(o===d || o.city!==city || (o.region && o.region!=='gc')) return;
+        var arr = o.options ? o.options.reduce(function(a,op){return a.concat(op.stops);}, (o.head||[]).slice()) : o.stops;
         arr.forEach(function(s){ if(s.kind==='air'||s.kind==='stay') return; LF.circleMarker(s.ll, {radius:3.5, className:'ctx', interactive:false, stroke:false, fillOpacity:1}).addTo(sc.group); });
       });
     }
@@ -1260,10 +1301,11 @@ function buildScene(){
       var same = st && en && st.ll[0]===en.ll[0] && st.ll[1]===en.ll[1];
       var bset = [st]; if(en && !same) bset.push(en);
       bset.forEach(function(b){ if(!b) return;
-        if(b.booked){ sc.fit.push(b.ll); return; }
+        var isHome = b.booked || b.n==='住处出发' || b.n==='回住处';
+        if(b.booked){ sc.fitHome.push(b.ll); return; }
         var lab = b.n && b.n!=='住处出发' && b.n!=='回住处' ? b.n : '住处';
         var mk = addMarker(b.ll, 'mk base', '<span class="ring"></span><span class="box">'+BED_SVG+'</span>', 18, lab, 100);
-        var m = {mk:mk, ll:b.ll, r:10}; sc.marks.push(m); sc.fit.push(b.ll);
+        var m = {mk:mk, ll:b.ll, r:10}; sc.marks.push(m); (isHome ? sc.fitHome : sc.fit).push(b.ll);
         addLabel(lab, 'dim', b.ll, 10, 6);
         onActivate(mk, function(){ openPop({n:lab, en:b.en||'', note:b.note||'每天从住处出发；具体位置看你们最后订的酒店。'}, b.ll, 10); markSel(m); S.sel={type:'b'}; });
       });
@@ -1273,7 +1315,7 @@ function buildScene(){
       var label = s.kind==='stay' ? '宿' : (s.kind==='air' ? '机' : String(++num));
       var mk = addMarker(s.ll, 'mk '+city+(s.opt?' opt':'')+(s.kind?' '+s.kind:''), '<span class="ring"></span><span class="dot">'+label+'</span>', 22, s.n, 300);
       sc.marks.push({mk:mk, ll:s.ll, r:12, i:i});
-      if(!s.nofit && !s.opt && s.kind!=='air') sc.fit.push(s.ll);
+      if(!s.nofit && !s.opt && s.kind!=='air') (s.kind==='stay' ? sc.fitHome : sc.fit).push(s.ll);
       onActivate(mk, function(){ select(i, false); });
       addLabel(s.n, s.opt?'dim':'', s.ll, 12, 2);
     });
@@ -1286,11 +1328,14 @@ function buildScene(){
           ? addMarker(h.ll, 'mk htl booked '+city, '<span class="ring"></span><span class="box">'+BED_SVG+'</span><span class="ck">✓</span>', 28, '已订 · '+h.n, 250)
           : addMarker(h.ll, 'mk htl'+(h.areaOnly?' area':''), '<span class="ring"></span><span class="box">'+BED_SVG+'</span>', 20, h.n, 0, sc.hotelGroup);
         sc.marks.push({mk:mk, ll:h.ll, r:bk?16:11, hotel:hi, booked:bk});
-        if(bk) sc.fit.push(h.ll); else sc.hasHotels=true;
+        if(bk) sc.fitHome.push(h.ll); else sc.hasHotels=true;
         onActivate(mk, function(){ selectHotel(hi, false); });
         addLabel(bk ? '已订 · '+(h.s||h.n) : (h.s||h.n), bk?'bk '+city:'h', h.ll, bk?16:11, bk?1.5:5, !bk);
       });
     }
+    // 已订的住处离当天的景点远（比如悉尼住 Ashbury），就不为了它把地图缩得很小；没订的城市照旧
+    var farOk = !bookedHotel(city);
+    sc.fitHome.forEach(function(p){ if(farOk || !sc.fit.length || sc.fit.some(function(q){ return haversine(p, q) < 4; })) sc.fit.push(p); });
   }
   if(S.hotels) sc.hotelGroup.addTo(map);
   btnHotels.setAttribute('aria-pressed', S.hotels?'true':'false');
@@ -1391,7 +1436,7 @@ function gmGo(A, B, mode){
   return 'https://www.google.com/maps/dir/?api=1&origin='+A[0]+','+A[1]+'&destination='+B[0]+','+B[1]+'&travelmode='+tm;
 }
 function stopLinks(s){ var l=''; if(s.q) l+='<a class="lk" href="'+gmSearch(s.q)+'" target="_blank" rel="noopener">地图</a>'; if(s.link) l+='<a class="lk" href="'+esc(s.link.u)+'" target="_blank" rel="noopener">'+esc(s.link.l)+'</a>'; return l; }
-function hotelLinks(h, c){ return '<a class="lk" href="'+gmSearch(h.q)+'" target="_blank" rel="noopener">地图</a>'+(h.areaOnly?'':'<a class="lk" href="'+booking(h,c)+'" target="_blank" rel="noopener">Booking 按日期查价</a>'); }
+function hotelLinks(h, c){ return '<a class="lk" href="'+gmSearch(h.q)+'" target="_blank" rel="noopener">地图</a>'+(h.areaOnly || isBooked(h) ?'':'<a class="lk" href="'+booking(h,c)+'" target="_blank" rel="noopener">Booking 按日期查价</a>'); }
 
 function isNarrow(){ return window.matchMedia && window.matchMedia('(max-width: 899px)').matches; }
 function findMark(f){ for(var i=0;i<scene.marks.length;i++){ if(f(scene.marks[i])) return scene.marks[i]; } return null; }
@@ -1463,7 +1508,7 @@ function renderDay(d){
   h+='<div class="pager"><button class="pbtn" type="button" data-go="'+(idx>0?DAYS[idx-1].id:'overview')+'">‹ '+(idx>0?DAYS[idx-1].date.slice(5).replace('-','/'):'总览')+'</button><button class="pbtn" type="button" data-go="'+(idx<DAYS.length-1?DAYS[idx+1].id:'')+'"'+(idx<DAYS.length-1?'':' disabled')+'>'+(idx<DAYS.length-1?DAYS[idx+1].date.slice(5).replace('-','/'):'行程结束')+' ›</button></div>';
   if(d.options){
     var cur=Math.min(S.opt[d.id]||0, d.options.length-1);
-    h+='<div class="opts" style="--c:var(--'+d.city+')"><span class="lab">白天选一个方向：</span>'+d.options.map(function(o,i){ return '<button class="obtn" type="button" data-opt="'+i+'" aria-pressed="'+(i===cur)+'">'+esc(o.label)+'</button>'; }).join('')+'</div>';
+    h+='<div class="opts" style="--c:var(--'+d.city+')"><span class="lab">'+esc(d.optLabel||'白天选一个方向：')+'</span>'+d.options.map(function(o,i){ return '<button class="obtn" type="button" data-opt="'+i+'" aria-pressed="'+(i===cur)+'">'+esc(o.label)+'</button>'; }).join('')+'</div>';
   }
   if(d.before){ h+='<h3 class="sec">抵达</h3>'+xferHtml(d.before); }
   h+='<h3 class="sec">路线</h3><ol class="stops" style="--c:var(--'+d.city+')">';
@@ -1521,7 +1566,7 @@ function renderOverview(){
   h+='<li><div class="drow static"><span class="md">10/23</span><span class="wd">五</span><span class="tt"><b>朋友济南出发</b><span>13:05 东航，武汉转机</span></span><span class="nt">飞机上</span></div></li>';
   DAYS.forEach(function(d){
     var c=CITY[d.city], night = d.night ? CITY[d.night].name : '飞机上';
-    h+='<li><button class="drow" type="button" data-go="'+d.id+'" style="--c:var(--'+d.city+')"><span class="md">'+d.date.slice(5).replace('-','/')+'</span><span class="wd">'+d.wd.slice(1)+'</span><span class="tt"><b><i class="dot-c"></i>'+esc(d.title)+'</b><span>'+esc(d.tag)+(dayWalkKm(d)>=0.1 ? ' · 步行约 '+dayWalkKm(d).toFixed(1)+' km' : '')+'</span></span><span class="nt">住 '+night+'</span></button></li>';
+    h+='<li><button class="drow" type="button" data-go="'+d.id+'" style="--c:var(--'+d.city+')"><span class="md">'+d.date.slice(5).replace('-','/')+'</span><span class="wd">'+d.wd.slice(1)+'</span><span class="tt"><b><i class="dot-c"></i>'+esc(d.title)+'</b><span>'+esc(d.tag)+walkRange(d)+'</span></span><span class="nt">住 '+night+'</span></button></li>';
   });
   h+='<li><div class="drow static"><span class="md">11/04</span><span class="wd">三</span><span class="tt"><b>11:30 到济南</b><span>11/5 上班</span></span><span class="nt">到家</span></div></li></ol>';
   h+='<h3 class="sec">交通</h3><div class="tblwrap"><table class="ftable"><tbody>'+FLIGHTS.map(function(f){ return '<tr><td>'+f.d+'</td><td><b>'+esc(f.code)+'</b> <span class="r">'+esc(f.r)+'</span><span class="sub">'+esc(f.who)+(f.sub?' · '+esc(f.sub):'')+'</span></td><td class="r" style="text-align:right;white-space:nowrap">'+esc(f.p)+'</td></tr>'; }).join('')+'</tbody></table></div>';

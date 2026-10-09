@@ -21,6 +21,7 @@ const OVERPASS = [
   'https://overpass-api.de/api/interpreter',
   'https://overpass.kumi.systems/api/interpreter',
   'https://overpass.private.coffee/api/interpreter',
+  'https://maps.mail.ru/osm/tools/overpass/api/interpreter',
 ];
 const OSRM = {
   foot: 'https://routing.openstreetmap.de/routed-foot/route/v1/foot/',
@@ -140,14 +141,18 @@ async function request(url, opts = {}, tries = 2, timeoutMs = 30000) {
   }
   throw err;
 }
-// 三个 Overpass 服务器同时问，谁先答用谁，其余的取消（公共服务器经常很忙）
+// 几个 Overpass 服务器同时问，谁先答用谁，其余的取消（公共服务器经常很忙）；都没答就等一会再问一轮
 async function overpass(q) {
+  try { return await overpassOnce(q); }
+  catch (e) { console.log(`  · 都没答，20 秒后再试一轮（${elapsed()}）`); await sleep(20000); return overpassOnce(q); }
+}
+async function overpassOnce(q) {
   const ctrl = new AbortController();
   const asks = OVERPASS.map(url => request(url, { method: 'POST', body: 'data=' + encodeURIComponent(q), headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, signal: ctrl.signal }, 1, 100000)
     .then(j => { if (!Array.isArray(j.elements)) throw new Error('返回格式不对'); ctrl.abort(); console.log(`  · ${url.split('/')[2]} 答了（${elapsed()}）`); return j; },
           e => { if (!ctrl.signal.aborted) console.log(`  · ${url.split('/')[2]} 失败：${e.message}（${elapsed()}）`); throw e; }));
   try { return await Promise.any(asks); }
-  catch (e) { throw new Error('三个服务器都没答'); }
+  catch (e) { throw new Error('服务器都没答'); }
   finally { await sleep(1000); }
 }
 async function osrm(profile, pts) {
