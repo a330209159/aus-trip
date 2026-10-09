@@ -722,11 +722,11 @@ var PAY = [
 function bookedHotel(city){ var hs=HOTELS[city]||[]; for(var i=0;i<hs.length;i++){ if(hs[i].booked && !hs[i].areaOnly) return hs[i]; } return null; }
 // 住处：订了酒店就用酒店的位置，否则用城市的默认落脚点
 function home(city){ var c=CITY[city], b=bookedHotel(city); return b ? {en:b.n, ll:b.ll, q:b.q, booked:true} : {en:'Hotel', ll:c.base, q:c.baseQ}; }
-// 某天（第 oi 个白天方案）的站点；方案里的 back 会替换「回酒店」那一站的交通
+// 某天（第 oi 个方案）的站点：head（各方案共用的前几站）+ 方案的站 + tail；方案里的 back 会替换「回酒店」那一站的交通
 function stopsFor(d, oi){
   var op = d.options ? d.options[Math.min(oi||0, d.options.length-1)] : null, tail = (d.tail||[]).slice();
   if(op && op.back && tail.length) tail[0] = Object.assign({}, tail[0], op.back);
-  var all = (op ? op.stops : d.stops).concat(tail), b = bookedHotel(d.city);
+  var all = (d.head||[]).concat(op ? op.stops : d.stops, tail), b = bookedHotel(d.city);
   return b ? all.map(function(s){ return s.kind==='stay' ? Object.assign({}, s, {en:b.n, ll:b.ll, q:b.q}) : s; }) : all;
 }
 function startPt(d){ if(!d.start) return null; return d.start===true ? Object.assign({n:'住处出发', base:true}, home(d.city)) : Object.assign({base:true}, d.start); }
@@ -995,7 +995,15 @@ function segKm(g){ var l=geoLine(g); return l ? lineKm(l) : lineKm([g.A].concat(
 function fmtKm(km){ return km<1 ? Math.max(50, Math.round(km*20)*50)+' m' : km.toFixed(1)+' km'; }
 function walkText(km){ return '约 '+Math.max(1, Math.round(km/4.5*60))+' 分钟 · '+fmtKm(km); }
 // 一天要走多少：只算站与站之间的步行（不含可选的支线和景点里面逛）
-function dayWalkKm(d){ var km=0; dayLegs(d).forEach(function(l){ if(l.s.opt) return; legSegs(l).forEach(function(g){ if(g.mode==='walk') km+=segKm(g); }); }); return km; }
+function walkKmOf(d, oi){ var km=0; legsFor(d, oi).forEach(function(l){ if(l.s.opt) return; legSegs(l).forEach(function(g){ if(g.mode==='walk') km+=segKm(g); }); }); return km; }
+function dayWalkKm(d){ return walkKmOf(d, S.opt[d.id]||0); }
+// 总览用：有几个方案的天写成「a–b km」
+function walkRange(d){
+  var ks = d.options ? d.options.map(function(o, i){ return walkKmOf(d, i); }) : [walkKmOf(d, 0)];
+  var lo = Math.min.apply(null, ks), hi = Math.max.apply(null, ks);
+  if(hi < 0.1) return '';
+  return ' · 步行约 '+(hi-lo < 0.5 ? hi.toFixed(1) : lo.toFixed(1)+'–'+hi.toFixed(1))+' km';
+}
 function fmtSteps(km){ return (Math.round(km*STEPS_PER_KM/100)*100).toLocaleString('zh-CN'); }
 
 /* ---------- 日出日落（简化天文算法，约 ±2 分钟） ---------- */
@@ -1208,7 +1216,7 @@ function arcPts(a, b, bend){
 function buildScene(){
   if(scene){ map.removeLayer(scene.group); map.removeLayer(scene.hotelGroup); }
   map.closePopup();
-  var sc = scene = {group:LF.layerGroup().addTo(map), hotelGroup:LF.layerGroup(), marks:[], labels:[], fit:[], hasHotels:false};
+  var sc = scene = {group:LF.layerGroup().addTo(map), hotelGroup:LF.layerGroup(), marks:[], labels:[], fit:[], fitHome:[], hasHotels:false};
   var isOv = S.view==='overview', d = isOv?null:byId[S.view];
   setNote(mapNote(d));
 
@@ -1238,8 +1246,8 @@ function buildScene(){
     var city=d.city, stops=dayStops(d), st=startPt(d), en=endPt(d), onMap = !d.region || d.region==='gc';
     // 同城其他天的点（淡显）
     if(onMap){
-      DAYS.forEach(function(o){ if(o===d || o.city!==city || o.region==='gor') return;
-        var arr = o.options ? o.options.reduce(function(a,op){return a.concat(op.stops);},[]) : o.stops;
+      DAYS.forEach(function(o){ if(o===d || o.city!==city || (o.region && o.region!=='gc')) return;
+        var arr = o.options ? o.options.reduce(function(a,op){return a.concat(op.stops);}, (o.head||[]).slice()) : o.stops;
         arr.forEach(function(s){ if(s.kind==='air'||s.kind==='stay') return; LF.circleMarker(s.ll, {radius:3.5, className:'ctx', interactive:false, stroke:false, fillOpacity:1}).addTo(sc.group); });
       });
     }
@@ -1260,10 +1268,11 @@ function buildScene(){
       var same = st && en && st.ll[0]===en.ll[0] && st.ll[1]===en.ll[1];
       var bset = [st]; if(en && !same) bset.push(en);
       bset.forEach(function(b){ if(!b) return;
-        if(b.booked){ sc.fit.push(b.ll); return; }
+        var isHome = b.booked || b.n==='住处出发' || b.n==='回住处';
+        if(b.booked){ sc.fitHome.push(b.ll); return; }
         var lab = b.n && b.n!=='住处出发' && b.n!=='回住处' ? b.n : '住处';
         var mk = addMarker(b.ll, 'mk base', '<span class="ring"></span><span class="box">'+BED_SVG+'</span>', 18, lab, 100);
-        var m = {mk:mk, ll:b.ll, r:10}; sc.marks.push(m); sc.fit.push(b.ll);
+        var m = {mk:mk, ll:b.ll, r:10}; sc.marks.push(m); (isHome ? sc.fitHome : sc.fit).push(b.ll);
         addLabel(lab, 'dim', b.ll, 10, 6);
         onActivate(mk, function(){ openPop({n:lab, en:b.en||'', note:b.note||'每天从住处出发；具体位置看你们最后订的酒店。'}, b.ll, 10); markSel(m); S.sel={type:'b'}; });
       });
@@ -1273,7 +1282,7 @@ function buildScene(){
       var label = s.kind==='stay' ? '宿' : (s.kind==='air' ? '机' : String(++num));
       var mk = addMarker(s.ll, 'mk '+city+(s.opt?' opt':'')+(s.kind?' '+s.kind:''), '<span class="ring"></span><span class="dot">'+label+'</span>', 22, s.n, 300);
       sc.marks.push({mk:mk, ll:s.ll, r:12, i:i});
-      if(!s.nofit && !s.opt && s.kind!=='air') sc.fit.push(s.ll);
+      if(!s.nofit && !s.opt && s.kind!=='air') (s.kind==='stay' ? sc.fitHome : sc.fit).push(s.ll);
       onActivate(mk, function(){ select(i, false); });
       addLabel(s.n, s.opt?'dim':'', s.ll, 12, 2);
     });
@@ -1286,11 +1295,14 @@ function buildScene(){
           ? addMarker(h.ll, 'mk htl booked '+city, '<span class="ring"></span><span class="box">'+BED_SVG+'</span><span class="ck">✓</span>', 28, '已订 · '+h.n, 250)
           : addMarker(h.ll, 'mk htl'+(h.areaOnly?' area':''), '<span class="ring"></span><span class="box">'+BED_SVG+'</span>', 20, h.n, 0, sc.hotelGroup);
         sc.marks.push({mk:mk, ll:h.ll, r:bk?16:11, hotel:hi, booked:bk});
-        if(bk) sc.fit.push(h.ll); else sc.hasHotels=true;
+        if(bk) sc.fitHome.push(h.ll); else sc.hasHotels=true;
         onActivate(mk, function(){ selectHotel(hi, false); });
         addLabel(bk ? '已订 · '+(h.s||h.n) : (h.s||h.n), bk?'bk '+city:'h', h.ll, bk?16:11, bk?1.5:5, !bk);
       });
     }
+    // 已订的住处离当天的景点远（比如悉尼住 Ashbury），就不为了它把地图缩得很小；没订的城市照旧
+    var farOk = !bookedHotel(city);
+    sc.fitHome.forEach(function(p){ if(farOk || !sc.fit.length || sc.fit.some(function(q){ return haversine(p, q) < 4; })) sc.fit.push(p); });
   }
   if(S.hotels) sc.hotelGroup.addTo(map);
   btnHotels.setAttribute('aria-pressed', S.hotels?'true':'false');
@@ -1391,7 +1403,7 @@ function gmGo(A, B, mode){
   return 'https://www.google.com/maps/dir/?api=1&origin='+A[0]+','+A[1]+'&destination='+B[0]+','+B[1]+'&travelmode='+tm;
 }
 function stopLinks(s){ var l=''; if(s.q) l+='<a class="lk" href="'+gmSearch(s.q)+'" target="_blank" rel="noopener">地图</a>'; if(s.link) l+='<a class="lk" href="'+esc(s.link.u)+'" target="_blank" rel="noopener">'+esc(s.link.l)+'</a>'; return l; }
-function hotelLinks(h, c){ return '<a class="lk" href="'+gmSearch(h.q)+'" target="_blank" rel="noopener">地图</a>'+(h.areaOnly?'':'<a class="lk" href="'+booking(h,c)+'" target="_blank" rel="noopener">Booking 按日期查价</a>'); }
+function hotelLinks(h, c){ return '<a class="lk" href="'+gmSearch(h.q)+'" target="_blank" rel="noopener">地图</a>'+(h.areaOnly || isBooked(h) ?'':'<a class="lk" href="'+booking(h,c)+'" target="_blank" rel="noopener">Booking 按日期查价</a>'); }
 
 function isNarrow(){ return window.matchMedia && window.matchMedia('(max-width: 899px)').matches; }
 function findMark(f){ for(var i=0;i<scene.marks.length;i++){ if(f(scene.marks[i])) return scene.marks[i]; } return null; }
@@ -1463,7 +1475,7 @@ function renderDay(d){
   h+='<div class="pager"><button class="pbtn" type="button" data-go="'+(idx>0?DAYS[idx-1].id:'overview')+'">‹ '+(idx>0?DAYS[idx-1].date.slice(5).replace('-','/'):'总览')+'</button><button class="pbtn" type="button" data-go="'+(idx<DAYS.length-1?DAYS[idx+1].id:'')+'"'+(idx<DAYS.length-1?'':' disabled')+'>'+(idx<DAYS.length-1?DAYS[idx+1].date.slice(5).replace('-','/'):'行程结束')+' ›</button></div>';
   if(d.options){
     var cur=Math.min(S.opt[d.id]||0, d.options.length-1);
-    h+='<div class="opts" style="--c:var(--'+d.city+')"><span class="lab">白天选一个方向：</span>'+d.options.map(function(o,i){ return '<button class="obtn" type="button" data-opt="'+i+'" aria-pressed="'+(i===cur)+'">'+esc(o.label)+'</button>'; }).join('')+'</div>';
+    h+='<div class="opts" style="--c:var(--'+d.city+')"><span class="lab">'+esc(d.optLabel||'白天选一个方向：')+'</span>'+d.options.map(function(o,i){ return '<button class="obtn" type="button" data-opt="'+i+'" aria-pressed="'+(i===cur)+'">'+esc(o.label)+'</button>'; }).join('')+'</div>';
   }
   if(d.before){ h+='<h3 class="sec">抵达</h3>'+xferHtml(d.before); }
   h+='<h3 class="sec">路线</h3><ol class="stops" style="--c:var(--'+d.city+')">';
@@ -1521,7 +1533,7 @@ function renderOverview(){
   h+='<li><div class="drow static"><span class="md">10/23</span><span class="wd">五</span><span class="tt"><b>朋友济南出发</b><span>13:05 东航，武汉转机</span></span><span class="nt">飞机上</span></div></li>';
   DAYS.forEach(function(d){
     var c=CITY[d.city], night = d.night ? CITY[d.night].name : '飞机上';
-    h+='<li><button class="drow" type="button" data-go="'+d.id+'" style="--c:var(--'+d.city+')"><span class="md">'+d.date.slice(5).replace('-','/')+'</span><span class="wd">'+d.wd.slice(1)+'</span><span class="tt"><b><i class="dot-c"></i>'+esc(d.title)+'</b><span>'+esc(d.tag)+(dayWalkKm(d)>=0.1 ? ' · 步行约 '+dayWalkKm(d).toFixed(1)+' km' : '')+'</span></span><span class="nt">住 '+night+'</span></button></li>';
+    h+='<li><button class="drow" type="button" data-go="'+d.id+'" style="--c:var(--'+d.city+')"><span class="md">'+d.date.slice(5).replace('-','/')+'</span><span class="wd">'+d.wd.slice(1)+'</span><span class="tt"><b><i class="dot-c"></i>'+esc(d.title)+'</b><span>'+esc(d.tag)+walkRange(d)+'</span></span><span class="nt">住 '+night+'</span></button></li>';
   });
   h+='<li><div class="drow static"><span class="md">11/04</span><span class="wd">三</span><span class="tt"><b>11:30 到济南</b><span>11/5 上班</span></span><span class="nt">到家</span></div></li></ol>';
   h+='<h3 class="sec">交通</h3><div class="tblwrap"><table class="ftable"><tbody>'+FLIGHTS.map(function(f){ return '<tr><td>'+f.d+'</td><td><b>'+esc(f.code)+'</b> <span class="r">'+esc(f.r)+'</span><span class="sub">'+esc(f.who)+(f.sub?' · '+esc(f.sub):'')+'</span></td><td class="r" style="text-align:right;white-space:nowrap">'+esc(f.p)+'</td></tr>'; }).join('')+'</tbody></table></div>';
