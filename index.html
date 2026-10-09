@@ -355,7 +355,7 @@ function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(c){retur
 /* @data-begin（tools/fetch-routes.mjs 会读取这段，到 @data-end 为止） */
 /* ---------- 城市 ---------- */
 var CITY = {
-  syd:{name:'悉尼', en:'Sydney', baseQ:'Museum Station Sydney', tz:11, sun:[-33.8688,151.2093], base:[-33.8775,151.2095], anchor:{n:'Circular Quay', ll:[-33.8614,151.2109]}, cin:'2026-10-24', cout:'2026-10-27', nights:3},
+  syd:{name:'悉尼', en:'Sydney', baseQ:'25 Woodlands Rd, Ashbury NSW 2193', tz:11, sun:[-33.8688,151.2093], base:[-33.8967,151.1218], anchor:{n:'Ashfield 站', ll:[-33.8877,151.1258]}, cin:'2026-10-24', cout:'2026-10-27', nights:3},
   mel:{name:'墨尔本', en:'Melbourne', baseQ:'Melbourne Central', tz:11, sun:[-37.8136,144.9631], base:[-37.8120,144.9620], anchor:{n:'Southern Cross 站', ll:[-37.8183,144.9526]}, cin:'2026-10-27', cout:'2026-10-31', nights:4},
   gc:{name:'黄金海岸', en:'Gold Coast', baseQ:'Cavill Avenue Surfers Paradise', tz:10, sun:[-28.0167,153.4000], base:[-28.0040,153.4300], anchor:{n:'Cavill Ave 海滩', ll:[-28.0024,153.4315]}, cin:'2026-10-31', cout:'2026-11-02', nights:2},
   bne:{name:'布里斯班', en:'Brisbane', baseQ:'Roma Street Station Brisbane', tz:10, sun:[-27.4698,153.0251], base:[-27.4690,153.0215], anchor:{n:'Roma St 站', ll:[-27.4659,153.0193]}, cin:'2026-11-02', cout:'2026-11-03', nights:1}
@@ -375,10 +375,7 @@ var REGION = {
    当天从住处出发 / 回住处、「酒店放行李 / 取行李」这些点也会自动挪到它的位置。区域备选（areaOnly）不能标。 */
 var HOTELS = {
   syd:[
-    {n:'Song Hotel Sydney', booked:false, area:'Hyde Park 南端', ll:[-33.8770,151.2112], tags:['双床房 Deluxe Twin','估价 A$170–250'], note:'参考攻略同款位置，去 Museum 站和唐人街都近。', q:'Song Hotel Sydney'},
-    {n:'ibis Sydney World Square', booked:false, s:'ibis World Square', area:'Town Hall · 唐人街', ll:[-33.8778,151.2077], tags:['双床房','估价 A$180–250'], note:'连锁酒店，有前台，退房后寄存行李方便（订前确认）。', q:'ibis Sydney World Square'},
-    {n:'Great Southern Hotel', booked:false, area:'Central 站旁', ll:[-33.8807,151.2047], tags:['双床房','估价 A$160–220'], note:'偏经济，离 Central 站近，去机场方便。', q:'Great Southern Hotel Sydney'},
-    {n:'North Sydney', area:'区域备选', ll:[-33.8395,151.2075], areaOnly:true, tags:['周末可能更便宜'], note:'10/24、10/25 是周末，商务区酒店可以和市中心比价；去 Bondi 要多换一次车。', q:'hotels North Sydney'}
+    {n:'Ashbury 民宿', booked:true, area:'25 Woodlands Rd, Ashbury', ll:[-33.8967,151.1218], tags:['两间房'], note:'房东同意 10/24 上午先放行李、10/27 退房后行李留到下午。离 Ashfield 站步行约 20 分钟，附近 King St 有 491 路到车站。', q:'25 Woodlands Rd, Ashbury NSW 2193'}
   ],
   mel:[
     {n:'ibis Melbourne Hotel and Apartments', booked:false, s:'ibis Melbourne', area:'Therry St · 近 QVM', ll:[-37.8082,144.9606], tags:['两卧公寓','估价 A$260 起'], note:'两卧公寓一间 Queen 床、一间两张单人床，适合一男一女各住一间。', q:'ibis Melbourne Hotel and Apartments'},
@@ -401,15 +398,15 @@ var HOTELS = {
 };
 
 /* ---------- 渡轮 / 旅行团途经点（示意） ---------- */
-var FERRY_MANLY = [[-33.8555,151.2140],[-33.8545,151.2330],[-33.8505,151.2560],[-33.8390,151.2700],[-33.8180,151.2780],[-33.8060,151.2835]];
 var FERRY_WATSONS = [[-33.8555,151.2140],[-33.8550,151.2255],[-33.8545,151.2520],[-33.8500,151.2700],[-33.8455,151.2790]];
 var CITYCAT = [[-27.4745,153.0185],[-27.4785,153.0225],[-27.4800,153.0285],[-27.4745,153.0325],[-27.4680,153.0315],[-27.4640,153.0345]];
 
 /* ---------- 车站和码头（交通段的上下车点，坐标 [纬度, 经度]） ---------- */
 var STN = {
-  sydIntl:[-33.9350,151.1664], sydDom:[-33.9334,151.1810], museum:[-33.8764,151.2097], cqStn:[-33.8613,151.2107],
-  cqW2:[-33.8604,151.2113], cqW3:[-33.8606,151.2121], barangarooM:[-33.8630,151.2032], gadigal:[-33.8745,151.2078],
-  museumBus:[-33.8762,151.2099], coogeeBus:[-33.9205,151.2565], bondiBus:[-33.8906,151.2750], bondiJn:[-33.8915,151.2477], townHall:[-33.8731,151.2068],
+  sydIntl:[-33.9350,151.1664], sydDom:[-33.9334,151.1810], museum:[-33.8764,151.2097], cqStn:[-33.8613,151.2107], cqW2:[-33.8604,151.2113],
+  townHall:[-33.8731,151.2068], wynyard:[-33.8660,151.2058], central:[-33.8840,151.2063], ashfield:[-33.8877,151.1258],
+  museumBus:[-33.8762,151.2099], coogeeBus:[-33.9205,151.2565], bondi380:[-33.8906,151.2747], gap380:[-33.8473,151.2861],
+  kiama:[-34.6726,150.8545], gerringong:[-34.7447,150.8177],
   melCentral:[-37.8100,144.9646], latrobeEliz:[-37.8095,144.9612], latrobeSwan:[-37.8101,144.9640], nicholsonVic:[-37.8089,144.9733], nicholsonJohnston:[-37.7985,144.9738],
   acland96:[-37.8679,144.9792], lunaPark:[-37.8680,144.9772], fitzroyEsp:[-37.8622,144.9747],
   spencerLatrobe:[-37.8135,144.9516], spencerBourke:[-37.8167,144.9538], swanstonBourke:[-37.8136,144.9658],
@@ -423,23 +420,36 @@ var STN = {
    字段：mode 方式（walk 步行 / train 火车 / metro 地铁 / tram 电车 / lrt 轻轨 / bus 巴士 / ferry 渡轮 / taxi 打车），
    line 线路号，dir 方向，on / off 上车 / 下车站，a / b 上车 / 下车点坐标，time 时间，freq 班次，note 补充，
    osm 让 tools/fetch-routes.mjs 去 OpenStreetMap 找这条线的走向。线路号和班次是 2026 年 10 月查的。 */
+// 悉尼住 Ashbury：每天先走到 Ashfield 站（或坐 491 路），坐 T2 / T3 进城；回来反过来
+var ASHFIELD_WALK = {mode:'walk', b:STN.ashfield, time:'步行约 20 分钟到 Ashfield 站', note:'不想走可以在 King St（Trevenar St 路口）坐 491 路往 Five Dock，几分钟到 Ashfield 站。'};
+var HOME_WALK = {mode:'walk', time:'从 Ashfield 站步行约 20 分钟回住处', note:'不想走可以坐 491 路往 Hurstville，在 King St（Trevenar St 路口）下车，或者叫 Uber。'};
+function t2In(off, b, time){ return {mode:'train', line:'T2/T3', dir:'往 City', on:'Ashfield 站', off:off, a:STN.ashfield, b:b, time:time, freq:'T2、T3 都进城，班次很密', note:'进城后绕 City Circle：Central、Town Hall、Wynyard、Circular Quay、St James、Museum 都停。', osm:{route:'train', ref:'T2'}}; }
+function t2Out(on, a, time){ return {mode:'train', line:'T2/T3', dir:'出城 · 往 Parramatta、Leppington 或 Liverpool', on:on, off:'Ashfield 站', a:a, b:STN.ashfield, time:time, note:'看站台屏幕，停 Ashfield 的车都行。', osm:{route:'train', ref:'T2'}}; }
+var BUS373 = {mode:'bus', line:'373', dir:'往 Coogee', on:'Museum Station（Elizabeth St）', off:'Coogee Beach', a:STN.museumBus, b:STN.coogeeBus, time:'约 35–40 分钟', freq:'白天约每 10 分钟', note:'上车、下车都要刷卡。', osm:{route:'bus', ref:'373'}};
+var SCO_KIAMA = {mode:'train', line:'SCO', dir:'South Coast Line · 往 Kiama', on:'Central 站（城际车站台）', off:'Kiama 站', a:STN.central, b:STN.kiama, time:'约 2 小时–2 小时 20 分', freq:'周末约每小时一班', note:'有的车只到 Wollongong 或 Dapto，看清车头写 Kiama。往南坐左边能看到海。', osm:{route:'train', ref:'SCO'}};
+
 var TX = {
   // 悉尼：火车、地铁、巴士、渡轮都刷银行卡或手机（Opal）
   sydIntlDom:{mode:'train', line:'T8', dir:'机场线 · 往 City', on:'International 站', off:'Domestic 站', a:STN.sydIntl, b:STN.sydDom, time:'约 2 分钟（1 站）', freq:'约每 10 分钟', note:'只坐 1 站也要付机场站点费。', osm:{route:'train', ref:'T8'}},
-  sydDomCity:{mode:'train', line:'T8', dir:'往 City', on:'Domestic 站', off:'Museum 站', a:STN.sydDom, b:STN.museum, time:'约 15 分钟', freq:'约每 10 分钟', note:'过 Central 后下一站就是 Museum。出机场站加收站点费。', osm:{route:'train', ref:'T8'}},
-  sydMuseumCQ:{mode:'train', line:'T2/T3/T8', dir:'City Circle · 往 St James', on:'Museum 站 1 号站台', off:'Circular Quay 站', a:STN.museum, b:STN.cqStn, time:'约 5 分钟（2 站）', note:'1 号站台来的车都绕 City Circle，任意一班都行。', osm:{route:'train', ref:'T8'}},
-  sydCQMuseum:{mode:'train', line:'T2/T3/T8', dir:'City Circle · 往 St James', on:'Circular Quay 站 2 号站台', off:'Museum 站', a:STN.cqStn, b:STN.museum, time:'约 5 分钟（2 站）', osm:{route:'train', ref:'T8'}},
-  sydMuseumDom:{mode:'train', line:'T8', dir:'往机场', on:'Museum 站 2 号站台', off:'Domestic 站', a:STN.museum, b:STN.sydDom, time:'约 15 分钟', freq:'约每 10 分钟', note:'看清车头写经机场（via Airport），有的 T8 不经过机场。出机场站加收站点费。', osm:{route:'train', ref:'T8'}},
-  watsons:{mode:'ferry', line:'F9', dir:'往 Watsons Bay', on:'Circular Quay 2 号码头', off:'Watsons Bay', a:STN.cqW2, time:'约 25 分钟', note:'部分班次经停 Double Bay、Rose Bay。', osm:{route:'ferry', ref:'F9'}},
-  barangarooHome:[
-    {mode:'walk', time:'步行约 5 分钟到地铁站'},
-    {mode:'metro', line:'M1', dir:'往 Sydenham', on:'Barangaroo 站', off:'Gadigal 站', a:STN.barangarooM, b:STN.gadigal, time:'约 5 分钟（2 站）', note:'Sydney Metro，刷卡和火车一样。Gadigal 站在 Pitt St，出站步行约 8 分钟到 Hyde Park 南端。', osm:{route:'subway|train', ref:'M1'}}],
-  coogee:{mode:'bus', line:'373', dir:'往 Coogee', on:'Museum Station（Elizabeth St）', off:'Coogee Beach', a:STN.museumBus, b:STN.coogeeBus, time:'约 35–40 分钟', freq:'白天约每 10 分钟', note:'上车、下车都要刷卡。', osm:{route:'bus', ref:'373'}},
-  bondiHome:[
-    {mode:'bus', line:'333', dir:'往 City（经 Bondi Junction）', on:'Bondi Beach（Campbell Pde）', off:'Bondi Junction', a:STN.bondiBus, b:STN.bondiJn, time:'约 10 分钟', freq:'很频繁', note:'380、381 也到 Bondi Junction。333 本身也直达城里，不想换车可以一直坐。', osm:{route:'bus', ref:'333'}},
-    {mode:'train', line:'T4', dir:'往 City', on:'Bondi Junction 站', off:'Town Hall 站', a:STN.bondiJn, b:STN.townHall, time:'约 15 分钟', note:'出站步行约 10 分钟到 Hyde Park 南端。', osm:{route:'train', ref:'T4'}}],
-  manly:{mode:'ferry', line:'F1', dir:'往 Manly', on:'Circular Quay 3 号码头', off:'Manly', a:STN.cqW3, time:'约 30 分钟', note:'另有私营的 Manly Fast Ferry，更快但更贵。', osm:{route:'ferry', ref:'F1'}},
-  manlyBack:{mode:'ferry', line:'F1', dir:'往 Circular Quay', on:'Manly', off:'Circular Quay 3 号码头', b:STN.cqW3, time:'约 30 分钟', osm:{route:'ferry', ref:'F1'}},
+  airportHome:{mode:'taxi', line:'打车', on:'国内航站楼 T2', off:'Ashbury 住处', time:'约 20 分钟', note:'两个人带行李，打车或 Uber 最省事；坐火车要在 Central 换车，还要付机场站点费。'},
+  homeAirport:{mode:'taxi', line:'打车', on:'Ashbury 住处', off:'国内航站楼 T2', time:'约 20 分钟', note:'也可以叫 Uber。'},
+  homeMuseum:[ASHFIELD_WALK, t2In('Museum 站', STN.museum, '约 20–25 分钟')],
+  homeTownHall:[ASHFIELD_WALK, t2In('Town Hall 站', STN.townHall, '约 20 分钟')],
+  homeCoogee:[ASHFIELD_WALK, t2In('Museum 站', STN.museum, '约 20–25 分钟'), BUS373],
+  wynyardHome:[{mode:'walk', b:STN.wynyard, time:'步行约 10 分钟到 Wynyard 站'}, t2Out('Wynyard 站', STN.wynyard, '约 25 分钟'), HOME_WALK],
+  centralHome:[{mode:'walk', b:STN.central, time:'步行约 10 分钟到 Central 站'}, t2Out('Central 站', STN.central, '约 16 分钟'), HOME_WALK],
+  homeGerringong:[ASHFIELD_WALK, t2In('Central 站', STN.central, '约 16 分钟'), SCO_KIAMA,
+    {mode:'train', line:'SCO', dir:'往 Bomaderry', on:'Kiama 站', off:'Gerringong 站', a:STN.kiama, b:STN.gerringong, time:'约 10 分钟（1 站）', freq:'周末约 2 小时一班', note:'Kiama 往南是柴油小火车，一般和悉尼来的车在 Kiama 对接；接不上就打车，约 15 分钟。', osm:{route:'train', ref:'SCO'}},
+    {mode:'walk', time:'步行约 25 分钟到岬角', note:'穿过 Gerringong 镇上，顺路买午饭。'}],
+  gerringongKiama:[{mode:'walk', b:STN.gerringong, time:'步行约 30 分钟回 Gerringong 站'},
+    {mode:'train', line:'SCO', dir:'往 Kiama', on:'Gerringong 站', off:'Kiama 站', a:STN.gerringong, b:STN.kiama, time:'约 10 分钟（1 站）', freq:'周末约 2 小时一班', note:'先查好时间；不想等就打车，约 15 分钟。', osm:{route:'train', ref:'SCO'}},
+    {mode:'walk', time:'步行约 15 分钟到喷水洞'}],
+  kiamaHome:[{mode:'walk', b:STN.kiama, time:'步行约 15 分钟到 Kiama 站'},
+    {mode:'train', line:'SCO', dir:'往 Sydney', on:'Kiama 站', off:'Central 站', a:STN.kiama, b:STN.central, time:'约 2 小时–2 小时 20 分', freq:'周末约每小时一班', note:'悉尼方向的车从 Kiama 发车，上车就有座。', osm:{route:'train', ref:'SCO'}},
+    t2Out('Central 站', STN.central, '约 16 分钟'), HOME_WALK],
+  bondiGap:{mode:'bus', line:'380', dir:'往 Watsons Bay', on:'Bondi Beach（Campbell Pde，C 站台）', off:'Gap Park（Old South Head Rd）', a:STN.bondi380, b:STN.gap380, time:'约 20 分钟', note:'沿海边开，坐右边看海。上下车都要刷卡。', osm:{route:'bus', ref:'380'}},
+  watsonsHome:[{mode:'ferry', line:'F9', dir:'往 Circular Quay', on:'Watsons Bay', off:'Circular Quay 2 号码头', b:STN.cqW2, via:FERRY_WATSONS.slice().reverse(), time:'约 25 分钟', note:'部分班次经停 Rose Bay、Double Bay。晚上班次少，先查好末班；赶不上就在 Trip Planner 查巴士回城。', osm:{route:'ferry', ref:'F9'}},
+    t2Out('Circular Quay 站', STN.cqStn, '约 30 分钟'), HOME_WALK],
 
   // 墨尔本：市中心免费电车区不用刷卡，出了区要刷 myki 或银行卡
   reb:[
@@ -496,71 +506,79 @@ var TX = {
 /* ---------- 每日行程 ---------- */
 var DAYS = [
  {id:'d1024', date:'2026-10-24', wd:'周六', city:'syd', night:'syd', tag:'悉尼 · 第 1 天', title:'悉尼海港',
-  lede:'朋友刚下长途航班，第一天沿着海港慢慢走，不赶景点。',
+  lede:'朋友刚下长途航班。先去住处放行李，再从海德公园一路走到海港边，看完日落回去。',
   before:[
     {who:'朋友', code:'东航', dep:'TNA 10/23 13:05', arr:'SYD T1 09:00', note:'武汉转机 4h35m'},
     {who:'我', code:'JQ403', dep:'OOL 07:10', arr:'SYD 09:40', note:'到国内航站楼'}],
   stops:[
     {n:'悉尼机场 T1 国际', en:'Sydney Airport T1', ll:[-33.9366,151.1658], t:'09:00', kind:'air', note:'朋友入境、取行李，大约 1 小时。', q:'Sydney International Airport T1', img:'Sydney Airport'},
     {n:'国内航站楼 T2', en:'Domestic Terminal T2', ll:[-33.9331,151.1796], t:'09:40', kind:'air', mode:'train', tx:TX.sydIntlDom, note:'我落地。两个航站楼之间坐机场线火车 1 站，或坐航站楼摆渡巴士会合。', q:'Sydney Airport T2 Domestic', img:'Sydney Airport'},
-    {n:'酒店放行李', en:'Hotel · Hyde Park 一带', ll:[-33.8775,151.2095], t:'约 10:30', kind:'stay', mode:'train', tx:TX.sydDomCity, note:'机场线火车到 Museum 或 Central 站约 15 分钟；机场两站进出会加收站点费。', q:'Museum Station Sydney'},
-    {n:'环形码头', en:'Circular Quay', ll:[-33.8614,151.2109], t:'约 11:30', mode:'train', tx:TX.sydMuseumCQ, note:'火车 2 站，或穿过 Hyde Park 步行约 25 分钟。', q:'Circular Quay Sydney', img:'Circular Quay'},
+    {n:'住处放行李', en:'Ashbury', ll:[-33.8967,151.1218], t:'约 10:30', kind:'stay', mode:'taxi', tx:TX.airportHome, note:'房东同意上午先放行李。'},
+    {n:'海德公园', en:'Hyde Park', ll:[-33.8731,151.2111], t:'约 11:45', mode:'train', tx:TX.homeMuseum, note:'Museum 站出来就是公园南端，往北穿过公园到 Archibald 喷泉。', q:'Hyde Park Sydney', img:'Hyde Park, Sydney'},
+    {n:'圣玛丽大教堂', en:"St Mary's Cathedral", ll:[-33.8712,151.2133], q:"St Mary's Cathedral Sydney", img:"St Mary's Cathedral, Sydney"},
+    {n:'麦考利夫人椅', en:"Mrs Macquarie's Chair", ll:[-33.8597,151.2228], note:'穿过 The Domain 过去。歌剧院和海港大桥同框的经典机位；累了可以跳过。', q:"Mrs Macquarie's Chair Sydney", img:"Mrs Macquarie's Chair"},
+    {n:'皇家植物园', en:'Royal Botanic Garden', ll:[-33.8642,151.2166], note:'沿 Farm Cove 往歌剧院方向走，累了就在草地上歇一会。', q:'Royal Botanic Garden Sydney', img:'Royal Botanic Garden, Sydney'},
     {n:'悉尼歌剧院', en:'Sydney Opera House', ll:[-33.8568,151.2153], note:'外观、大台阶，以及和海港大桥同框的角度。想进内部可以订导览。', q:'Sydney Opera House', img:'Sydney Opera House'},
-    {n:'皇家植物园', en:'Royal Botanic Garden', ll:[-33.8642,151.2166], note:'午后慢逛，累了就在草地上歇一会。', q:'Royal Botanic Garden Sydney', img:'Royal Botanic Garden, Sydney'},
-    {n:'麦考利夫人椅', en:"Mrs Macquarie's Chair", ll:[-33.8597,151.2228], note:'歌剧院和海港大桥同框的经典机位。', q:"Mrs Macquarie's Chair Sydney", img:"Mrs Macquarie's Chair"},
+    {n:'环形码头', en:'Circular Quay', ll:[-33.8614,151.2109], q:'Circular Quay Sydney', img:'Circular Quay'},
     {n:'岩石区', en:'The Rocks', ll:[-33.8593,151.2085], note:'老街区，周末有 The Rocks Markets。晚饭可以在这里解决。', q:'The Rocks Sydney', img:['The Rocks, Sydney', 'The Rocks, New South Wales']},
     {n:'天文台山', en:'Observatory Hill', ll:[-33.8590,151.2045], sunset:true, note:'看海港大桥和日落。', q:'Observatory Hill Sydney', img:['Observatory Hill, Sydney', 'Sydney Observatory']},
-    {n:'屈臣氏湾（可选）', en:'Watsons Bay', ll:[-33.8432,151.2810], opt:true, mode:'ferry', tx:TX.watsons, from:3, via:FERRY_WATSONS, note:'体力特别好再考虑。从 Circular Quay 坐渡轮约 20–25 分钟，第一天不强求。', q:'Watsons Bay Wharf', img:['Watsons Bay', 'Watsons Bay, New South Wales']}
+    {n:'Barangaroo（可选）', en:'Barangaroo', ll:[-33.8630,151.2018], opt:true, from:10, note:'从天文台山往下走约 10 分钟，海边餐厅多。体力好再去，吃完从 Wynyard 站坐车回去。', q:'Barangaroo Sydney', img:['Barangaroo Reserve', 'Barangaroo']}
   ],
-  gm:{mode:'walking', list:[3,4,5,6,7,8]},
-  tips:['悉尼的火车、渡轮、巴士都可以直接刷信用卡或手机进出站，不用专门买卡。','第一天别暴走，晚饭后早点回酒店倒时差。']},
-
- {id:'d1025', date:'2026-10-25', wd:'周日', city:'syd', night:'syd', tag:'悉尼 · 第 2 天', title:'CBD 城市漫步',
-  lede:'从唐人街一路往北走到海边，中间穿插两个馆，各控制在 1–1.5 小时。',
-  start:true, end:{mode:'train', tx:TX.barangarooHome},
-  stops:[
-    {n:'唐人街', en:'Chinatown · Dixon St', ll:[-33.8786,151.2041], t:'10:00', note:'早午饭可以在这里吃。', q:'Dixon Street Chinatown Sydney', img:'Chinatown, Sydney'},
-    {n:'维多利亚女王大厦 · 市政厅', en:'QVB · Town Hall', ll:[-33.8718,151.2067], q:'Queen Victoria Building Sydney', img:'Queen Victoria Building'},
-    {n:'海德公园', en:'Hyde Park', ll:[-33.8731,151.2111], q:'Hyde Park Sydney', img:'Hyde Park, Sydney'},
-    {n:'圣玛丽大教堂', en:"St Mary's Cathedral", ll:[-33.8712,151.2133], q:"St Mary's Cathedral Sydney", img:"St Mary's Cathedral, Sydney"},
-    {n:'澳大利亚博物馆', en:'Australian Museum', ll:[-33.8743,151.2131], note:'控制在 1–1.5 小时。', q:'Australian Museum Sydney', img:'Australian Museum'},
-    {n:'新州图书馆', en:'State Library of NSW', ll:[-33.8661,151.2131], note:'Mitchell 阅览室很出片。', q:'State Library of NSW', img:'State Library of New South Wales'},
-    {n:'新州美术馆', en:'Art Gallery of NSW', ll:[-33.8688,151.2174], note:'常设展免费。博物馆和美术馆不必都深度逛。', q:'Art Gallery of New South Wales', img:'Art Gallery of New South Wales'},
-    {n:'Barangaroo', en:'Barangaroo', ll:[-33.8630,151.2018], note:'海边散步、晚饭。从美术馆过去步行约 30 分钟，也可以坐火车到 Wynyard。', q:'Barangaroo Sydney', img:['Barangaroo Reserve', 'Barangaroo']}
+  end:{mode:'train', tx:TX.wynyardHome},
+  gm:{mode:'walking', list:[3,4,5,6,7,8,9,10]},
+  tips:['悉尼的火车、渡轮、巴士都可以直接刷信用卡或手机进出站，不用专门买卡。','第一天别暴走，晚饭后早点回去倒时差。','从 Ashfield 站走回住处约 20 分钟；不想走就坐 491 路，或者叫 Uber。']},
+ {id:'d1025', date:'2026-10-25', wd:'周日', city:'syd', region:'kiama', night:'syd', tag:'悉尼 · 南海岸一日', title:'Gerringong 和 Kiama',
+  lede:'坐火车去南海岸：上午在 Gerringong 岬角的草坡上看 Werri Beach，下午回到 Kiama 看喷水洞。下午走步道还是坐车，到时候看天气和体力。',
+  optLabel:'下午怎么回 Kiama：',
+  start:true, end:{mode:'train', tx:TX.kiamaHome},
+  head:[
+    {n:'Gerringong 岬角', en:'Gerringong Headland', ll:[-34.7452,150.8360], t:'约 11:00', mode:'train', tx:TX.homeGerringong, note:'就是那张躺在草坡上看海的照片的位置，往北看是 Werri Beach。午饭在车站和岬角之间的镇上买，带到草坡上吃。', q:'Gerringong Headland', img:['search:Gerringong headland Werri Beach', 'Gerringong, New South Wales']},
+    {n:'Werri Beach', en:'Werri Beach', ll:[-34.7360,150.8341], note:'沿沙滩往北走，北头是 Werri Lagoon 的出海口。', q:'Werri Beach', img:['Werri Beach', 'search:intitle:"Werri Beach"']}
   ],
-  gm:{mode:'walking', list:[0,1,2,3,4,5,6,7]},
-  tips:['周日不少商店营业时间较短，想购物尽量放在白天。']},
-
- {id:'d1026', date:'2026-10-26', wd:'周一', city:'syd', night:'syd', tag:'悉尼 · 第 3 天', title:'Coogee 到 Bondi 海岸步道',
-  lede:'约 6 km 的悬崖步道，一路经过五个海滩。',
-  start:true, end:{mode:'bus', tx:TX.bondiHome},
+  options:[
+    {label:'徒步版', stops:[
+      {n:'Loves Bay', en:'Kiama Coast Walk', ll:[-34.6978,150.8541], t:'约 14:00', via:[[-34.72856,150.83889],[-34.72601,150.84236],[-34.72207,150.84648],[-34.71798,150.84598],[-34.71398,150.85113],[-34.70997,150.85011],[-34.70603,150.85167],[-34.70170,150.85282]], note:'Kiama Coast Walk 南段：从 Werri Lagoon 出海口往北，一路是海边悬崖和牧场草坡，约 2 小时。下过大雨潟湖口可能过不去，就改走轻松版。', q:'Loves Bay Kiama Heights', img:['search:Kiama Coast Walk Loves Bay', 'Kiama Coast Walk']},
+      {n:'小喷水洞', en:'Little Blowhole', ll:[-34.6867,150.8592], via:[[-34.69399,150.85705],[-34.68985,150.85363]], note:'比 Kiama 喷水洞小，但浪大时更常喷。走到这里累了就叫车去 Kiama，约 10 分钟。', q:'Little Blowhole Kiama', img:['search:intitle:"Little Blowhole" Kiama', 'Kiama, New South Wales']},
+      {n:'Kiama 喷水洞 · 灯塔', en:'Kiama Blowhole · Lighthouse', ll:[-34.6719,150.8632], t:'约 16:00', via:[[-34.68167,150.85523],[-34.67797,150.85546],[-34.67398,150.85856]], note:'这段经过 Kendalls Beach，后半段走镇上的路。喷水要看浪，等几分钟一般能看到。', q:'Kiama Blowhole', img:['search:intitle:"Kiama Blowhole"', 'Kiama, New South Wales']}],
+     gm:{mode:'walking', list:[0,1,2,3,4]}},
+    {label:'轻松版', stops:[
+      {n:'Kiama 喷水洞 · 灯塔', en:'Kiama Blowhole · Lighthouse', ll:[-34.6719,150.8632], t:'约 14:00', mode:'train', tx:TX.gerringongKiama, note:'喷水要看浪，等几分钟一般能看到。', q:'Kiama Blowhole', img:['search:intitle:"Kiama Blowhole"', 'Kiama, New South Wales']},
+      {n:'Kiama 港口', en:'Kiama Harbour', ll:[-34.6693,150.8586], note:'港口边走走，在 Terralong St 一带喝咖啡，再去车站。', q:'Kiama Harbour', img:['search:intitle:"Kiama Harbour"', 'Kiama, New South Wales']}],
+     gm:{mode:'walking', list:[2,3]}}
+  ],
+  tips:['周日一天公交最多扣约 A$9.65（2025 年 7 月起的价格），这一天怎么坐都不会超。','周末悉尼火车常有维修停运。出发前几天在 Transport for NSW 的 Trip Planner 查 10/25 的 South Coast Line，停运就和 10/26 对调。','悉尼开来的火车到 Kiama 为止，往南去 Gerringong 要换柴油小火车，周末大约 2 小时一班，赶不上就打车。','徒步版全天走路接近 20 km（含进出 Ashfield 站），南风大或下雨就走轻松版。','带水、防晒和外套，海边风大。']},
+ {id:'d1026', date:'2026-10-26', wd:'周一', city:'syd', night:'syd', tag:'悉尼 · 第 3 天', title:'Bondi 海岸步道 + Watsons Bay',
+  lede:'上午走 Coogee 到 Bondi 的悬崖步道，下午坐 380 路沿海去 Watsons Bay，傍晚坐渡轮回城。',
+  start:true, end:{mode:'ferry', tx:TX.watsonsHome},
   stops:[
-    {n:'库吉海滩', en:'Coogee Beach', ll:[-33.9205,151.2577], t:'约 09:30', mode:'bus', tx:TX.coogee, note:'从市区坐巴士约 30–40 分钟，步道从这里往北走。', q:'Coogee Beach Sydney', img:['Coogee Beach', 'Coogee, New South Wales']},
+    {n:'库吉海滩', en:'Coogee Beach', ll:[-33.9205,151.2577], t:'约 09:30', mode:'bus', tx:TX.homeCoogee, note:'步道从这里往北走。', q:'Coogee Beach Sydney', img:['Coogee Beach', 'Coogee, New South Wales']},
     {n:'克洛夫利', en:'Clovelly Beach', ll:[-33.9140,151.2680], q:'Clovelly Beach Sydney', img:['Clovelly Beach', 'Clovelly, New South Wales']},
     {n:'勃朗特海滩', en:'Bronte Beach', ll:[-33.9036,151.2683], q:'Bronte Beach Sydney', img:['Bronte Beach', 'Bronte, New South Wales']},
-    {n:'塔玛拉玛', en:'Tamarama Beach', ll:[-33.8990,151.2710], note:'Sculpture by the Sea 如果今年照常举办，展品主要在 Tamarama 到 Bondi 这一段。', q:'Tamarama Beach Sydney', img:['Tamarama Beach', 'Tamarama, New South Wales']},
-    {n:'邦迪海滩', en:'Bondi Beach', ll:[-33.8908,151.2743], note:'Bondi Icebergs 泳池是经典机位。回程坐巴士到 Bondi Junction 换火车。', q:'Bondi Beach Sydney', img:'Bondi Beach'}
+    {n:'塔玛拉玛', en:'Tamarama Beach', ll:[-33.8990,151.2710], note:'Sculpture by the Sea 今年 10/16–11/2 举办，展品在 Tamarama 到 Bondi 这一段，周一比周末人少。', q:'Tamarama Beach Sydney', img:['Tamarama Beach', 'Tamarama, New South Wales']},
+    {n:'邦迪海滩', en:'Bondi Beach', ll:[-33.8908,151.2743], t:'约 12:30', note:'Bondi Icebergs 泳池是经典机位。午饭在这里吃。', q:'Bondi Beach Sydney', img:'Bondi Beach'},
+    {n:'悬崖 The Gap', en:'The Gap · Gap Park', ll:[-33.8457,151.2852], mode:'bus', tx:TX.bondiGap, note:'南岬的海边悬崖，看外海。', q:'The Gap Watsons Bay', img:['search:intitle:"The Gap" Watsons Bay', 'Watsons Bay']},
+    {n:'Camp Cove', en:'Camp Cove', ll:[-33.8397,151.2790], note:'安静的小海湾，水很平。往北沿 South Head 步道可以走到红白条纹的灯塔，来回约 1 小时，可选。', q:'Camp Cove Beach', img:['Camp Cove', 'search:intitle:"Camp Cove"']},
+    {n:'屈臣氏湾码头', en:'Watsons Bay Wharf', ll:[-33.8435,151.2810], t:'约 17:30', note:'码头边吃 fish & chips。天气好可以等日落，晚上渡轮班次少，先查好末班；赶不上可以坐巴士回城。', q:'Watsons Bay Wharf', img:['Watsons Bay', 'Watsons Bay, New South Wales']}
   ],
   gm:{mode:'walking', list:[0,1,2,3,4]},
-  tips:['含拍照大约 2.5–3 小时，台阶多，穿运动鞋，带水和防晒。','上午走比较凉快，光线也顺。']},
-
- {id:'d1027', date:'2026-10-27', wd:'周二', city:'syd', night:'mel', tag:'悉尼 → 墨尔本', title:'Manly 半日 + 晚班机',
-  lede:'早上退房寄存行李，坐渡轮去 Manly，下午回来取行李飞墨尔本。',
+  tips:['步道含拍照大约 2.5–3 小时，台阶多，穿运动鞋，带水和防晒。','上午走比较凉快，光线也顺。','380 路沿海边开，往 Watsons Bay 方向坐右边能看到海。']},
+ {id:'d1027', date:'2026-10-27', wd:'周二', city:'syd', night:'mel', tag:'悉尼 → 墨尔本', title:'CBD 半日 + 晚班机',
+  lede:'退房后行李先留在住处，上午逛 CBD，下午回去取行李，打车去机场。',
   start:true,
   stops:[
-    {n:'环形码头', en:'Circular Quay', ll:[-33.8605,151.2112], t:'约 09:30', mode:'train', tx:TX.sydMuseumCQ, q:'Circular Quay Sydney', img:'Circular Quay'},
-    {n:'曼利码头', en:'Manly Wharf', ll:[-33.8000,151.2845], mode:'ferry', tx:TX.manly, via:FERRY_MANLY, note:'渡轮约 30 分钟，坐露天甲板看海港和歌剧院。', q:'Manly Wharf', img:['Manly Wharf', 'Manly ferry services']},
-    {n:'曼利海滩', en:'Manly Beach · The Corso', ll:[-33.7969,151.2878], q:'Manly Beach', img:['Manly Beach', 'Manly, New South Wales']},
-    {n:'雪莉海滩', en:'Shelly Beach', ll:[-33.7998,151.2973], note:'沿海边步道走过去约 15–20 分钟，海水很清。午饭在 Manly 吃。', q:'Shelly Beach Manly', img:['Cabbage Tree Bay Aquatic Reserve', 'Shelly Beach, Manly']},
-    {n:'回环形码头', en:'Circular Quay', ll:[-33.8615,151.2105], t:'约 14:30', mode:'ferry', tx:TX.manlyBack, fromLL:[-33.8000,151.2845], via:FERRY_MANLY.slice().reverse(), q:'Circular Quay Sydney', img:'Circular Quay'},
-    {n:'酒店取行李', en:'Hotel', ll:[-33.8775,151.2095], t:'约 15:30', kind:'stay', mode:'train', tx:TX.sydCQMuseum, q:'Museum Station Sydney'},
-    {n:'国内航站楼 T2', en:'Sydney Domestic T2', ll:[-33.9331,151.1796], t:'约 16:45', kind:'air', mode:'train', tx:TX.sydMuseumDom, note:'国内线建议起飞前约 1 小时到。', q:'Sydney Airport T2 Domestic', img:'Sydney Airport'}
+    {n:'维多利亚女王大厦 · 市政厅', en:'QVB · Town Hall', ll:[-33.8718,151.2067], t:'约 10:00', mode:'train', tx:TX.homeTownHall, q:'Queen Victoria Building Sydney', img:'Queen Victoria Building'},
+    {n:'新州图书馆', en:'State Library of NSW', ll:[-33.8661,151.2131], note:'Mitchell 阅览室很出片。', q:'State Library of NSW', img:'State Library of New South Wales'},
+    {n:'澳大利亚博物馆', en:'Australian Museum', ll:[-33.8743,151.2131], note:'控制在 1 小时左右。想看画就换成新州美术馆，两个选一个。', q:'Australian Museum Sydney', img:'Australian Museum'},
+    {n:'新州美术馆（二选一）', en:'Art Gallery of NSW', ll:[-33.8688,151.2174], opt:true, from:1, note:'常设展免费。从图书馆穿过 The Domain 过去约 10 分钟。', q:'Art Gallery of New South Wales', img:'Art Gallery of New South Wales'},
+    {n:'唐人街', en:'Chinatown · Dixon St', ll:[-33.8786,151.2041], t:'约 12:30', note:'午饭。', q:'Dixon Street Chinatown Sydney', img:'Chinatown, Sydney'},
+    {n:'住处取行李', en:'Ashbury', ll:[-33.8967,151.1218], t:'约 15:00', kind:'stay', mode:'train', tx:TX.centralHome, note:'房东同意退房后行李留到下午。'},
+    {n:'国内航站楼 T2', en:'Sydney Domestic T2', ll:[-33.9331,151.1796], t:'约 15:45', kind:'air', mode:'taxi', tx:TX.homeAirport, note:'国内线建议起飞前约 1 小时到，行李托运起飞前 30 分钟截止。', q:'Sydney Airport T2 Domestic', img:'Sydney Airport'}
   ],
   after:[
     {who:'两人', code:'JQ533', dep:'SYD 18:25', arr:'MEL 20:05', note:'目标价 ≤ A$95/人'},
     {who:'', code:'SkyBus', dep:'MEL 机场', arr:'Southern Cross', note:'约 30–40 分钟，之后去酒店，大约 21:30 后入住'}],
-  gm:{mode:'walking', list:[1,2,3]},
-  tips:['退房时把行李寄存在前台，下午回来取。','不去 Featherdale，考拉留到黄金海岸的 Currumbin。']},
+  gm:{mode:'walking', list:[0,1,2,4]},
+  tips:['出门前把行李收好放在房间，下午回来拿了就走。','不去 Featherdale，考拉留到黄金海岸的 Currumbin。']},
 
  {id:'d1028', date:'2026-10-28', wd:'周三', city:'mel', night:'mel', tag:'墨尔本 · 第 1 天', title:'墨尔本 CBD City Walk',
   lede:'从州立图书馆往南，穿过拱廊和涂鸦巷，傍晚到亚拉河边。',
