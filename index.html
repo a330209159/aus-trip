@@ -16,6 +16,7 @@
   --land:#F7F6F2; --sea:#CADCE4; --coast:#9AB5C1; --sea-ink:#477A8E; --grid:rgba(22,35,43,.075); --halo:rgba(247,246,242,.92);
   --syd:#1E5EA8; --mel:#2E7A52; --gc:#B06F08; --bne:#7347AE; --air:#3B4A53;
   --walk:#46535B; --l-train:#C2571A; --l-metro:#0B7A78; --l-tram:#2F8A3A; --l-lrt:#C0263B; --l-bus:#1D63A6; --l-ferry:#0A7EA3; --l-car:#7A6450;
+  --warn-bg:#FFF1CC; --warn-line:#E3BE5C;
   --f-display:"Noto Serif SC","Songti SC","STSong",serif;
   --f-body:"Noto Sans SC","PingFang SC","Hiragino Sans GB","Microsoft YaHei",system-ui,sans-serif;
   --f-mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
@@ -27,6 +28,7 @@
     --land:#18232A; --sea:#0C1D25; --coast:#2D4C5A; --sea-ink:#7BB0C3; --grid:rgba(226,233,236,.06); --halo:rgba(24,35,42,.9);
     --syd:#74ABEE; --mel:#66C896; --gc:#E5AD4A; --bne:#B793F0; --air:#B9C6CD; color-scheme:dark;
     --walk:#D3DDE2; --l-train:#F28C4E; --l-metro:#37B9B4; --l-tram:#6BCB77; --l-lrt:#F2667A; --l-bus:#64A2EC; --l-ferry:#4CC6E6; --l-car:#C9B49C;
+    --warn-bg:#3A3016; --warn-line:#7A6426;
   }
 }
 :root[data-theme="dark"]{
@@ -34,6 +36,7 @@
   --land:#18232A; --sea:#0C1D25; --coast:#2D4C5A; --sea-ink:#7BB0C3; --grid:rgba(226,233,236,.06); --halo:rgba(24,35,42,.9);
   --syd:#74ABEE; --mel:#66C896; --gc:#E5AD4A; --bne:#B793F0; --air:#B9C6CD; color-scheme:dark;
   --walk:#D3DDE2; --l-train:#F28C4E; --l-metro:#37B9B4; --l-tram:#6BCB77; --l-lrt:#F2667A; --l-bus:#64A2EC; --l-ferry:#4CC6E6; --l-car:#C9B49C;
+  --warn-bg:#3A3016; --warn-line:#7A6426;
 }
 
 *{box-sizing:border-box}
@@ -48,6 +51,41 @@ button{font:inherit;color:inherit}
 .masthead .route{font-size:13px;color:var(--muted);display:flex;flex-wrap:wrap;gap:2px 6px;align-items:center}
 .masthead .route b{font-weight:500;color:var(--ink)}
 .masthead .route i{font-style:normal;color:var(--muted)}
+/* 版本：标题右边的小按钮，点开是版本列表 */
+.ver{position:relative;margin-left:auto;align-self:center}
+.ver>summary{list-style:none;cursor:pointer;display:inline-flex;align-items:center;gap:7px;height:30px;padding:0 11px;border:1px solid var(--line);border-radius:999px;background:var(--surface);color:var(--ink);font-size:12.5px;white-space:nowrap;user-select:none}
+.ver>summary::-webkit-details-marker{display:none}
+.ver>summary b{font-family:var(--f-mono);font-weight:600}
+.ver>summary span{color:var(--muted)}
+.ver>summary::after{content:'';width:6px;height:6px;margin-left:1px;border-right:1.5px solid var(--muted);border-bottom:1.5px solid var(--muted);transform:translateY(-2px) rotate(45deg)}
+.ver[open]>summary::after{transform:translateY(1px) rotate(225deg)}
+.ver>summary:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+.ver.old>summary{background:var(--warn-bg);border-color:var(--warn-line)}
+.vpop{position:absolute;right:0;top:calc(100% + 6px);z-index:60;width:min(360px, calc(100vw - 32px));background:var(--surface);border:1px solid var(--line);border-radius:12px;box-shadow:0 10px 28px rgba(0,0,0,.14);padding:10px 12px 8px}
+.vpop h4{margin:0 0 6px;font-size:13px;color:var(--muted);font-weight:500}
+.vpop ol{list-style:none;margin:0;padding:0}
+.vpop li{display:grid;grid-template-columns:auto 1fr auto;gap:2px 10px;align-items:baseline;padding:8px 0;border-top:1px solid var(--line)}
+.vpop li:first-child{border-top:0}
+.vpop .vn{font-family:var(--f-mono);font-weight:600;font-size:13px}
+.vpop .vt{font-size:13px;line-height:1.45;min-width:0}
+.vpop .vt small{display:block;color:var(--muted);font-family:var(--f-mono);font-size:11.5px}
+.vpop .va{font-size:12.5px;white-space:nowrap}
+.vpop .va a{color:var(--ink)}
+.vpop .va .cur{color:var(--muted)}
+.vpop p{margin:6px 0 0;font-size:11.5px;color:var(--muted);line-height:1.5}
+@media (min-width: 600px){ .ver{order:3} }
+/* 总览页底部的版本记录 */
+.vlist{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.vlist li{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:11px 14px}
+.vlist .vh{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px}
+.vlist .vh b{font-family:var(--f-mono);font-weight:600}
+.vlist .vh .d{font-family:var(--f-mono);font-size:12.5px;color:var(--muted)}
+.vlist .vh .tt{font-weight:500;flex:1 1 200px;min-width:0}
+.vlist .vh a,.vlist .vh .cur{font-size:13px;white-space:nowrap}
+.vlist .vh a{color:var(--ink)}
+.vlist .vh .cur{color:var(--muted)}
+.vlist ul{margin:6px 0 0;padding-left:18px;font-size:13.5px;color:var(--muted)}
+.vlist ul li{background:none;border:0;padding:0;border-radius:0}
 
 /* date rail */
 .railbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--bg);border-bottom:1px solid var(--line)}
@@ -307,6 +345,7 @@ h3.sec::after{content:"";flex:1;height:1px;background:var(--line)}
 
 <div class="wrap masthead">
   <h1>澳洲四城行程地图</h1>
+  <details class="ver" id="ver" hidden></details>
   <div class="route"><b>10.23 济南</b><i>→</i><b>悉尼</b><i>→</i><b>墨尔本</b><i>→</i><b>黄金海岸</b><i>→</i><b>布里斯班</b><i>→</i><b>11.04 济南</b></div>
 </div>
 
@@ -734,6 +773,20 @@ var PAY = [
   {c:'mel', t:'墨尔本：2026 年起火车和电车也能直接刷银行卡或手机，但海外卡不一定每个读卡器都认，稳妥起见买张 myki 卡。市中心免费电车区内坐电车不用刷。SkyBus 单独买票。'},
   {c:'gc', t:'黄金海岸 · 布里斯班：Translink 全网一程 50 分（巴士、G:link 轻轨、火车、CityCat），刷 go card 或银行卡、手机都行。机场快线 Airtrain 不在内，单程约 A$23。'},
   {c:'', t:'坐车前点每段交通下面的「实时查询」，用 Google 地图看实时班次。'}
+];
+
+/* ---------- 版本记录：最新的写在最前。旧版本是 v/<号>/index.html 里冻结的整页副本（tools/snapshot.mjs 生成） ---------- */
+var VERSIONS = [
+  {v:2, date:'2026-10-09', title:'悉尼住 Ashbury，加 Gerringong + Kiama 一日', notes:[
+    '悉尼住 Ashbury 民宿（两间房，已订），每天从 Ashfield 站坐 T2 / T3 进出城，来回机场打车。',
+    '10/24：放行李后从海德公园一路走到海港，天文台山看日落。',
+    '10/25：新增 Gerringong 和 Kiama 一日游，下午徒步版 / 轻松版二选一。',
+    '10/26：Coogee 到 Bondi 步道之后，加 The Gap、Camp Cove 和 Watsons Bay，坐渡轮回城。',
+    '10/27：改成 CBD 半日，去掉 Manly。',
+    '墨尔本、黄金海岸、布里斯班和 v1 一样。']},
+  {v:1, date:'2026-10-03', title:'初版：没有 Kiama，悉尼酒店还在比较', notes:[
+    '悉尼：10/24 海港，10/25 CBD 城市漫步，10/26 Coogee 到 Bondi，10/27 Manly 半日后飞墨尔本。',
+    '悉尼列了几家 Hyde Park、Town Hall 一带的候选酒店，还没订。']}
 ];
 
 /* ---------- 每段路怎么走（列表、地图和 tools/fetch-routes.mjs 共用） ---------- */
@@ -1572,10 +1625,31 @@ function renderOverview(){
   h+='<h3 class="sec">交通</h3><div class="tblwrap"><table class="ftable"><tbody>'+FLIGHTS.map(function(f){ return '<tr><td>'+f.d+'</td><td><b>'+esc(f.code)+'</b> <span class="r">'+esc(f.r)+'</span><span class="sub">'+esc(f.who)+(f.sub?' · '+esc(f.sub):'')+'</span></td><td class="r" style="text-align:right;white-space:nowrap">'+esc(f.p)+'</td></tr>'; }).join('')+'</tbody></table></div>';
   h+='<h3 class="sec">当地交通怎么付钱</h3><ul class="tips pay">'+PAY.map(function(p){ return '<li>'+(p.c?'<i class="dot-c" style="--c:var(--'+p.c+')"></i>':'')+esc(p.t)+'</li>'; }).join('')+'</ul>';
   h+='<h3 class="sec">住宿</h3><div class="stays">'+['syd','mel','gc','bne'].map(function(k){ var c=CITY[k]; return '<div style="border-top:3px solid var(--'+k+')"><b>'+c.name+'</b><span class="n">'+c.nights+'</span> <span>晚</span><br><span>'+c.cin.slice(5).replace('-','/')+' → '+c.cout.slice(5).replace('-','/')+'</span>'+(bookedHotel(k)?'<span class="bkd">已订 · '+esc(bookedHotel(k).s||bookedHotel(k).n)+'</span>':'')+'</div>'; }).join('')+'</div>';
+  h+='<h3 class="sec" id="versions">版本记录</h3><ol class="vlist">'+(SNAP ? '<li><div class="vh"><b>最新版</b><span class="tt">现在的计划</span><a href="'+VROOT+'">去看 →</a></div></li>' : '')+VERSIONS.map(function(x){
+    return '<li><div class="vh"><b>v'+x.v+'</b><span class="d">'+x.date+'</span><span class="tt">'+esc(x.title)+'</span>'+(x.v===CURV ? '<span class="cur">正在看</span>' : '<a href="'+verHref(x.v)+'">看这一版 →</a>')+'</div>'+
+      (x.notes && x.notes.length ? '<ul>'+x.notes.map(function(n){ return '<li>'+esc(n)+'</li>'; }).join('')+'</ul>' : '')+'</li>';
+  }).join('')+'</ol>';
   h+='<p class="fine">底图和路线数据来自 OpenStreetMap，地点照片来自维基百科 / Wikimedia Commons（作者和授权写在地图弹窗的照片下面），景点和酒店按真实坐标放置；线路走向仅供参考，坐车以站牌和实时查询为准。实际导航请点每一站的「地图」，在 Google 地图里打开。机票价格是之前查到的参考价，购买前重新查。</p>';
   panel.innerHTML=h;
   panel.querySelectorAll('[data-go]').forEach(function(b){ b.addEventListener('click', function(){ setView(b.getAttribute('data-go')); if(isNarrow()) window.scrollTo({top:0}); }); });
 }
+
+/* ---------- 版本 ---------- */
+// 旧版本副本的 html 标签带 data-snapshot（版本号），链接要回到上两级
+var SNAP = +(document.documentElement.getAttribute('data-snapshot')||0), VROOT = SNAP ? '../../' : '', CURV = SNAP || VERSIONS[0].v;
+function verHref(v){ return v===VERSIONS[0].v && !SNAP ? './' : VROOT+'v/'+v+'/'; }
+function md(date){ return +date.slice(5,7)+'/'+(+date.slice(8,10)); }
+(function(){
+  var el=document.getElementById('ver'), cur=VERSIONS.filter(function(x){ return x.v===CURV; })[0] || VERSIONS[0];
+  el.innerHTML='<summary aria-label="版本记录">'+(SNAP ? '<b>旧版本 v'+SNAP+'</b>' : '<b>v'+cur.v+'</b><span>'+md(cur.date)+' 更新</span>')+'</summary>'+
+    '<div class="vpop"><h4>行程版本</h4><ol>'+(SNAP ? '<li><span class="vn">最新</span><span class="vt">现在的计划</span><span class="va"><a href="'+VROOT+'">去看 →</a></span></li>' : '')+
+    VERSIONS.map(function(x){ return '<li><span class="vn">v'+x.v+'</span><span class="vt">'+esc(x.title)+'<small>'+x.date+'</small></span><span class="va">'+(x.v===CURV ? '<span class="cur">正在看</span>' : '<a href="'+verHref(x.v)+'">看 →</a>')+'</span></li>'; }).join('')+
+    '</ol><p>每一版改了什么，写在总览页最下面的「版本记录」。旧版本只用来对照，不再更新。</p></div>';
+  if(SNAP) el.classList.add('old');
+  el.hidden=false;
+  document.addEventListener('click', function(e){ if(el.open && !el.contains(e.target)) el.open=false; });
+  document.addEventListener('keydown', function(e){ if(e.key==='Escape' && el.open){ el.open=false; el.querySelector('summary').focus(); } });
+})();
 
 /* ---------- 切换 ---------- */
 function render(){
