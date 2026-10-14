@@ -395,18 +395,19 @@ function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(c){retur
 /* ---------- 城市 ---------- */
 var CITY = {
   syd:{name:'悉尼', en:'Sydney', baseQ:'25 Woodlands Rd, Ashbury NSW 2193', tz:11, sun:[-33.8688,151.2093], base:[-33.8967,151.1218], anchor:{n:'Ashfield 站', ll:[-33.8877,151.1258]}, cin:'2026-10-24', cout:'2026-10-27', nights:3},
-  mel:{name:'墨尔本', en:'Melbourne', baseQ:'Melbourne Central', tz:11, sun:[-37.8136,144.9631], base:[-37.8120,144.9620], anchor:{n:'Southern Cross 站', ll:[-37.8183,144.9526]}, cin:'2026-10-27', cout:'2026-10-31', nights:4},
-  gc:{name:'黄金海岸', en:'Gold Coast', baseQ:'Cavill Avenue Surfers Paradise', tz:10, sun:[-28.0167,153.4000], base:[-28.0040,153.4300], anchor:{n:'Cavill Ave 海滩', ll:[-28.0024,153.4315]}, cin:'2026-10-31', cout:'2026-11-02', nights:2},
+  mel:{name:'墨尔本', en:'Melbourne', baseQ:'Melbourne Central', tz:11, sun:[-37.8136,144.9631], base:[-37.8120,144.9620], anchor:{n:'Southern Cross 站', ll:[-37.8183,144.9526]}, cin:'2026-10-27', cout:'2026-11-01', nights:4, stayNote:'10/28 住 Apollo Bay：那天早上退房、大行李寄存前台，10/29 回来再入住。'},
+  apb:{name:'Apollo Bay', en:'Apollo Bay', baseQ:'Apollo Bay Victoria', tz:11, sun:[-38.7547,143.6692], base:[-38.7547,143.6700], anchor:{n:'Apollo Bay 海边', ll:[-38.7520,143.6730]}, cin:'2026-10-28', cout:'2026-10-29', nights:1},
+  gc:{name:'黄金海岸', en:'Gold Coast', baseQ:'Cavill Avenue Surfers Paradise', tz:10, sun:[-28.0167,153.4000], base:[-28.0040,153.4300], anchor:{n:'Cavill Ave 海滩', ll:[-28.0024,153.4315]}, cin:'2026-11-01', cout:'2026-11-02', nights:1},
   bne:{name:'布里斯班', en:'Brisbane', baseQ:'Roma Street Station Brisbane', tz:10, sun:[-27.4698,153.0251], base:[-27.4690,153.0215], anchor:{n:'Roma St 站', ll:[-27.4659,153.0193]}, cin:'2026-11-02', cout:'2026-11-03', nights:1}
 };
-var MODE = { walk:'步行', train:'火车', metro:'地铁', tram:'电车 / 轻轨', lrt:'轻轨', bus:'巴士', taxi:'打车', ferry:'渡轮', tour:'旅行团', car:'自驾或参团', flight:'飞机' };
+var MODE = { walk:'步行', train:'火车', metro:'地铁', tram:'电车 / 轻轨', lrt:'轻轨', bus:'巴士', taxi:'打车', ferry:'渡轮', tour:'旅行团', car:'自驾', flight:'飞机' };
 var MCLS = { walk:'m-walk', train:'m-transit', metro:'m-transit', tram:'m-transit', lrt:'m-transit', bus:'m-transit', taxi:'m-transit', ferry:'m-ferry', tour:'m-tour', car:'m-tour', flight:'m-flight' };
 var TXMODE = { walk:'步行', train:'火车', metro:'地铁', tram:'电车', lrt:'轻轨', bus:'巴士', ferry:'渡轮', taxi:'打车', car:'自驾', tour:'旅行团', flight:'飞机' };
 
 /* ---------- 地图左上角的说明 ---------- */
 var REGION = {
   au:{note:'航线弧线是示意。点城市进入当天行程。'},
-  gor:{note:'大洋路按途经点画，实际路线以旅行团为准。'}
+  gor:{note:'大洋路自驾，路线按实际公路画。'}
 };
 
 /* ---------- 候选酒店 ----------
@@ -422,6 +423,9 @@ var HOTELS = {
     {n:'ibis Styles Kingsgate', booked:false, s:'Kingsgate', area:'King St · 近 Southern Cross', ll:[-37.8165,144.9560], tags:['双床房','估价 A$130–180'], note:'便宜；部分房型共用卫浴，订的时候选带独立卫浴的。', q:'ibis Styles Kingsgate Hotel Melbourne'},
     {n:'Nesuto Docklands', booked:false, area:'Docklands', ll:[-37.8165,144.9420], tags:['两卧公寓','估价 A$250–320'], note:'靠近 Southern Cross 机场大巴站；订前确认有没有洗衣机。', q:'Nesuto Docklands Melbourne'},
     {n:'Quest NewQuay', booked:false, area:'Docklands NewQuay', ll:[-37.8132,144.9380], tags:['两卧公寓','估价 A$280 起'], note:'NewQuay 一带可能在免费电车区边缘，订前在地图上核对。', q:'Quest NewQuay Docklands'}
+  ],
+  apb:[
+    {n:'Apollo Bay 汽车旅馆', booked:false, s:'Apollo Bay', area:'Apollo Bay 镇上', ll:[-38.7547,143.6700], tags:['订两间','约 A$111–157/间'], note:'镇上沿 Great Ocean Rd 的汽车旅馆，订两间；先问好最晚几点能入住。', q:'Apollo Bay motel'}
   ],
   gc:[
     {n:'Novotel Surfers Paradise', booked:false, s:'Novotel', area:'Surfers 中心北', ll:[-27.9995,153.4290], tags:['双床房 Deluxe Twin','估价 A$150–250'], note:'连锁酒店，有前台，深夜入住和寄存行李都方便。', q:'Novotel Surfers Paradise'},
@@ -446,9 +450,10 @@ var STN = {
   townHall:[-33.8731,151.2068], wynyard:[-33.8660,151.2058], central:[-33.8840,151.2063], ashfield:[-33.8877,151.1258],
   museumBus:[-33.8762,151.2099], coogeeBus:[-33.9205,151.2565], bondi380:[-33.8906,151.2747], gap380:[-33.8473,151.2861],
   kiama:[-34.6726,150.8545], gerringong:[-34.7447,150.8177],
-  melCentral:[-37.8100,144.9646], latrobeEliz:[-37.8095,144.9612], latrobeSwan:[-37.8101,144.9640], nicholsonVic:[-37.8089,144.9733], nicholsonJohnston:[-37.7985,144.9738],
-  acland96:[-37.8679,144.9792], lunaPark:[-37.8680,144.9772], fitzroyEsp:[-37.8622,144.9747],
-  spencerLatrobe:[-37.8135,144.9516], spencerBourke:[-37.8167,144.9538], swanstonBourke:[-37.8136,144.9658],
+  melCentral:[-37.8100,144.9646], nicholsonJohnston:[-37.7985,144.9738],
+  lunaPark:[-37.8680,144.9772], flindersSwan:[-37.8176,144.9670],
+  melCentralStn:[-37.8100,144.9626], parliamentStn:[-37.8109,144.9729], belgrave:[-37.9090,145.3553], belgravePB:[-37.9077,145.3566], lakeside:[-37.9304,145.4597],
+  swanstonBourke:[-37.8136,144.9658],
   cavill:[-28.0010,153.4285], surfersBus:[-28.0005,153.4270], burleighLR:[-28.0921,153.4521], cwsBus:[-28.1365,153.4860], currumbinN:[-28.1345,153.4872],
   bbNorth:[-28.0275,153.4310], bbSouth:[-28.0347,153.4292], helensvale:[-27.9217,153.3337],
   romaSt:[-27.4659,153.0193]
@@ -491,28 +496,18 @@ var TX = {
     t2Out('Circular Quay 站', STN.cqStn, '约 30 分钟'), HOME_WALK],
 
   // 墨尔本：市中心免费电车区不用刷卡，出了区要刷 myki 或银行卡
-  reb:[
-    {mode:'walk', time:'步行约 5 分钟到 La Trobe St'},
-    {mode:'tram', line:'30', dir:"往 St Vincent's Plaza", on:'Elizabeth St / La Trobe St', off:'Nicholson St / Victoria Pde', a:STN.latrobeEliz, b:STN.nicholsonVic, time:'约 10 分钟', note:'下车的站在免费电车区外，上车要刷卡。也可以直接走过去，约 20 分钟。', osm:{route:'tram', ref:'30'}}],
-  stkilda96:[
-    {mode:'walk', time:'步行约 8 分钟到 Nicholson St'},
-    {mode:'tram', line:'96', dir:'往 St Kilda Beach', on:'Nicholson St / Johnston St', off:'St Kilda Beach（Acland St 终点）', a:STN.nicholsonJohnston, b:STN.acland96, time:'约 45 分钟', note:'一车直达，不用换乘。', osm:{route:'tram', ref:'96'}}],
   stkildaHome:{mode:'tram', line:'16', dir:'往 Melbourne University', on:'Luna Park（The Esplanade）', off:'Melbourne Central（Swanston St）', a:STN.lunaPark, b:STN.melCentral, time:'约 35 分钟', osm:{route:'tram', ref:'16'}},
-  stkildaPier:{mode:'tram', line:'16', dir:'往 Kew（经 St Kilda Beach）', on:'Melbourne Central（Swanston St）', off:'Fitzroy St / The Esplanade', a:STN.melCentral, b:STN.fitzroyEsp, time:'约 30 分钟', note:'出了免费电车区要刷卡。', osm:{route:'tram', ref:'16'}},
-  aclandHome:[
-    {mode:'walk', time:'步行约 5 分钟到 Luna Park'},
-    {mode:'tram', line:'16', dir:'往 Melbourne University', on:'Luna Park（The Esplanade）', off:'Melbourne Central（Swanston St）', a:STN.lunaPark, b:STN.melCentral, time:'约 35 分钟', osm:{route:'tram', ref:'16'}}],
-  dfoHome:[
-    {mode:'walk', time:'步行约 10 分钟到 Spencer St'},
-    {mode:'tram', line:'86/96', dir:'Bourke St 往东', on:'Spencer St / Bourke St', off:'Swanston St / Bourke St', a:STN.spencerBourke, b:STN.swanstonBourke, time:'约 10 分钟', note:'整段在免费电车区内，不用刷卡。', osm:{route:'tram', ref:'96'}}],
-  carlton:{mode:'tram', line:'30', dir:"往 St Vincent's Plaza", on:'Swanston St / La Trobe St', off:'Nicholson St / Victoria Pde', a:STN.latrobeSwan, b:STN.nicholsonVic, time:'约 6 分钟', osm:{route:'tram', ref:'30'}},
+  stkilda16:{mode:'tram', line:'16', dir:'往 Kew（经 St Kilda Beach）', on:'Flinders St 站（Swanston St）', off:'Luna Park（The Esplanade）', a:STN.flindersSwan, b:STN.lunaPark, time:'约 30 分钟', note:'出了免费电车区要刷卡（myki 或银行卡）。', osm:{route:'tram', ref:'16'}},
+  toBelgrave:[
+    {mode:'walk', time:'步行到 Melbourne Central 站'},
+    {mode:'train', line:'Belgrave', dir:'往 Belgrave', on:'Melbourne Central 站', off:'Belgrave 站（终点）', a:STN.melCentralStn, b:STN.belgrave, time:'约 1 小时出头', note:'Metro 火车，刷 myki 或银行卡；有的班次不进 City Loop，就到 Flinders Street 上车。终点出站走几分钟就是小火车站。', osm:{route:'train', ref:'BEG'}}],
+  puffingBilly:{mode:'train', line:'Puffing Billy', dir:'往 Lakeside', on:'Belgrave', off:'Lakeside', a:STN.belgravePB, b:STN.lakeside, time:'约 1 小时', note:'蒸汽小火车，要先在官网订座。', osm:{route:'train', name:'Puffing Billy'}},
+  pbBackCity:[
+    {mode:'train', line:'Puffing Billy', dir:'往 Belgrave', on:'Lakeside', off:'Belgrave', a:STN.lakeside, b:STN.belgravePB, time:'约 1 小时', osm:{route:'train', name:'Puffing Billy'}},
+    {mode:'train', line:'Belgrave', dir:'往 City', on:'Belgrave 站', off:'Parliament 站', a:STN.belgrave, b:STN.parliamentStn, time:'约 1 小时出头', note:'到 Parliament 站出来，走 10 分钟到卡尔顿花园。', osm:{route:'train', ref:'BEG'}}],
   fitzroyHome:[
     {mode:'walk', time:'步行约 8 分钟到 Nicholson St'},
     {mode:'tram', line:'96', dir:'往 St Kilda Beach', on:'Nicholson St / Johnston St', off:'Swanston St / Bourke St', a:STN.nicholsonJohnston, b:STN.swanstonBourke, time:'约 15 分钟', osm:{route:'tram', ref:'96'}}],
-  toSouthernCross:[
-    {mode:'tram', line:'30/35', dir:'La Trobe St 往西', on:'Swanston St / La Trobe St', off:'Spencer St / La Trobe St', a:STN.latrobeSwan, b:STN.spencerLatrobe, time:'约 10 分钟', note:'免费电车区内，不用刷卡。拖行李嫌麻烦就打车，约 10 分钟。', osm:{route:'tram', ref:'30'}},
-    {mode:'walk', time:'步行约 5 分钟到 Southern Cross'}],
-  skybus:{mode:'bus', line:'SkyBus', dir:'Melbourne City Express', on:'Southern Cross 站', off:'墨尔本机场', time:'约 30–40 分钟', freq:'约每 10–15 分钟', note:'私营机场大巴，单独买票，不能用 myki。', osm:{route:'bus', name:'SkyBus'}},
 
   // 黄金海岸 · 布里斯班：Translink 一程 50 分（Airtrain 除外），刷 go card 或银行卡
   currumbin:[
@@ -619,83 +614,82 @@ var DAYS = [
   gm:{mode:'walking', list:[0,1,2,4]},
   tips:['出门前把行李收好放在房间，下午回来拿了就走。','不去 Featherdale，考拉留到黄金海岸的 Currumbin。']},
 
- {id:'d1028', date:'2026-10-28', wd:'周三', city:'mel', night:'mel', tag:'墨尔本 · 第 1 天', title:'墨尔本 CBD City Walk',
-  lede:'从州立图书馆往南，穿过拱廊和涂鸦巷，傍晚到亚拉河边。',
-  start:true, end:{mode:'walk'},
+ {id:'d1028', date:'2026-10-28', wd:'周三', city:'mel', region:'gor', night:'apb', tag:'大洋路自驾 · 第 1 天', title:'大洋路：Torquay 到 Apollo Bay',
+  lede:'早上市区取车，沿大洋路一路往西：Bells Beach、Split Point 灯塔、纪念拱门，Lorne 吃午饭，Kennett River 看野生考拉，傍晚住 Apollo Bay。',
+  start:{n:'市区取车', en:'Car rental · Franklin St 一带', ll:[-37.8081,144.9616], t:'08:00', nofit:true, note:'出门前墨尔本酒店退房，大行李寄存前台。', q:'car rental Franklin Street Melbourne'},
   stops:[
-    {n:'维州州立图书馆', en:'State Library Victoria', ll:[-37.8098,144.9652], t:'10:00', note:'穹顶阅览室 La Trobe Reading Room。', q:'State Library Victoria', img:'State Library Victoria'},
-    {n:'墨尔本中心', en:'Melbourne Central', ll:[-37.8102,144.9628], note:'商场中庭里的老子弹塔。', q:'Melbourne Central', img:['Melbourne Central Shopping Centre', 'search:intitle:"Melbourne Central" shopping']},
+    {n:'Torquay · Bells Beach', en:'Bells Beach', ll:[-38.3690,144.2825], t:'约 09:30', mode:'car', note:'大洋路从 Torquay 开始，Bells Beach 是冲浪圣地，停车场就在悬崖上。', q:'Bells Beach Victoria', img:['Bells Beach, Victoria', 'search:intitle:"Bells Beach"']},
+    {n:'Split Point 灯塔', en:'Split Point Lighthouse', ll:[-38.4680,144.1045], mode:'car', note:'Aireys Inlet 的白色灯塔，沿悬崖步道看海。', q:'Split Point Lighthouse', img:['Split Point Lighthouse', 'search:intitle:"Split Point Lighthouse"']},
+    {n:'大洋路纪念拱门', en:'Memorial Arch', ll:[-38.4720,144.0446], mode:'car', note:'路边停车拍照。', q:'Great Ocean Road Memorial Arch', img:['search:Great Ocean Road arch', 'Great Ocean Road']},
+    {n:'Lorne', en:'Lorne', ll:[-38.5447,143.9808], t:'约 12:30', mode:'car', note:'海边小镇，午饭。', q:'Mountjoy Parade Lorne', img:['Lorne, Victoria', 'search:intitle:Lorne Victoria beach']},
+    {n:'Kennett River · 野生考拉', en:'Kennett River · Grey River Rd', ll:[-38.6677,143.8589], mode:'car', note:'在 Kennett River 拐进 Grey River Rd 慢慢开，看路边桉树上的野生考拉。别投喂，也别在路中间停车。', q:'Grey River Road Kennett River', img:['search:koala Kennett River', 'Kennett River, Victoria']}
+  ],
+  end:{n:'Apollo Bay', en:'Apollo Bay · 住一晚', ll:[-38.7547,143.6700], mode:'car', t:'约 17:00', q:'Apollo Bay Victoria', img:'Apollo Bay'},
+  gm:{mode:'driving', list:['start',0,1,2,3,4,'end']},
+  tips:['走沿海大洋路约 190 km，纯开车约 3 小时；弯道多，看风景用路边的停车湾。','租车选开到 17:00 的门店（Europcar / Hertz / Thrifty / Dollar / East Coast），明天 16:30 前还车。','中文驾照要随身带英文翻译件，租车前确认租车公司的要求。','跟 Apollo Bay 的旅馆确认最晚几点能入住。','墨尔本酒店退房，大行李寄存在前台，只带一晚的东西。']},
+
+ {id:'d1029', date:'2026-10-29', wd:'周四', city:'mel', region:'gor', night:'mel', tag:'大洋路自驾 · 第 2 天', title:'十二门徒石，走内陆回墨尔本',
+  lede:'早上走 Maits Rest 雨林步道，11 点前后到十二门徒石，Port Campbell 午饭、加油，13:00 前出发走内陆回墨尔本还车。',
+  start:{n:'Apollo Bay 出发', en:'Apollo Bay', ll:[-38.7547,143.6700], t:'约 08:30', q:'Apollo Bay Victoria', img:'Apollo Bay'},
+  stops:[
+    {n:'Maits Rest 雨林步道', en:'Maits Rest Rainforest Walk', ll:[-38.7559,143.5545], mode:'car', note:'约 30 分钟的环形步道，大树蕨雨林。出发前在 Parks Victoria 查步道开不开。', q:'Maits Rest Rainforest Walk', img:['search:intitle:"Maits Rest"', 'Great Otway National Park']},
+    {n:'十二门徒石', en:'Twelve Apostles', ll:[-38.6656,143.1044], t:'约 11:00', mode:'car', note:'10/16 起要在 twelveapostles.org.au 预约到达时段（免费，含停车位）。', q:'Twelve Apostles Victoria', img:['The Twelve Apostles (Victoria)', 'Twelve Apostles (Victoria)']},
+    {n:'洛克阿德峡谷', en:'Loch Ard Gorge', ll:[-38.6464,143.0703], mode:'car', note:'只能在观景台看。', q:'Loch Ard Gorge', img:'Loch Ard Gorge'},
+    {n:'Port Campbell', en:'Port Campbell', ll:[-38.6196,142.9954], t:'约 12:15', mode:'car', note:'午饭、加油。最晚 13:00 出发回墨尔本。', q:'Port Campbell Victoria', img:['Port Campbell, Victoria', 'search:intitle:"Port Campbell"']},
+    {n:'市区还车', en:'Car rental · Franklin St 一带', ll:[-37.8081,144.9616], t:'16:30 前', mode:'car', via:[[-38.3400,143.5859],[-38.15,144.36]], nofit:true, note:'走内陆经 Colac 约 230 km、3 小时。还车前在城外加满油。', q:'car rental Franklin Street Melbourne'},
+    {n:'Southbank 河边（可选）', en:'Southbank', ll:[-37.8200,144.9662], opt:true, from:4, note:'晚上沿亚拉河吃饭、看夜景。', q:'Southbank Promenade Melbourne', img:['Southbank, Victoria', 'Yarra River']}
+  ],
+  end:{mode:'walk', nofit:true},
+  gm:{mode:'driving', list:['start',0,1,2,3,4]},
+  tips:['十二门徒石 10/16 起要在 twelveapostles.org.au 预约（免费，含停车位），按 11:00 左右订。','出发前查 Maits Rest 步道开不开。','最晚 13:00 从 Port Campbell 出发；还车前在城外加满油，16:30 前还车。','回酒店重新入住，取寄存的行李。']},
+
+ {id:'d1030', date:'2026-10-30', wd:'周五', city:'mel', night:'mel', tag:'墨尔本 · 市区', title:'City Walk + St Kilda 日落和企鹅',
+  lede:'早上女王市场吃早午饭，穿过市中心一路走到弗林德斯街车站；傍晚坐 16 路电车去 St Kilda，Acland St 吃晚饭，看日落和栈桥的小企鹅。',
+  start:true, end:{mode:'tram', tx:TX.stkildaHome},
+  stops:[
+    {n:'维多利亚女王市场', en:'Queen Victoria Market', ll:[-37.8076,144.9568], t:'09:00', note:'早午饭。', q:'Queen Victoria Market', img:'Queen Victoria Market'},
+    {n:'维州州立图书馆', en:'State Library Victoria', ll:[-37.8098,144.9652], note:'穹顶阅览室 La Trobe Reading Room。', q:'State Library Victoria', img:'State Library Victoria'},
+    {n:'墨尔本中心', en:'Melbourne Central', ll:[-37.8102,144.9628], q:'Melbourne Central', img:['Melbourne Central Shopping Centre', 'search:intitle:"Melbourne Central" shopping']},
     {n:'唐人街', en:'Chinatown · Little Bourke St', ll:[-37.8115,144.9686], q:'Chinatown Melbourne', img:'Chinatown, Melbourne'},
     {n:'皇家拱廊', en:'Royal Arcade', ll:[-37.8144,144.9640], q:'Royal Arcade Melbourne', img:['search:intitle:"Royal Arcade" Melbourne', 'Royal Arcade, Melbourne']},
+    {n:'Block Arcade', en:'The Block Arcade', ll:[-37.8159,144.9649], q:'Block Arcade Melbourne', img:'Block Arcade'},
     {n:'墨尔本市政厅', en:'Melbourne Town Hall', ll:[-37.8150,144.9667], q:'Melbourne Town Hall', img:'Melbourne Town Hall'},
     {n:'圣保罗大教堂', en:"St Paul's Cathedral", ll:[-37.8169,144.9676], q:"St Paul's Cathedral Melbourne", img:"St Paul's Cathedral, Melbourne"},
     {n:'涂鸦巷', en:'Hosier Lane', ll:[-37.8165,144.9692], q:'Hosier Lane Melbourne', img:'Hosier Lane'},
     {n:'联邦广场', en:'Federation Square', ll:[-37.8179,144.9690], q:'Federation Square Melbourne', img:'Federation Square'},
     {n:'弗林德斯街车站', en:'Flinders Street Station', ll:[-37.8183,144.9671], q:'Flinders Street Station', img:'Flinders Street railway station'},
-    {n:'国立维多利亚美术馆', en:'NGV International', ll:[-37.8226,144.9689], note:'常设展免费。', q:'NGV International', img:'National Gallery of Victoria'},
-    {n:'南岸 · 亚拉河', en:'Southbank · Yarra River', ll:[-37.8203,144.9637], sunset:true, note:'沿河散步、晚饭、看夜景。', q:'Southbank Promenade Melbourne', img:['Southbank, Victoria', 'Yarra River']}
+    {n:'国立维多利亚美术馆（可选）', en:'NGV International', ll:[-37.8226,144.9689], opt:true, from:10, note:'常设展免费，过桥就到。', q:'National Gallery of Victoria', img:'National Gallery of Victoria'},
+    {n:'Acland St', en:'Acland Street', ll:[-37.8685,144.9800], t:'约 17:30', mode:'tram', tx:TX.stkilda16, note:'蛋糕店一条街，晚饭在这里吃。', q:'Acland Street St Kilda', img:['search:intitle:"Acland Street" cake', 'Acland Street']},
+    {n:'St Kilda 海滩 · 栈桥', en:'St Kilda Beach · Pier', ll:[-37.8647,144.9689], sunset:true, note:'看日落，然后去栈桥尽头看小企鹅：免费但要预约，选日落后约 30 分钟开始的第一场。', q:'St Kilda Pier', img:'St Kilda Pier'}
   ],
   gm:{mode:'walking', list:[0,1,2,3,4,5,6,7,8,9,10]},
-  tips:['CBD 免费电车区内坐电车不用刷卡，出区要刷卡。','维多利亚女王市场周三白天不营业，所以放到明天。']},
+  tips:['看企鹅免费但要预约（penguins.org.au）：每周二 10:00 放出下一周的票，很快就没；选日落后约 30 分钟开始的第一场。','如果 10/31 改去菲利普岛，这晚就不看企鹅，改去 Southbank 河边。','市中心免费电车区内坐电车不用刷卡；去 St Kilda 出了免费区要刷卡。']},
 
- {id:'d1029', date:'2026-10-29', wd:'周四', city:'mel', night:'mel', tag:'墨尔本 · 第 2 天', title:'市场 + 街区',
-  lede:'早上逛市场，下午走 Carlton 和 Fitzroy，傍晚去 St Kilda 看海。按体力删减。',
-  start:true, end:{mode:'tram', tx:TX.stkildaHome},
-  stops:[
-    {n:'维多利亚女王市场', en:'Queen Victoria Market', ll:[-37.8076,144.9568], t:'约 09:00', note:'早上去，早午饭在市场里解决。营业时间出发前再核对。', q:'Queen Victoria Market', img:'Queen Victoria Market'},
-    {n:'皇家展览馆 · 卡尔顿花园', en:'Royal Exhibition Building', ll:[-37.8047,144.9717], mode:'tram', tx:TX.reb, q:'Royal Exhibition Building', img:'Royal Exhibition Building'},
-    {n:'Lygon St 意大利街', en:'Lygon Street, Carlton', ll:[-37.7985,144.9668], q:'Lygon Street Carlton', img:'Lygon Street'},
-    {n:'Brunswick St', en:'Brunswick Street, Fitzroy', ll:[-37.7985,144.9785], note:'咖啡、古着店、街头涂鸦。', q:'Brunswick Street Fitzroy', img:'Brunswick Street, Melbourne'},
-    {n:'圣基尔达', en:'St Kilda · Luna Park', ll:[-37.8676,144.9760], mode:'tram', tx:TX.stkilda96, sunset:true, note:'96 路电车直达，约 45 分钟。海边看日落；防波堤傍晚可能看到小企鹅，遵守现场观看规定。', q:'St Kilda Beach', img:['Luna Park Melbourne', 'St Kilda, Victoria']}
-  ],
-  gm:{mode:'walking', list:[0,1,2,3]},
-  tips:['St Kilda 在免费电车区外，坐电车要刷卡。']},
-
- {id:'d1030', date:'2026-10-30', wd:'周五', city:'mel', region:'gor', night:'mel', tag:'墨尔本 · 大洋路', title:'大洋路一日游（反向）',
-  lede:'跟团先走内陆直奔十二门徒石，再沿海岸开回墨尔本，避开上午的人流。',
-  start:{n:'墨尔本集合点', en:'Melbourne CBD', q:'Federation Square Melbourne', img:'Federation Square', ll:[-37.8179,144.9690], t:'约 07:00', note:'按旅行团通知，常见在 Federation Square 或 Southern Cross 一带。'},
-  end:{n:'返回墨尔本', en:'Melbourne CBD', q:'Federation Square Melbourne', img:'Federation Square', ll:[-37.8179,144.9690], mode:'tour', via:[[-38.338,144.326],[-38.15,144.36]], t:'约 20:00–21:00'},
-  stops:[
-    {n:'十二门徒石', en:'Twelve Apostles', ll:[-38.6656,143.1044], t:'约 11:00', mode:'tour', via:[[-38.15,144.36],[-38.34,143.585]], note:'反向团先走内陆经 Colac 过来，约 3.5–4 小时车程。', q:'Twelve Apostles Victoria', img:['The Twelve Apostles (Victoria)', 'Twelve Apostles (Victoria)']},
-    {n:'洛克阿德峡谷', en:'Loch Ard Gorge', ll:[-38.6460,143.0703], mode:'tour', q:'Loch Ard Gorge', img:'Loch Ard Gorge'},
-    {n:'阿波罗湾', en:'Apollo Bay', ll:[-38.7567,143.6711], mode:'tour', via:[[-38.70,143.16],[-38.68,143.39],[-38.73,143.55]], note:'午饭或下午茶。', q:'Apollo Bay Victoria', img:'Apollo Bay'},
-    {n:'大洋路纪念拱门', en:'Memorial Arch', ll:[-38.4630,144.0450], mode:'tour', via:[[-38.73,143.71],[-38.668,143.862],[-38.542,143.979]], note:'沿海最经典的一段大洋路。', q:'Great Ocean Road Memorial Arch', img:['search:Great Ocean Road arch', 'Great Ocean Road']}
-  ],
-  gm:{mode:'driving', list:['start',0,1,2,3,'end']},
-  tips:['一日游约 12–13 小时，前一晚早睡；带外套和零食，海边风大。','Klook、淘宝或当地正规旅行团都可以，确认是「反向」路线和集合地点。']},
-
- {id:'d1031', date:'2026-10-31', wd:'周六', city:'mel', night:'gc', tag:'墨尔本 → 黄金海岸', title:'自由补漏 + 晚班机',
-  lede:'白天三选一，18:00 左右回酒店取行李去机场。',
+ {id:'d1031', date:'2026-10-31', wd:'周六', city:'mel', night:'mel', tag:'墨尔本 · 周边', title:'Puffing Billy 小火车',
+  lede:'默认坐 Metro 火车去 Belgrave 坐蒸汽小火车，下午回市区，体力够就去 Carlton 和 Fitzroy。还没定的方案：小火车 + 菲利普岛企鹅一日游。',
   start:true,
   options:[
-    {label:'St Kilda 海边', stops:[
-      {n:'St Kilda 海滩 · 栈桥', en:'St Kilda Pier', ll:[-37.8650,144.9730], mode:'tram', tx:TX.stkildaPier, t:'上午', note:'如果 10/29 没来得及去。', q:'St Kilda Pier', img:'St Kilda Pier'},
-      {n:'Acland St', en:'Acland Street', ll:[-37.8685,144.9800], note:'蛋糕店一条街，午饭。', q:'Acland Street St Kilda', img:['search:intitle:"Acland Street" cake', 'Acland Street']}], back:{tx:TX.aclandHome}},
-    {label:'CBD 购物', stops:[
-      {n:'Bourke St Mall', en:'Bourke Street Mall', ll:[-37.8136,144.9645], t:'上午', q:'Bourke Street Mall', img:['Bourke Street Mall', 'Bourke Street']},
-      {n:'Emporium', en:'Emporium Melbourne', ll:[-37.8122,144.9638], q:'Emporium Melbourne', img:'Emporium Melbourne'},
-      {n:'Block Arcade', en:'The Block Arcade', ll:[-37.8159,144.9649], q:'Block Arcade Melbourne', img:'Block Arcade'},
-      {n:'DFO South Wharf', en:'DFO South Wharf', ll:[-37.8255,144.9525], note:'折扣店，离 Southern Cross 不远。', q:'DFO South Wharf', img:'South Wharf, Victoria'}], back:{tx:TX.dfoHome}},
-    {label:'Carlton / Fitzroy', stops:[
-      {n:'卡尔顿花园', en:'Carlton Gardens', ll:[-37.8047,144.9717], mode:'tram', tx:TX.carlton, t:'上午', note:'如果 10/29 走得太赶。', q:'Carlton Gardens', img:'Carlton Gardens'},
-      {n:'Lygon St', en:'Lygon Street', ll:[-37.7985,144.9668], q:'Lygon Street Carlton', img:'Lygon Street'},
-      {n:'Brunswick St', en:'Brunswick Street', ll:[-37.7985,144.9785], q:'Brunswick Street Fitzroy', img:'Brunswick Street, Melbourne'}], back:{tx:TX.fitzroyHome}}
+    {label:'默认：小火车 + Carlton / Fitzroy', stops:[
+      {n:'Belgrave · Puffing Billy', en:'Puffing Billy · Belgrave', ll:[-37.9077,145.3566], t:'10:00 或 11:00', mode:'train', tx:TX.toBelgrave, note:'往返约 A$66/人（以官网为准），周六容易满，要先在官网订。', q:'Puffing Billy Railway Belgrave', img:['Puffing Billy Railway', 'search:intitle:"Puffing Billy"']},
+      {n:'Lakeside（Emerald Lake）', en:'Lakeside · Emerald Lake Park', ll:[-37.9304,145.4597], mode:'train', tx:TX.puffingBilly, note:'湖边公园吃午饭，再坐回程的小火车回 Belgrave。', q:'Lakeside Station Puffing Billy', img:['search:Emerald Lake Park', 'Emerald, Victoria']},
+      {n:'卡尔顿花园', en:'Carlton Gardens', ll:[-37.8047,144.9717], t:'下午', mode:'train', tx:TX.pbBackCity, note:'体力够再去；累了就直接回酒店。', q:'Carlton Gardens', img:'Carlton Gardens'},
+      {n:'Lygon St 意大利街', en:'Lygon Street', ll:[-37.7985,144.9668], note:'晚饭吃意大利菜。', q:'Lygon Street Carlton', img:'Lygon Street'},
+      {n:'Brunswick St', en:'Brunswick Street · Fitzroy', ll:[-37.7985,144.9785], q:'Brunswick Street Fitzroy', img:'Brunswick Street, Melbourne'}],
+     gm:{mode:'walking', list:[2,3,4]}, back:{tx:TX.fitzroyHome}},
+    {label:'待定：小火车 + 菲利普岛', stops:[
+      {n:'Puffing Billy 小火车', en:'Puffing Billy · Belgrave', ll:[-37.9077,145.3566], t:'上午', mode:'tour', note:'跟团，坐一段蒸汽小火车（看团的安排）。一日游起价 A$229/人。', q:'Puffing Billy Railway Belgrave', img:['Puffing Billy Railway', 'search:intitle:"Puffing Billy"']},
+      {n:'菲利普岛 · 企鹅归巢', en:'Phillip Island · Penguin Parade', ll:[-38.5105,145.1496], t:'日落后', mode:'tour', note:'傍晚看小企鹅上岸，10 月大约 22:30 回到市区。', q:'Penguin Parade Phillip Island', img:['search:Phillip Island penguin parade', 'Phillip Island']}],
+     back:{mode:'tour', t:'约 22:30'}}
   ],
-  tail:[
-    {n:'酒店取行李', en:'Hotel', ll:[-37.8120,144.9620], t:'约 18:00', kind:'stay', mode:'tram', q:'Melbourne Central'},
-    {n:'Southern Cross 站', en:'SkyBus · Southern Cross', ll:[-37.8183,144.9526], t:'约 18:15', mode:'tram', tx:TX.toSouthernCross, note:'坐 SkyBus 去机场约 30–40 分钟。', q:'Southern Cross Station', img:'Southern Cross railway station'},
-    {n:'墨尔本机场', en:'Melbourne Airport', ll:[-37.6698,144.8422], t:'约 19:00', kind:'air', mode:'bus', tx:TX.skybus, nofit:true, q:'Melbourne Airport', img:'Melbourne Airport'}
-  ],
-  after:[
-    {who:'两人', code:'Jetstar', dep:'MEL 21:10', arr:'OOL 22:15', note:'实际飞约 2h05；墨尔本比黄金海岸快 1 小时'},
-    {who:'', code:'打车', dep:'OOL 机场', arr:'Surfers Paradise', note:'约 25–30 分钟；深夜入住提前和酒店确认取钥匙方式'}],
-  tips:['今天是 Derby Day（Flemington 赛马开幕日），城里人多，去机场早点出发。','白天别去 Phillip Island，来不及赶 21:10 的飞机。']},
+  tail:[{n:'回酒店', en:'Hotel', ll:[-37.8120,144.9620], kind:'stay', mode:'tram', t:'晚上', q:'Melbourne Central'}],
+  tips:['Puffing Billy 往返约 A$66/人（以官网为准），周六容易满，要先订；赶 10:00 或 11:00 的车。','菲利普岛一日游起价 A$229/人，10 月大约 22:30 回到市区。','11/1 一早飞黄金海岸。选一日游的话，改订 10 点以后起飞的航班；10/30 晚上也不用在 St Kilda 看企鹅，改去 Southbank。']},
 
  {id:'d1101', date:'2026-11-01', wd:'周日', city:'gc', region:'gc', night:'gc', tag:'黄金海岸 · 第 1 天', title:'Currumbin 看考拉',
   lede:'上午去野生动物保护区，下午沿海往北，傍晚在 Burleigh Heads 看海。',
+  before:[{who:'两人', code:'航班待定', dep:'MEL 早班', arr:'OOL', note:'墨尔本比黄金海岸快 1 小时；落地后先去酒店放行李'}],
   start:true, end:{mode:'tram', tx:TX.burleighHome},
   stops:[
-    {n:'Currumbin 野生动物保护区', en:'Currumbin Wildlife Sanctuary', ll:[-28.1360,153.4870], t:'约 09:00', mode:'bus', tx:TX.currumbin, note:'考拉合影可选树上合影或抱考拉；抱考拉要求身高 140cm 以上、能托住考拉。门票和合影分开买，出发前在官网确认价格和时段。', q:'Currumbin Wildlife Sanctuary', img:'Currumbin Wildlife Sanctuary', link:{l:'合影官网', u:'https://book.currumbinsanctuary.com.au/location/currumbin-sanctuary/book/encounters/tree-kangaroo-encounter'}},
+    {n:'Currumbin 野生动物保护区', en:'Currumbin Wildlife Sanctuary', ll:[-28.1360,153.4870], t:'落地后', mode:'bus', tx:TX.currumbin, note:'考拉合影可选树上合影或抱考拉；抱考拉要求身高 140cm 以上、能托住考拉。门票和合影分开买，出发前在官网确认价格和时段。', q:'Currumbin Wildlife Sanctuary', img:'Currumbin Wildlife Sanctuary', link:{l:'合影官网', u:'https://book.currumbinsanctuary.com.au/location/currumbin-sanctuary/book/encounters/tree-kangaroo-encounter'}},
     {n:'象岩 · Currumbin 海滩', en:'Elephant Rock', ll:[-28.1327,153.4906], q:'Elephant Rock Currumbin', img:['Currumbin, Queensland', 'Currumbin Beach']},
     {n:'伯利角', en:'Burleigh Heads', ll:[-28.0890,153.4555], mode:'bus', tx:TX.burleigh, sunset:true, note:'国家公园海岬步道，看冲浪和 Surfers 天际线。', q:'Burleigh Head National Park', img:['Burleigh Head National Park', 'Burleigh Heads, Queensland']}
   ],
@@ -751,7 +745,8 @@ var FLIGHTS = [
   {d:'10/23', code:'东航', r:'TNA 13:05 → SYD 09:00⁺¹', who:'朋友', sub:'武汉转机 4h35m', p:'¥2469'},
   {d:'10/24', code:'JQ403', r:'OOL 07:10 → SYD 09:40', who:'我', sub:'', p:'≈ A$83'},
   {d:'10/27', code:'JQ533', r:'SYD 18:25 → MEL 20:05', who:'两人', sub:'', p:'≈ A$90/人'},
-  {d:'10/31', code:'Jetstar', r:'MEL 21:10 → OOL 22:15', who:'两人', sub:'跨时区，实际飞约 2h05', p:'≈ A$115/人'},
+  {d:'10/28', code:'租车', r:'墨尔本市区 ⇄ 大洋路', who:'两人', sub:'10/28 08:00 取车，10/29 16:30 前还车', p:''},
+  {d:'11/01', code:'待定', r:'MEL 早班 → OOL', who:'两人', sub:'墨尔本比黄金海岸快 1 小时；10/31 选菲利普岛一日游就改订 10 点以后起飞的', p:''},
   {d:'11/02', code:'陆路', r:'Surfers → Brisbane', who:'两人', sub:'G:link 轻轨 + 火车，约 1.5 小时', p:''},
   {d:'11/03', code:'南航', r:'BNE 23:00 → TNA 11:30⁺¹', who:'朋友', sub:'广州转机 2h45m', p:'¥2652（学生价 ¥2502）'}
 ];
@@ -762,7 +757,7 @@ var OV_CITIES = [
 var OV_LEGS = [
   {a:[-28.1644,153.5047], b:[-33.9366,151.1658], mode:'flight', lb:'10/24 我', bend:-.22},
   {a:[-33.9366,151.1658], b:[-37.6698,144.8422], mode:'flight', lb:'10/27', bend:.22},
-  {a:[-37.6698,144.8422], b:[-28.1644,153.5047], mode:'flight', lb:'10/31', bend:-.18},
+  {a:[-37.6698,144.8422], b:[-28.1644,153.5047], mode:'flight', lb:'11/1', bend:-.18},
   {a:[-28.0024,153.4315], b:[-27.4698,153.0251], mode:'train', lb:'11/2 火车', bend:0}
 ];
 var JINAN = [36.857,117.216];
@@ -777,6 +772,12 @@ var PAY = [
 
 /* ---------- 版本记录：最新的写在最前。旧版本是 v/<号>/index.html 里冻结的整页副本（tools/snapshot.mjs 生成） ---------- */
 var VERSIONS = [
+  {v:3, date:'2026-10-14', title:'墨尔本改成大洋路自驾两天 + 市区一天 + 小火车', notes:[
+    '10/28–29：大洋路自驾两天，10/28 住 Apollo Bay；第 2 天看十二门徒石，走内陆回墨尔本还车（原来是 10/30 跟团一日游）。',
+    '10/30：女王市场和市中心 City Walk，傍晚坐 16 路电车去 St Kilda 看日落和小企鹅。',
+    '10/31：Puffing Billy 小火车 + Carlton / Fitzroy；也可以改成小火车 + 菲利普岛一日游（待定）。',
+    '去黄金海岸改成 11/1 一早的航班（航班待定），黄金海岸住 1 晚。',
+    '悉尼、布里斯班和 v2 一样；黄金海岸只改了 11/1 怎么到。']},
   {v:2, date:'2026-10-09', title:'悉尼住 Ashbury，加 Gerringong + Kiama 一日', notes:[
     '悉尼住 Ashbury 民宿（两间房，已订），每天从 Ashfield 站坐 T2 / T3 进出城，来回机场打车。',
     '10/24：放行李后从海德公园一路走到海港，天文台山看日落。',
