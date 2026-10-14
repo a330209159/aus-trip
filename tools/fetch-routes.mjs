@@ -203,11 +203,13 @@ async function transitShape(g) {
   let best = null;
   for (const r of rels) {
     const pa = project(r.line, g.A), pb = project(r.line, g.B);
-    if (pa.d > snap || pb.d > snap || !(pa.pos < pb.pos)) continue;
-    const part = cut(r.line, pa, pb), len = length(part);
+    // 方向要对；火车的轨道来回是同一条，只有一个方向的线路（比如 Puffing Billy）也可以反着用
+    const fwd = pa.pos < pb.pos, rev = !fwd && g.mode === 'train' && pb.pos < pa.pos;
+    if (pa.d > snap || pb.d > snap || !(fwd || rev)) continue;
+    const part = fwd ? cut(r.line, pa, pb) : cut(r.line, pb, pa).slice().reverse(), len = length(part);
     if (len > straight * 4 + 3000) continue;
-    const score = pa.d + pb.d + len * 0.01;
-    if (!best || score < best.score) best = { score, part, info: `relation ${r.id} ${r.name} · 上下车点离线 ${pa.d.toFixed(0)}/${pb.d.toFixed(0)} m` };
+    const score = pa.d + pb.d + len * 0.01 + (fwd ? 0 : 100000);
+    if (!best || score < best.score) best = { score, part, info: `relation ${r.id} ${r.name}${fwd ? '' : '（反向）'} · 上下车点离线 ${pa.d.toFixed(0)}/${pb.d.toFixed(0)} m` };
   }
   return best;
 }
