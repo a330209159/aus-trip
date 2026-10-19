@@ -1,0 +1,1699 @@
+<!doctype html>
+<html lang="zh-CN" data-snapshot="3">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>澳洲四城行程地图 · 旧版本 v3</title>
+<style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Sans+SC:wght@400;500;700&family=Noto+Serif+SC:wght@600;700&display=swap">
+<style>
+/* Layout: date rail pinned on top; wide screens keep the map pinned on the left while the day's itinerary scrolls on the right; phones stack map over itinerary.
+   The map is Leaflet (loaded at runtime from a CDN) on OpenStreetMap tiles (CARTO if a key is set); its stylesheet is inserted before this one so the rules below win. */
+:root{
+  --bg:#EDF1F3; --surface:#FFFFFF; --ink:#16232B; --muted:#5B6B75; --line:#D3DDE2; --soft:#E4EBEF;
+  --land:#F7F6F2; --sea:#CADCE4; --coast:#9AB5C1; --sea-ink:#477A8E; --grid:rgba(22,35,43,.075); --halo:rgba(247,246,242,.92);
+  --syd:#1E5EA8; --mel:#2E7A52; --gc:#B06F08; --bne:#7347AE; --air:#3B4A53; --apb:var(--mel);
+  --walk:#46535B; --l-train:#C2571A; --l-metro:#0B7A78; --l-tram:#2F8A3A; --l-lrt:#C0263B; --l-bus:#1D63A6; --l-ferry:#0A7EA3; --l-car:#7A6450;
+  --warn-bg:#FFF1CC; --warn-line:#E3BE5C;
+  --f-display:"Noto Serif SC","Songti SC","STSong",serif;
+  --f-body:"Noto Sans SC","PingFang SC","Hiragino Sans GB","Microsoft YaHei",system-ui,sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  --rail:64px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0E1519; --surface:#162027; --ink:#E2E9EC; --muted:#93A4AD; --line:#2A3941; --soft:#1C2930;
+    --land:#18232A; --sea:#0C1D25; --coast:#2D4C5A; --sea-ink:#7BB0C3; --grid:rgba(226,233,236,.06); --halo:rgba(24,35,42,.9);
+    --syd:#74ABEE; --mel:#66C896; --gc:#E5AD4A; --bne:#B793F0; --air:#B9C6CD; color-scheme:dark;
+    --walk:#D3DDE2; --l-train:#F28C4E; --l-metro:#37B9B4; --l-tram:#6BCB77; --l-lrt:#F2667A; --l-bus:#64A2EC; --l-ferry:#4CC6E6; --l-car:#C9B49C;
+    --warn-bg:#3A3016; --warn-line:#7A6426;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0E1519; --surface:#162027; --ink:#E2E9EC; --muted:#93A4AD; --line:#2A3941; --soft:#1C2930;
+  --land:#18232A; --sea:#0C1D25; --coast:#2D4C5A; --sea-ink:#7BB0C3; --grid:rgba(226,233,236,.06); --halo:rgba(24,35,42,.9);
+  --syd:#74ABEE; --mel:#66C896; --gc:#E5AD4A; --bne:#B793F0; --air:#B9C6CD; color-scheme:dark;
+  --walk:#D3DDE2; --l-train:#F28C4E; --l-metro:#37B9B4; --l-tram:#6BCB77; --l-lrt:#F2667A; --l-bus:#64A2EC; --l-ferry:#4CC6E6; --l-car:#C9B49C;
+  --warn-bg:#3A3016; --warn-line:#7A6426;
+}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased}
+a{color:inherit}
+button{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--syd);outline-offset:2px;border-radius:6px}
+
+.wrap{padding-inline:16px;max-width:1440px;margin-inline:auto}
+.masthead{padding-block:18px 6px;display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 16px}
+.masthead h1{font-family:var(--f-display);font-weight:700;font-size:clamp(22px,4.6vw,30px);line-height:1.2;margin:0;letter-spacing:.02em;text-wrap:balance}
+.masthead .route{font-size:13px;color:var(--muted);display:flex;flex-wrap:wrap;gap:2px 6px;align-items:center}
+.masthead .route b{font-weight:500;color:var(--ink)}
+.masthead .route i{font-style:normal;color:var(--muted)}
+/* 版本：标题右边的小按钮，点开是版本列表 */
+.ver{position:relative;margin-left:auto;align-self:center}
+.ver>summary{list-style:none;cursor:pointer;display:inline-flex;align-items:center;gap:7px;height:30px;padding:0 11px;border:1px solid var(--line);border-radius:999px;background:var(--surface);color:var(--ink);font-size:12.5px;white-space:nowrap;user-select:none}
+.ver>summary::-webkit-details-marker{display:none}
+.ver>summary b{font-family:var(--f-mono);font-weight:600}
+.ver>summary span{color:var(--muted)}
+.ver>summary::after{content:'';width:6px;height:6px;margin-left:1px;border-right:1.5px solid var(--muted);border-bottom:1.5px solid var(--muted);transform:translateY(-2px) rotate(45deg)}
+.ver[open]>summary::after{transform:translateY(1px) rotate(225deg)}
+.ver>summary:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+.ver.old>summary{background:var(--warn-bg);border-color:var(--warn-line)}
+.vpop{position:absolute;right:0;top:calc(100% + 6px);z-index:60;width:min(360px, calc(100vw - 32px));background:var(--surface);border:1px solid var(--line);border-radius:12px;box-shadow:0 10px 28px rgba(0,0,0,.14);padding:10px 12px 8px}
+.vpop h4{margin:0 0 6px;font-size:13px;color:var(--muted);font-weight:500}
+.vpop ol{list-style:none;margin:0;padding:0}
+.vpop li{display:grid;grid-template-columns:auto 1fr auto;gap:2px 10px;align-items:baseline;padding:8px 0;border-top:1px solid var(--line)}
+.vpop li:first-child{border-top:0}
+.vpop .vn{font-family:var(--f-mono);font-weight:600;font-size:13px}
+.vpop .vt{font-size:13px;line-height:1.45;min-width:0}
+.vpop .vt small{display:block;color:var(--muted);font-family:var(--f-mono);font-size:11.5px}
+.vpop .va{font-size:12.5px;white-space:nowrap}
+.vpop .va a{color:var(--ink)}
+.vpop .va .cur{color:var(--muted)}
+.vpop p{margin:6px 0 0;font-size:11.5px;color:var(--muted);line-height:1.5}
+@media (min-width: 600px){ .ver{order:3} }
+/* 总览页底部的版本记录 */
+.vlist{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.vlist li{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:11px 14px}
+.vlist .vh{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px}
+.vlist .vh b{font-family:var(--f-mono);font-weight:600}
+.vlist .vh .d{font-family:var(--f-mono);font-size:12.5px;color:var(--muted)}
+.vlist .vh .tt{font-weight:500;flex:1 1 200px;min-width:0}
+.vlist .vh a,.vlist .vh .cur{font-size:13px;white-space:nowrap}
+.vlist .vh a{color:var(--ink)}
+.vlist .vh .cur{color:var(--muted)}
+.vlist ul{margin:6px 0 0;padding-left:18px;font-size:13.5px;color:var(--muted)}
+.vlist ul li{background:none;border:0;padding:0;border-radius:0}
+
+/* date rail */
+.railbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--bg);border-bottom:1px solid var(--line)}
+.rail{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding-block:9px;scroll-padding-inline:16px}
+.rail::-webkit-scrollbar{display:none}
+.chip{flex:none;display:grid;grid-template-columns:auto auto;align-items:baseline;column-gap:5px;row-gap:0;min-width:66px;padding:5px 10px 6px;border-radius:10px;border:1px solid var(--line);background:var(--surface);cursor:pointer;text-align:left;position:relative;line-height:1.25}
+.chip::before{content:"";position:absolute;left:9px;right:9px;top:-1px;height:3px;border-radius:0 0 3px 3px;background:var(--c,var(--muted))}
+.chip .md{font-family:var(--f-mono);font-weight:600;font-size:14px;font-variant-numeric:tabular-nums}
+.chip .wd{font-size:12px;color:var(--muted)}
+.chip .ct{grid-column:1 / -1;font-size:11.5px;color:var(--muted);white-space:nowrap}
+.chip.ov{grid-template-columns:auto;align-content:center}
+.chip.ov .md{font-family:var(--f-body);font-weight:700;font-size:14px}
+.chip[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.chip[aria-pressed="true"] .wd,.chip[aria-pressed="true"] .ct{color:var(--bg);opacity:.8}
+.chip .today{position:absolute;right:6px;top:6px;width:7px;height:7px;border-radius:50%;background:var(--c,var(--syd));box-shadow:0 0 0 2px var(--surface)}
+.chip.sep{margin-left:8px}
+
+/* stage */
+.stage{display:grid;grid-template-columns:minmax(0,1fr);gap:14px;padding-block:14px 40px}
+.map{position:relative;isolation:isolate;scroll-margin-top:calc(var(--rail) + 8px);height:min(58svh,540px);min-height:320px;border-radius:14px;overflow:hidden;border:1px solid var(--line);background:var(--land);touch-action:none;user-select:none;-webkit-user-select:none}
+.lmap{position:absolute;inset:0}
+.map:not(.ready) .tools,.map:not(.ready) .mapnote{display:none}
+.map.nomap{height:auto;min-height:0;touch-action:auto;user-select:auto;-webkit-user-select:auto}
+.map.nomap .lmap{display:none}
+.mapmsg{position:absolute;inset:0;z-index:500;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:8px 12px;padding:14px 16px;text-align:center;font-size:13px;color:var(--muted)}
+.mapmsg p{margin:0;max-width:44ch}
+.map.nomap .mapmsg{position:static;justify-content:flex-start;text-align:left}
+.tools{position:absolute;z-index:500;top:10px;right:10px;display:flex;flex-direction:column;gap:6px;align-items:flex-end}
+.tbtn{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-width:34px;height:34px;padding:0 10px;border-radius:9px;border:1px solid var(--line);background:var(--surface);font-size:13px;cursor:pointer;box-shadow:0 1px 2px rgba(0,0,0,.06)}
+.tbtn[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.tgroup{display:flex;flex-direction:column;border-radius:9px;overflow:hidden;border:1px solid var(--line);box-shadow:0 1px 2px rgba(0,0,0,.06)}
+.tgroup .tbtn{border:0;border-radius:0;box-shadow:none;font-family:var(--f-mono);font-size:17px;width:34px;padding:0}
+.tgroup .tbtn+.tbtn{border-top:1px solid var(--line)}
+.mapnote{position:absolute;z-index:500;pointer-events:none;left:10px;top:10px;max-width:calc(100% - 140px);font-size:11.5px;line-height:1.4;color:var(--muted);background:var(--halo);padding:4px 8px;border-radius:7px}
+.mapnote .tw{display:none}
+.mapnote.warn .tw{display:block;margin-top:3px;padding-top:3px;border-top:1px solid var(--line);color:var(--ink)}
+/* Leaflet 外观跟随页面主题 */
+.lmap.leaflet-container{background:var(--land);font-family:var(--f-body);font-size:13px;line-height:1.5}
+/* OSM 瓦片：浅色时略降饱和度，让路线更显眼；深色时反色调暗 */
+.lmap.tiles-osm .leaflet-tile-pane{filter:saturate(.7)}
+.lmap.tiles-osm.tiles-dark .leaflet-tile-pane{filter:invert(1) hue-rotate(180deg) brightness(.9) contrast(.85) saturate(.55)}
+.lmap .leaflet-control-attribution{background:var(--halo);color:var(--muted);font-size:10.5px;line-height:1.5;padding:1px 6px;border-top-left-radius:6px}
+.lmap .leaflet-control-attribution a{color:var(--ink);text-decoration:none}
+.lmap .leaflet-control-scale{margin:0 0 8px 10px}
+.lmap .leaflet-control-scale-line{background:var(--halo);border-color:var(--ink);color:var(--ink);font:500 10.5px/1.5 var(--f-mono)}
+.lmap .leaflet-popup-content-wrapper{background:var(--surface);color:var(--ink);border-radius:12px;padding:0;box-shadow:0 0 0 1px var(--line),0 6px 24px rgba(10,20,26,.22)}
+.lmap .leaflet-popup-tip{background:var(--surface);box-shadow:none}
+.lmap .leaflet-popup-content{margin:10px 12px;font-size:13px;line-height:1.5}
+.lmap a.leaflet-popup-close-button{top:4px;right:4px;width:26px;height:26px;font:18px/26px var(--f-body);color:var(--muted)}
+.pop h4{margin:0 22px 2px 0;font-size:14.5px;line-height:1.35}
+.pop .pim{margin:-10px -12px 9px;height:128px;border-radius:12px 12px 0 0;overflow:hidden;background:var(--soft)}
+.pop .pim img{display:block;width:100%;height:100%;object-fit:cover}
+.pop .pim + h4{margin-right:0}
+.pop .pcr{margin-top:7px;font-size:11px;line-height:1.4;color:var(--muted)}
+.lmap .pop .pcr a{color:var(--muted);text-decoration:none}
+.lmap a.leaflet-popup-close-button{background:var(--halo);border-radius:7px}
+.pop .en{font-family:var(--f-mono);font-size:11.5px;color:var(--muted)}
+.lmap .pop p{margin:6px 0 8px;color:var(--ink)}
+.pop .links{display:flex;flex-wrap:wrap;gap:6px}
+.lmap .pop .lk{color:var(--ink)}
+/* 路线（Leaflet 的 SVG 路径，className 带过来） */
+.ctx{fill:var(--muted);fill-opacity:.4}
+.rt{fill:none;stroke-linecap:round;stroke-linejoin:round;stroke:var(--lc2,var(--muted))}
+/* 步行：灰色圆点线；坐车：实线，颜色和线路号标签一致 */
+.rt.md-walk{--lc2:var(--walk)} .rt.md-train{--lc2:var(--l-train)} .rt.md-metro{--lc2:var(--l-metro)} .rt.md-tram{--lc2:var(--l-tram)}
+.rt.md-lrt{--lc2:var(--l-lrt)} .rt.md-bus{--lc2:var(--l-bus)} .rt.md-ferry{--lc2:var(--l-ferry)} .rt.md-taxi,.rt.md-car,.rt.md-tour{--lc2:var(--l-car)}
+.rt.m-walk{stroke-width:3.6;stroke-dasharray:.1 6.5}
+.rt.m-transit{stroke-width:4.5}
+.rt.m-ferry{stroke-width:4;stroke-dasharray:10 6}
+.rt.m-tour{stroke-width:3.2;stroke-dasharray:14 5 3 5}
+.rt.m-flight{stroke-width:2;stroke-dasharray:9 6;stroke:var(--air)}
+.rt.opt{opacity:.45}
+/* 点标记（divIcon；尺寸由 iconSize 决定，里面的元素铺满） */
+.mk{cursor:pointer}
+.mk.syd{--c:var(--syd)} .mk.mel{--c:var(--mel)} .mk.gc{--c:var(--gc)} .mk.bne{--c:var(--bne)}
+.mk .ring{position:absolute;inset:-6px;border:2px solid var(--ink);border-radius:50%;opacity:0;pointer-events:none}
+.mk.sel .ring{opacity:1}
+.mk .dot{display:flex;align-items:center;justify-content:center;width:100%;height:100%;border-radius:50%;background:var(--c);border:2px solid var(--surface);color:var(--surface);font:600 11px/1 var(--f-mono);box-shadow:0 1px 3px rgba(0,0,0,.3)}
+.mk.opt .dot{background:var(--surface);color:var(--c);border-color:var(--c)}
+.mk.stay .dot,.mk.air .dot{font:700 11.5px/1 var(--f-body)}
+.mk.city .dot{border-width:3px;font-size:12px}
+.mk .box{display:block;width:100%;height:100%;border-radius:5px;background:var(--ink);border:2px solid var(--surface);box-shadow:0 1px 3px rgba(0,0,0,.3)}
+.mk .box svg{display:block;width:100%;height:100%;fill:none;stroke:var(--surface);stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+.mk.htl .ring{border-radius:10px}
+.mk.htl.area .box{background:var(--surface);border:1.5px dashed var(--ink)}
+.mk.htl.area .box svg{stroke:var(--ink)}
+.mk.base .box{background:var(--surface);border:1.6px solid var(--muted)}
+.mk.base .box svg{stroke:var(--muted)}
+.mk.base .ring{border-radius:9px}
+.mk.htl.booked .box{background:var(--c);border-width:2.5px;box-shadow:0 0 0 2px var(--c),0 2px 8px rgba(0,0,0,.35)}
+.mk.htl.booked .ring{inset:-7px;border-radius:12px}
+.mk.htl.booked .ck{position:absolute;right:-7px;top:-7px;width:16px;height:16px;border-radius:50%;background:var(--ink);color:var(--surface);border:1.5px solid var(--surface);font:700 10px/13px var(--f-body);text-align:center}
+/* 标签：零尺寸锚点里的文字，位置由脚本避让后决定 */
+.lbm .lb{position:absolute;left:0;top:0;padding:0 2px;white-space:nowrap;font:500 12px/16px var(--f-body);color:var(--ink);visibility:hidden;text-shadow:0 0 1px var(--halo),0 0 2px var(--halo),0 0 3px var(--halo),0 0 4px var(--halo),0 0 6px var(--halo)}
+.lbm .lb.h{font-size:11.5px;font-weight:400}
+.lbm .lb.c{font-size:13.5px;font-weight:700;line-height:18px}
+.lbm .lb.f{font:500 10.5px/14px var(--f-mono);color:var(--muted)}
+.lbm .lb.dim{color:var(--muted);font-weight:400}
+.lbm .lb.bk{font-weight:700;color:var(--c)}
+/* 交通：线路号标签（列表和地图共用），颜色按交通方式 */
+.ln{display:inline-flex;align-items:center;justify-content:center;min-width:26px;height:20px;padding:0 6px;border-radius:5px;font:600 11.5px/1 var(--f-mono);color:#fff;background:var(--lc,#4B5563);white-space:nowrap}
+.ln.train{--lc:#C2571A} .ln.metro{--lc:#0B7A78} .ln.tram{--lc:#2F8A3A} .ln.lrt{--lc:#C0263B} .ln.bus{--lc:#1D63A6} .ln.ferry{--lc:#0A7EA3} .ln.taxi,.ln.car,.ln.tour{--lc:#6E5A47}
+.ln.walk{background:transparent;color:var(--walk);border:1.5px dashed var(--walk);font:500 11.5px/1 var(--f-body)}
+.lnbm{cursor:pointer}
+.lnbm .ln{width:100%;height:100%;padding:0;box-shadow:0 0 0 2px var(--surface),0 1px 4px rgba(0,0,0,.3)}
+.lnbm.opt{opacity:.6}
+.lnbm.sel .ln{box-shadow:0 0 0 2px var(--surface),0 0 0 4px var(--ink)}
+.xdot{fill:var(--surface);stroke:var(--ink);stroke-width:2}
+.lbm .lb.syd{--c:var(--syd)} .lbm .lb.mel{--c:var(--mel)} .lbm .lb.gc{--c:var(--gc)} .lbm .lb.bne{--c:var(--bne)}
+.legend{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:12px;color:var(--muted);padding:8px 2px 0}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend svg{width:30px;height:8px;overflow:visible}
+.legend line{stroke-linecap:round;stroke-width:4}
+.legend .md-walk{stroke:var(--walk);stroke-width:3.4;stroke-dasharray:.1 5.5}
+.legend .md-train{stroke:var(--l-train)} .legend .md-metro{stroke:var(--l-metro)} .legend .md-tram{stroke:var(--l-tram)} .legend .md-lrt{stroke:var(--l-lrt)} .legend .md-bus{stroke:var(--l-bus)}
+.legend .md-ferry{stroke:var(--l-ferry);stroke-width:3.4;stroke-dasharray:7 4}
+.legend .md-car{stroke:var(--l-car);stroke-width:2.8;stroke-dasharray:9 3 2 3}
+.legend .md-flight{stroke:var(--air);stroke-width:2;stroke-dasharray:6 4}
+
+/* panel */
+.panel{min-width:0}
+.dayhead{display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 14px;align-items:end;padding-bottom:12px;border-bottom:1px solid var(--line)}
+.bigdate{grid-row:span 2;font-family:var(--f-mono);font-weight:600;font-size:34px;line-height:1;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.bigdate small{display:block;font-family:var(--f-body);font-weight:500;font-size:13px;letter-spacing:0;color:var(--muted);margin-top:6px}
+.tagline{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:12.5px;color:var(--muted)}
+.ctag{display:inline-flex;align-items:center;gap:6px;font-weight:500;color:var(--ink)}
+.ctag::before{content:"";width:9px;height:9px;border-radius:50%;background:var(--c)}
+.dayhead h2{font-family:var(--f-display);font-weight:700;font-size:clamp(22px,3.6vw,28px);line-height:1.25;margin:0;text-wrap:balance}
+.lede{margin:12px 0 0;color:var(--ink);max-width:62ch}
+.meta{display:flex;flex-wrap:wrap;gap:6px 16px;margin-top:10px;font-size:12.5px;color:var(--muted)}
+.meta .mono{font-family:var(--f-mono);color:var(--ink);font-variant-numeric:tabular-nums}
+.pager{display:flex;gap:8px;margin-top:12px}
+.pbtn{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;height:38px;border-radius:10px;border:1px solid var(--line);background:var(--surface);cursor:pointer;font-size:13.5px}
+.pbtn:disabled{opacity:.4;cursor:default}
+
+.opts{display:flex;flex-wrap:wrap;gap:6px;margin-top:16px}
+.opts .lab{width:100%;font-size:12.5px;color:var(--muted)}
+.obtn{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:5px 13px;font-size:13.5px;cursor:pointer}
+.obtn[aria-pressed="true"]{background:var(--c);border-color:var(--c);color:var(--surface)}
+
+h3.sec{font-size:12.5px;font-weight:700;letter-spacing:.14em;color:var(--muted);margin:22px 0 10px;display:flex;align-items:center;gap:10px}
+h3.sec::after{content:"";flex:1;height:1px;background:var(--line)}
+
+.xfers{display:grid;gap:8px}
+.xfer{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;gap:4px 10px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 12px;position:relative}
+.xfer .who{grid-column:1 / -1;display:flex;flex-wrap:wrap;gap:4px 10px;font-size:12px;color:var(--muted)}
+.xfer .who b{font-family:var(--f-mono);font-weight:600;color:var(--ink)}
+.xfer .end{font-family:var(--f-mono);font-size:13.5px;font-weight:500;font-variant-numeric:tabular-nums;min-width:0;overflow-wrap:anywhere}
+.xfer .end.r{text-align:right}
+.xfer .arrow{color:var(--muted);font-family:var(--f-mono)}
+.xfer .nt{grid-column:1 / -1;font-size:12.5px;color:var(--muted)}
+
+.stops{list-style:none;margin:0;padding:0;position:relative}
+.stop{display:grid;grid-template-columns:30px minmax(0,1fr);gap:0 12px;position:relative;padding-bottom:14px;cursor:pointer;border-radius:10px}
+.stop::before{content:"";position:absolute;left:14px;top:26px;bottom:-2px;width:2px;background:var(--c);opacity:.28}
+.stop:last-child::before{display:none}
+.stop .n{width:28px;height:28px;border-radius:50%;background:var(--c);color:var(--surface);font-family:var(--f-mono);font-weight:600;font-size:12.5px;display:flex;align-items:center;justify-content:center;margin-top:1px;position:relative;z-index:1}
+.stop.opt .n{background:var(--surface);color:var(--c);border:2px solid var(--c)}
+.stop.stay .n,.stop.air .n{font-size:14px}
+.stop .body{min-width:0;padding:2px 8px 6px;margin-left:-8px;border-radius:10px;transition:background .2s}
+.stop.on .body{background:var(--soft)}
+.stop .ttl{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 8px}
+.stop .hd{display:flex;align-items:center;gap:11px;min-width:0}
+.stop .hdt{flex:1;min-width:0}
+.thumb{flex:none;position:relative;width:58px;height:58px;border-radius:10px;overflow:hidden;background:var(--soft);border:1px solid var(--line)}
+.thumb i{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--muted)}
+.thumb i svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+.thumb i svg.fill{fill:currentColor;stroke:none;width:22px;height:22px}
+.thumb img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.stop.opt .thumb{opacity:.75}
+.stop .nm{font-weight:700;font-size:15.5px}
+.stop .t{font-family:var(--f-mono);font-size:12.5px;color:var(--muted);font-variant-numeric:tabular-nums}
+.stop .en{font-family:var(--f-mono);font-size:12px;color:var(--muted);line-height:1.4}
+.stop .via{display:inline-block;font-size:11.5px;color:var(--muted);border:1px solid var(--line);border-radius:5px;padding:0 6px;margin-bottom:4px;background:var(--surface)}
+.stop .note{margin:4px 0 0;font-size:13.5px;color:var(--ink);max-width:60ch}
+.stop .links{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.tx{display:grid;gap:8px;margin:6px 0 4px;padding:9px 10px;border-radius:10px;background:var(--surface);border:1px solid var(--line)}
+.txr{display:grid;grid-template-columns:auto minmax(0,1fr);column-gap:9px;align-items:start;font-size:13px;line-height:1.45}
+.txr>.ln{grid-row:span 4;margin-top:1px}
+.txr>span:not(.ln){grid-column:2;min-width:0}
+.txr .tk{font-weight:600}
+.txr .tm{font-size:12.5px;color:var(--muted);font-variant-numeric:tabular-nums}
+.txr .tn{font-size:12.5px;color:var(--muted)}
+.txr.walk{align-items:center}
+.tx .txl{justify-self:start}
+.daysum{display:flex;flex-wrap:wrap;gap:8px 22px;margin-top:12px;padding:10px 12px;border-radius:12px;background:var(--surface);border:1px solid var(--line)}
+.daysum .ds{display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px;font-size:13px}
+.daysum .lab{color:var(--muted);font-size:12.5px}
+.daysum b{font:600 17px/1.2 var(--f-mono);font-variant-numeric:tabular-nums}
+.daysum .sub{color:var(--muted);font-variant-numeric:tabular-nums}
+.daysum .unit{margin-left:-5px;font-weight:600}
+.daysum .chips{display:flex;flex-wrap:wrap;gap:5px}
+.txw{display:flex;align-items:center;gap:8px;margin:5px 0 3px;font-size:12.5px;color:var(--muted);font-variant-numeric:tabular-nums}
+.tips.pay li{list-style:none;margin-left:-1.1em}
+.lk{display:inline-flex;align-items:center;gap:4px;font-size:12.5px;text-decoration:none;border:1px solid var(--line);border-radius:7px;padding:2px 9px;background:var(--surface);color:var(--ink);white-space:nowrap}
+.lk:hover{border-color:var(--muted)}
+.lk.pri{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.routebtn{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:6px;height:42px;border-radius:11px;text-decoration:none;background:var(--ink);color:var(--bg);font-size:14px;font-weight:500}
+
+.tips{margin:0;padding-left:1.1em;display:grid;gap:6px;font-size:13.5px;max-width:64ch}
+.tips li::marker{color:var(--muted)}
+
+.hotels{display:grid;gap:8px}
+.hstay{font-size:13px;color:var(--muted);margin:-2px 0 4px}
+.hstay b{font-family:var(--f-mono);font-weight:500;color:var(--ink)}
+.hotel{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 12px;cursor:pointer}
+.hotel.on{border-color:var(--ink)}
+.hotel.booked{border-color:var(--c);box-shadow:inset 3px 0 0 var(--c)}
+.hotel .hn .bk{font-size:11.5px;font-weight:700;line-height:1.6;padding:0 7px;border-radius:5px;background:var(--c);color:var(--surface);align-self:center}
+.hstay .bkn{font-weight:700;color:var(--ink)}
+.hotel .hn{display:flex;flex-wrap:wrap;gap:2px 8px;align-items:baseline}
+.hotel .hn b{font-size:14.5px}
+.hotel .hn span{font-size:12.5px;color:var(--muted)}
+.hotel .tags{display:flex;flex-wrap:wrap;gap:5px;margin:6px 0 4px}
+.tag{font-size:12px;border-radius:5px;padding:1px 7px;background:var(--soft);color:var(--ink)}
+.tag.d{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+.hotel p{margin:2px 0 6px;font-size:13px}
+.hotel .links{display:flex;flex-wrap:wrap;gap:6px}
+
+/* overview */
+.dlist{list-style:none;margin:0;padding:0;display:grid;gap:4px}
+.drow{display:grid;grid-template-columns:52px 28px minmax(0,1fr) auto;align-items:center;gap:8px;padding:8px 10px;border-radius:10px;background:var(--surface);border:1px solid var(--line);cursor:pointer;width:100%;text-align:left}
+.drow.static{cursor:default;background:transparent;border-style:dashed}
+.drow .md{font-family:var(--f-mono);font-weight:600;font-size:13.5px;font-variant-numeric:tabular-nums}
+.drow .wd{font-size:12.5px;color:var(--muted)}
+.drow .tt{min-width:0}
+.drow .tt b{font-weight:500;font-size:14px;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.drow .tt span{font-size:12px;color:var(--muted)}
+.drow .nt{font-size:12px;color:var(--muted);white-space:nowrap}
+.drow .bar{grid-column:1 / -1;display:none}
+.dot-c{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--c);margin-right:6px;vertical-align:1px}
+.ftable{width:100%;border-collapse:collapse;font-size:13px}
+.ftable td{padding:8px 6px;border-bottom:1px solid var(--line);vertical-align:top}
+.ftable td:first-child{padding-left:0;white-space:nowrap;font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+.ftable .r{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+.ftable .sub{display:block;color:var(--muted);font-size:12px}
+.tblwrap{overflow-x:auto}
+.stays{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px}
+.stays div{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.stays b{display:block;font-size:14px}
+.stays .n{font-family:var(--f-mono);font-size:22px;font-weight:600;line-height:1.2}
+.stays span{font-size:12.5px;color:var(--muted)}
+.stays .bkd{display:block;margin-top:4px;color:var(--ink);font-weight:500}
+.fine{font-size:12.5px;color:var(--muted);max-width:64ch;margin:18px 0 0}
+
+@media (min-width: 900px){
+  .wrap{padding-inline:24px}
+  .thumb{width:66px;height:66px}
+  .stage{grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:24px;align-items:start}
+  .mapcol{position:sticky;top:calc(env(safe-area-inset-top,0px) + var(--rail) + 14px)}
+  .map{height:calc(100vh - var(--rail) - 80px);height:calc(100dvh - var(--rail) - 80px);max-height:none}
+}
+@media (prefers-reduced-motion: reduce){ *{transition:none!important;scroll-behavior:auto!important} }
+</style>
+</head>
+<body>
+<!-- 旧版本副本（tools/snapshot.mjs 生成，不再更新） -->
+<style>
+.snapbar{--sb-bg:#FFF1CC;--sb-line:#E3BE5C;--sb-ink:#3D2E05;background:var(--sb-bg);border-bottom:1px solid var(--sb-line);color:var(--sb-ink);font-size:13.5px;line-height:1.5}
+.snapbar .in{max-width:1440px;margin:0 auto;padding:9px 16px;display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 12px}
+.snapbar b{font-weight:600}
+.snapbar a{color:inherit;font-weight:600;white-space:nowrap}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]) .snapbar{--sb-bg:#3A3016;--sb-line:#7A6426;--sb-ink:#F3E2B3} }
+:root[data-theme="dark"] .snapbar{--sb-bg:#3A3016;--sb-line:#7A6426;--sb-ink:#F3E2B3}
+</style>
+<div class="snapbar" role="note"><div class="in"><span><b>旧版本 v3</b> · 2026-10-14 · 墨尔本改成大洋路自驾两天 + 市区一天 + 小火车</span><span>这是之前的计划，只用来对照，不再更新。</span><a href="../../">看最新版 →</a></div></div>
+
+
+<div class="wrap masthead">
+  <h1>澳洲四城行程地图</h1>
+  <details class="ver" id="ver" hidden></details>
+  <div class="route"><b>10.23 济南</b><i>→</i><b>悉尼</b><i>→</i><b>墨尔本</b><i>→</i><b>黄金海岸</b><i>→</i><b>布里斯班</b><i>→</i><b>11.04 济南</b></div>
+</div>
+
+<div class="railbar">
+  <nav class="wrap rail" id="rail" aria-label="选择日期"></nav>
+</div>
+
+<main class="wrap stage">
+  <div class="mapcol">
+    <div class="map" id="map">
+      <div class="lmap" id="lmap" role="region" aria-label="行程路线地图"></div>
+      <div class="mapmsg" id="mapmsg" aria-live="polite"><p>地图加载中…</p></div>
+      <div class="mapnote" id="mapnote"></div>
+      <div class="tools">
+        <button class="tbtn" id="btnHotels" type="button" aria-pressed="true" title="显示或隐藏候选酒店">酒店</button>
+        <div class="tgroup">
+          <button class="tbtn" id="btnIn" type="button" aria-label="放大">+</button>
+          <button class="tbtn" id="btnOut" type="button" aria-label="缩小">−</button>
+        </div>
+        <button class="tbtn" id="btnFit" type="button" title="回到整天视图">复位</button>
+      </div>
+    </div>
+    <div class="legend" aria-label="图例">
+      <span><svg viewBox="0 0 30 8"><line class="md-walk" x1="3" y1="4" x2="27" y2="4"/></svg>步行</span>
+      <span><svg viewBox="0 0 30 8"><line class="md-train" x1="3" y1="4" x2="27" y2="4"/></svg>火车</span>
+      <span><svg viewBox="0 0 30 8"><line class="md-metro" x1="3" y1="4" x2="27" y2="4"/></svg>地铁</span>
+      <span><svg viewBox="0 0 30 8"><line class="md-tram" x1="3" y1="4" x2="27" y2="4"/></svg>电车</span>
+      <span><svg viewBox="0 0 30 8"><line class="md-lrt" x1="3" y1="4" x2="27" y2="4"/></svg>轻轨</span>
+      <span><svg viewBox="0 0 30 8"><line class="md-bus" x1="3" y1="4" x2="27" y2="4"/></svg>巴士</span>
+      <span><svg viewBox="0 0 30 8"><line class="md-ferry" x1="3" y1="4" x2="27" y2="4"/></svg>渡轮</span>
+      <span><svg viewBox="0 0 30 8"><line class="md-car" x1="3" y1="4" x2="27" y2="4"/></svg>打车 · 自驾 · 旅行团</span>
+      <span><svg viewBox="0 0 30 8"><line class="md-flight" x1="3" y1="4" x2="27" y2="4"/></svg>飞机</span>
+    </div>
+  </div>
+  <section class="panel" id="panel" aria-live="polite"></section>
+</main>
+
+<script>
+(function(){
+"use strict";
+var D2R = Math.PI/180;
+function proj(ll){ return [ll[1], -Math.log(Math.tan(Math.PI/4 + ll[0]*D2R/2))/D2R]; }
+function unprojY(y){ return (2*Math.atan(Math.exp(-y*D2R)) - Math.PI/2)/D2R; }
+function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
+
+/* @data-begin（tools/fetch-routes.mjs 会读取这段，到 @data-end 为止） */
+/* ---------- 城市 ---------- */
+var CITY = {
+  syd:{name:'悉尼', en:'Sydney', baseQ:'25 Woodlands Rd, Ashbury NSW 2193', tz:11, sun:[-33.8688,151.2093], base:[-33.8967,151.1218], anchor:{n:'Ashfield 站', ll:[-33.8877,151.1258]}, cin:'2026-10-24', cout:'2026-10-27', nights:3},
+  mel:{name:'墨尔本', en:'Melbourne', baseQ:'Melbourne Central', tz:11, sun:[-37.8136,144.9631], base:[-37.8120,144.9620], anchor:{n:'Southern Cross 站', ll:[-37.8183,144.9526]}, cin:'2026-10-27', cout:'2026-11-01', nights:4, stayNote:'10/28 住 Apollo Bay：那天早上退房、大行李寄存前台，10/29 回来再入住。'},
+  apb:{name:'Apollo Bay', en:'Apollo Bay', baseQ:'Apollo Bay Victoria', tz:11, sun:[-38.7547,143.6692], base:[-38.7547,143.6700], anchor:{n:'Apollo Bay 海边', ll:[-38.7520,143.6730]}, cin:'2026-10-28', cout:'2026-10-29', nights:1},
+  gc:{name:'黄金海岸', en:'Gold Coast', baseQ:'Cavill Avenue Surfers Paradise', tz:10, sun:[-28.0167,153.4000], base:[-28.0040,153.4300], anchor:{n:'Cavill Ave 海滩', ll:[-28.0024,153.4315]}, cin:'2026-11-01', cout:'2026-11-02', nights:1},
+  bne:{name:'布里斯班', en:'Brisbane', baseQ:'Roma Street Station Brisbane', tz:10, sun:[-27.4698,153.0251], base:[-27.4690,153.0215], anchor:{n:'Roma St 站', ll:[-27.4659,153.0193]}, cin:'2026-11-02', cout:'2026-11-03', nights:1}
+};
+var MODE = { walk:'步行', train:'火车', metro:'地铁', tram:'电车 / 轻轨', lrt:'轻轨', bus:'巴士', taxi:'打车', ferry:'渡轮', tour:'旅行团', car:'自驾', flight:'飞机' };
+var MCLS = { walk:'m-walk', train:'m-transit', metro:'m-transit', tram:'m-transit', lrt:'m-transit', bus:'m-transit', taxi:'m-transit', ferry:'m-ferry', tour:'m-tour', car:'m-tour', flight:'m-flight' };
+var TXMODE = { walk:'步行', train:'火车', metro:'地铁', tram:'电车', lrt:'轻轨', bus:'巴士', ferry:'渡轮', taxi:'打车', car:'自驾', tour:'旅行团', flight:'飞机' };
+
+/* ---------- 地图左上角的说明 ---------- */
+var REGION = {
+  au:{note:'航线弧线是示意。点城市进入当天行程。'},
+  gor:{note:'大洋路自驾，路线按实际公路画。'}
+};
+
+/* ---------- 候选酒店 ----------
+   订好以后把那家的 booked 改成 true（每个城市一家）。地图上它会醒目显示、列表里置顶标「已订」，
+   当天从住处出发 / 回住处、「酒店放行李 / 取行李」这些点也会自动挪到它的位置。区域备选（areaOnly）不能标。 */
+var HOTELS = {
+  syd:[
+    {n:'Ashbury 民宿', booked:true, area:'25 Woodlands Rd, Ashbury', ll:[-33.8967,151.1218], tags:['两间房'], note:'房东同意 10/24 上午先放行李、10/27 退房后行李留到下午。离 Ashfield 站步行约 20 分钟，附近 King St 有 491 路到车站。', q:'25 Woodlands Rd, Ashbury NSW 2193'}
+  ],
+  mel:[
+    {n:'ibis Melbourne Hotel and Apartments', booked:false, s:'ibis Melbourne', area:'Therry St · 近 QVM', ll:[-37.8082,144.9606], tags:['两卧公寓','估价 A$260 起'], note:'两卧公寓一间 Queen 床、一间两张单人床，适合一男一女各住一间。', q:'ibis Melbourne Hotel and Apartments'},
+    {n:'Mercure Welcome Melbourne', booked:false, s:'Mercure Welcome', area:'Little Bourke St · CBD 中心', ll:[-37.8124,144.9648], tags:['双床房','估价 A$160–220'], note:'步行可到大部分 City Walk 景点。', q:'Mercure Welcome Melbourne'},
+    {n:'ibis Styles Kingsgate', booked:false, s:'Kingsgate', area:'King St · 近 Southern Cross', ll:[-37.8165,144.9560], tags:['双床房','估价 A$130–180'], note:'便宜；部分房型共用卫浴，订的时候选带独立卫浴的。', q:'ibis Styles Kingsgate Hotel Melbourne'},
+    {n:'Nesuto Docklands', booked:false, area:'Docklands', ll:[-37.8165,144.9420], tags:['两卧公寓','估价 A$250–320'], note:'靠近 Southern Cross 机场大巴站；订前确认有没有洗衣机。', q:'Nesuto Docklands Melbourne'},
+    {n:'Quest NewQuay', booked:false, area:'Docklands NewQuay', ll:[-37.8132,144.9380], tags:['两卧公寓','估价 A$280 起'], note:'NewQuay 一带可能在免费电车区边缘，订前在地图上核对。', q:'Quest NewQuay Docklands'}
+  ],
+  apb:[
+    {n:'Apollo Bay 汽车旅馆', booked:false, s:'Apollo Bay', area:'Apollo Bay 镇上', ll:[-38.7547,143.6700], tags:['订两间','约 A$111–157/间'], note:'镇上沿 Great Ocean Rd 的汽车旅馆，订两间；先问好最晚几点能入住。', q:'Apollo Bay motel'}
+  ],
+  gc:[
+    {n:'Novotel Surfers Paradise', booked:false, s:'Novotel', area:'Surfers 中心北', ll:[-27.9995,153.4290], tags:['双床房 Deluxe Twin','估价 A$150–250'], note:'连锁酒店，有前台，深夜入住和寄存行李都方便。', q:'Novotel Surfers Paradise'},
+    {n:'Orchid Residences', booked:false, area:'Orchid Ave · Hilton 同楼', ll:[-28.0040,153.4305], tags:['两卧公寓','参考 A$255/晚'], note:'私人公寓房源，提前确认深夜入住方式和能否寄存行李。', q:'Orchid Residences Surfers Paradise'},
+    {n:'Mantra Legends', booked:false, area:'Surfers 南段', ll:[-28.0085,153.4298], tags:['酒店 / 公寓','估价 A$150–250'], note:'离 Cavill Ave 不远，周边吃饭方便。', q:'Mantra Legends Hotel Surfers Paradise'},
+    {n:'Broadbeach', area:'区域备选', ll:[-28.0310,153.4310], areaOnly:true, tags:['两卧公寓多'], note:'比 Surfers 安静，轻轨直达。', q:'Broadbeach apartments Gold Coast'}
+  ],
+  bne:[
+    {n:'Mercure Brisbane', booked:false, area:'North Quay', ll:[-27.4700,153.0190], tags:['双床房','估价 A$160–220'], note:'步行到 Roma St 站约 10 分钟，坐 Airtrain 去机场方便。', q:'Mercure Brisbane North Quay'},
+    {n:'ibis Styles Brisbane Elizabeth Street', booked:false, s:'ibis Styles', area:'市中心 · 近 Queen St Mall', ll:[-27.4720,153.0250], tags:['双床房','估价 A$160–220'], note:'吃饭、逛街都在步行范围。', q:'ibis Styles Brisbane Elizabeth Street'},
+    {n:'Hotel Grand Chancellor Brisbane', booked:false, s:'Grand Chancellor', area:'Spring Hill · 近 Roma St', ll:[-27.4630,153.0225], tags:['双床房','估价 A$150–210'], note:'Spring Hill 一带有坡，拖行李去车站注意选路线。', q:'Hotel Grand Chancellor Brisbane'}
+  ]
+};
+
+/* ---------- 渡轮 / 旅行团途经点（示意） ---------- */
+var FERRY_WATSONS = [[-33.8555,151.2140],[-33.8550,151.2255],[-33.8545,151.2520],[-33.8500,151.2700],[-33.8455,151.2790]];
+var CITYCAT = [[-27.4745,153.0185],[-27.4785,153.0225],[-27.4800,153.0285],[-27.4745,153.0325],[-27.4680,153.0315],[-27.4640,153.0345]];
+
+/* ---------- 车站和码头（交通段的上下车点，坐标 [纬度, 经度]） ---------- */
+var STN = {
+  sydIntl:[-33.9350,151.1664], sydDom:[-33.9334,151.1810], museum:[-33.8764,151.2097], cqStn:[-33.8613,151.2107], cqW2:[-33.8604,151.2113],
+  townHall:[-33.8731,151.2068], wynyard:[-33.8660,151.2058], central:[-33.8840,151.2063], ashfield:[-33.8877,151.1258],
+  museumBus:[-33.8762,151.2099], coogeeBus:[-33.9205,151.2565], bondi380:[-33.8906,151.2747], gap380:[-33.8473,151.2861],
+  kiama:[-34.6726,150.8545], gerringong:[-34.7447,150.8177],
+  melCentral:[-37.8100,144.9646], nicholsonJohnston:[-37.7985,144.9738],
+  lunaPark:[-37.8680,144.9772], flindersSwan:[-37.8176,144.9670],
+  melCentralStn:[-37.8100,144.9626], parliamentStn:[-37.8109,144.9729], belgrave:[-37.9090,145.3553], belgravePB:[-37.9077,145.3566], lakeside:[-37.9304,145.4597],
+  swanstonBourke:[-37.8136,144.9658],
+  cavill:[-28.0010,153.4285], surfersBus:[-28.0005,153.4270], burleighLR:[-28.0921,153.4521], cwsBus:[-28.1365,153.4860], currumbinN:[-28.1345,153.4872],
+  bbNorth:[-28.0275,153.4310], bbSouth:[-28.0347,153.4292], helensvale:[-27.9217,153.3337],
+  romaSt:[-27.4659,153.0193]
+};
+
+/* ---------- 交通段 ----------
+   DAYS 里每一站可以写 tx:TX.xxx，说明「从上一站怎么到这一站」；几段连着坐就写成数组。
+   字段：mode 方式（walk 步行 / train 火车 / metro 地铁 / tram 电车 / lrt 轻轨 / bus 巴士 / ferry 渡轮 / taxi 打车），
+   line 线路号，dir 方向，on / off 上车 / 下车站，a / b 上车 / 下车点坐标，time 时间，freq 班次，note 补充，
+   osm 让 tools/fetch-routes.mjs 去 OpenStreetMap 找这条线的走向。线路号和班次是 2026 年 10 月查的。 */
+// 悉尼住 Ashbury：每天先走到 Ashfield 站（或坐 491 路），坐 T2 / T3 进城；回来反过来
+var ASHFIELD_WALK = {mode:'walk', b:STN.ashfield, time:'步行约 20 分钟到 Ashfield 站', note:'不想走可以在 King St（Trevenar St 路口）坐 491 路往 Five Dock，几分钟到 Ashfield 站。'};
+var HOME_WALK = {mode:'walk', time:'从 Ashfield 站步行约 20 分钟回住处', note:'不想走可以坐 491 路往 Hurstville，在 King St（Trevenar St 路口）下车，或者叫 Uber。'};
+function t2In(off, b, time){ return {mode:'train', line:'T2/T3', dir:'往 City', on:'Ashfield 站', off:off, a:STN.ashfield, b:b, time:time, freq:'T2、T3 都进城，班次很密', note:'进城后绕 City Circle：Central、Town Hall、Wynyard、Circular Quay、St James、Museum 都停。', osm:{route:'train', ref:'T2'}}; }
+function t2Out(on, a, time){ return {mode:'train', line:'T2/T3', dir:'出城 · 往 Parramatta、Leppington 或 Liverpool', on:on, off:'Ashfield 站', a:a, b:STN.ashfield, time:time, note:'看站台屏幕，停 Ashfield 的车都行。', osm:{route:'train', ref:'T2'}}; }
+var BUS373 = {mode:'bus', line:'373', dir:'往 Coogee', on:'Museum Station（Elizabeth St）', off:'Coogee Beach', a:STN.museumBus, b:STN.coogeeBus, time:'约 35–40 分钟', freq:'白天约每 10 分钟', note:'上车、下车都要刷卡。', osm:{route:'bus', ref:'373'}};
+var SCO_KIAMA = {mode:'train', line:'SCO', dir:'South Coast Line · 往 Kiama', on:'Central 站（城际车站台）', off:'Kiama 站', a:STN.central, b:STN.kiama, time:'约 2 小时–2 小时 20 分', freq:'周末约每小时一班', note:'有的车只到 Wollongong 或 Dapto，看清车头写 Kiama。往南坐左边能看到海。', osm:{route:'train', ref:'SCO'}};
+
+var TX = {
+  // 悉尼：火车、地铁、巴士、渡轮都刷银行卡或手机（Opal）
+  sydIntlDom:{mode:'train', line:'T8', dir:'机场线 · 往 City', on:'International 站', off:'Domestic 站', a:STN.sydIntl, b:STN.sydDom, time:'约 2 分钟（1 站）', freq:'约每 10 分钟', note:'只坐 1 站也要付机场站点费。', osm:{route:'train', ref:'T8'}},
+  airportHome:{mode:'taxi', line:'打车', on:'国内航站楼 T2', off:'Ashbury 住处', time:'约 20 分钟', note:'两个人带行李，打车或 Uber 最省事；坐火车要在 Central 换车，还要付机场站点费。'},
+  homeAirport:{mode:'taxi', line:'打车', on:'Ashbury 住处', off:'国内航站楼 T2', time:'约 20 分钟', note:'也可以叫 Uber。'},
+  homeMuseum:[ASHFIELD_WALK, t2In('Museum 站', STN.museum, '约 20–25 分钟')],
+  homeTownHall:[ASHFIELD_WALK, t2In('Town Hall 站', STN.townHall, '约 20 分钟')],
+  homeCoogee:[ASHFIELD_WALK, t2In('Museum 站', STN.museum, '约 20–25 分钟'), BUS373],
+  wynyardHome:[{mode:'walk', b:STN.wynyard, time:'步行约 10 分钟到 Wynyard 站'}, t2Out('Wynyard 站', STN.wynyard, '约 25 分钟'), HOME_WALK],
+  centralHome:[{mode:'walk', b:STN.central, time:'步行约 10 分钟到 Central 站'}, t2Out('Central 站', STN.central, '约 16 分钟'), HOME_WALK],
+  homeGerringong:[ASHFIELD_WALK, t2In('Central 站', STN.central, '约 16 分钟'), SCO_KIAMA,
+    {mode:'train', line:'SCO', dir:'往 Bomaderry', on:'Kiama 站', off:'Gerringong 站', a:STN.kiama, b:STN.gerringong, time:'约 10 分钟（1 站）', freq:'周末约 2 小时一班', note:'Kiama 往南是柴油小火车，一般和悉尼来的车在 Kiama 对接；接不上就打车，约 15 分钟。', osm:{route:'train', ref:'SCO'}},
+    {mode:'walk', time:'步行约 25 分钟到岬角', note:'穿过 Gerringong 镇上，顺路买午饭。'}],
+  gerringongKiama:[{mode:'walk', b:STN.gerringong, time:'步行约 30 分钟回 Gerringong 站'},
+    {mode:'train', line:'SCO', dir:'往 Kiama', on:'Gerringong 站', off:'Kiama 站', a:STN.gerringong, b:STN.kiama, time:'约 10 分钟（1 站）', freq:'周末约 2 小时一班', note:'先查好时间；不想等就打车，约 15 分钟。', osm:{route:'train', ref:'SCO'}},
+    {mode:'walk', time:'步行约 15 分钟到喷水洞'}],
+  kiamaHome:[{mode:'walk', b:STN.kiama, time:'步行约 15 分钟到 Kiama 站'},
+    {mode:'train', line:'SCO', dir:'往 Sydney', on:'Kiama 站', off:'Central 站', a:STN.kiama, b:STN.central, time:'约 2 小时–2 小时 20 分', freq:'周末约每小时一班', note:'悉尼方向的车从 Kiama 发车，上车就有座。', osm:{route:'train', ref:'SCO'}},
+    t2Out('Central 站', STN.central, '约 16 分钟'), HOME_WALK],
+  bondiGap:{mode:'bus', line:'380', dir:'往 Watsons Bay', on:'Bondi Beach（Campbell Pde，C 站台）', off:'Gap Park（Old South Head Rd）', a:STN.bondi380, b:STN.gap380, time:'约 20 分钟', note:'沿海边开，坐右边看海。上下车都要刷卡。', osm:{route:'bus', ref:'380'}},
+  watsonsHome:[{mode:'ferry', line:'F9', dir:'往 Circular Quay', on:'Watsons Bay', off:'Circular Quay 2 号码头', b:STN.cqW2, via:FERRY_WATSONS.slice().reverse(), time:'约 25 分钟', note:'部分班次经停 Rose Bay、Double Bay。晚上班次少，先查好末班；赶不上就在 Trip Planner 查巴士回城。', osm:{route:'ferry', ref:'F9'}},
+    t2Out('Circular Quay 站', STN.cqStn, '约 30 分钟'), HOME_WALK],
+
+  // 墨尔本：市中心免费电车区不用刷卡，出了区要刷 myki 或银行卡
+  stkildaHome:{mode:'tram', line:'16', dir:'往 Melbourne University', on:'Luna Park（The Esplanade）', off:'Melbourne Central（Swanston St）', a:STN.lunaPark, b:STN.melCentral, time:'约 35 分钟', osm:{route:'tram', ref:'16'}},
+  stkilda16:{mode:'tram', line:'16', dir:'往 Kew（经 St Kilda Beach）', on:'Flinders St 站（Swanston St）', off:'Luna Park（The Esplanade）', a:STN.flindersSwan, b:STN.lunaPark, time:'约 30 分钟', note:'出了免费电车区要刷卡（myki 或银行卡）。', osm:{route:'tram', ref:'16'}},
+  toBelgrave:[
+    {mode:'walk', time:'步行到 Melbourne Central 站'},
+    {mode:'train', line:'Belgrave', dir:'往 Belgrave', on:'Melbourne Central 站', off:'Belgrave 站（终点）', a:STN.melCentralStn, b:STN.belgrave, time:'约 1 小时出头', note:'Metro 火车，刷 myki 或银行卡；有的班次不进 City Loop，就到 Flinders Street 上车。终点出站走几分钟就是小火车站。', osm:{route:'train', ref:'BEG'}}],
+  puffingBilly:{mode:'train', line:'Puffing Billy', dir:'往 Lakeside', on:'Belgrave', off:'Lakeside', a:STN.belgravePB, b:STN.lakeside, time:'约 1 小时', note:'蒸汽小火车，要先在官网订座。', osm:{route:'train', name:'Puffing Billy'}},
+  pbBackCity:[
+    {mode:'train', line:'Puffing Billy', dir:'往 Belgrave', on:'Lakeside', off:'Belgrave', a:STN.lakeside, b:STN.belgravePB, time:'约 1 小时', osm:{route:'train', name:'Puffing Billy'}},
+    {mode:'train', line:'Belgrave', dir:'往 City', on:'Belgrave 站', off:'Parliament 站', a:STN.belgrave, b:STN.parliamentStn, time:'约 1 小时出头', note:'到 Parliament 站出来，走 10 分钟到卡尔顿花园。', osm:{route:'train', ref:'BEG'}}],
+  fitzroyHome:[
+    {mode:'walk', time:'步行约 8 分钟到 Nicholson St'},
+    {mode:'tram', line:'96', dir:'往 St Kilda Beach', on:'Nicholson St / Johnston St', off:'Swanston St / Bourke St', a:STN.nicholsonJohnston, b:STN.swanstonBourke, time:'约 15 分钟', osm:{route:'tram', ref:'96'}}],
+
+  // 黄金海岸 · 布里斯班：Translink 一程 50 分（Airtrain 除外），刷 go card 或银行卡
+  currumbin:[
+    {mode:'lrt', line:'G:link', dir:'往 Burleigh Heads', on:'Cavill Avenue 站', off:'Burleigh Heads 站', a:STN.cavill, b:STN.burleighLR, time:'约 30 分钟', note:'轻轨 2026 年 8 月起通到 Burleigh Heads。', osm:{route:'light_rail|tram'}},
+    {mode:'bus', line:'700', dir:'往 Tweed Heads', on:'Burleigh Heads 站', off:'Currumbin Wildlife Sanctuary', a:STN.burleighLR, b:STN.cwsBus, time:'约 15 分钟', freq:'白天约每 10 分钟', note:'下车就是保护区门口。700 路不到 Surfers，所以先坐轻轨。', osm:{route:'bus', ref:'700'}}],
+  burleigh:{mode:'bus', line:'700', dir:'往 Broadbeach', on:'Currumbin（Gold Coast Hwy）', off:'Burleigh Heads 站', a:STN.currumbinN, b:STN.burleighLR, time:'约 15 分钟', freq:'白天约每 10 分钟', note:'车站就在国家公园入口旁边。', osm:{route:'bus', ref:'700'}},
+  burleighHome:[
+    {mode:'walk', time:'从国家公园走回车站约 5 分钟'},
+    {mode:'lrt', line:'G:link', dir:'往 Helensvale', on:'Burleigh Heads 站', off:'Cavill Avenue 站', a:STN.burleighLR, b:STN.cavill, time:'约 30 分钟', osm:{route:'light_rail|tram'}}],
+  broadbeach:[
+    {mode:'walk', time:'步行约 5 分钟到 Cavill Avenue 站'},
+    {mode:'lrt', line:'G:link', dir:'往 Burleigh Heads', on:'Cavill Avenue 站', off:'Broadbeach North 站', a:STN.cavill, b:STN.bbNorth, time:'约 10 分钟', osm:{route:'light_rail|tram'}}],
+  pacificFairHome:{mode:'lrt', line:'G:link', dir:'往 Helensvale', on:'Broadbeach South 站', off:'Cavill Avenue 站', a:STN.bbSouth, b:STN.cavill, time:'约 12 分钟', osm:{route:'light_rail|tram'}},
+  seaworld:{mode:'bus', line:'705', dir:'往 Sea World', on:'Surfers Paradise', off:'Sea World', a:STN.surfersBus, time:'约 20 分钟', note:'出发前点「实时查询」核对班次。', osm:{route:'bus', ref:'705'}},
+  seaworldHome:{mode:'bus', line:'705', dir:'往 Surfers Paradise', on:'Sea World', off:'Surfers Paradise', b:STN.surfersBus, time:'约 20 分钟', osm:{route:'bus', ref:'705'}},
+  movieworld:[
+    {mode:'lrt', line:'G:link', dir:'往 Helensvale', on:'Cavill Avenue 站', off:'Helensvale 站', a:STN.cavill, b:STN.helensvale, time:'约 40 分钟', osm:{route:'light_rail|tram'}},
+    {mode:'bus', line:'TX7', dir:'往 Coomera', on:'Helensvale 站', off:'Movie World', a:STN.helensvale, time:'约 10 分钟', freq:'约每 30 分钟', note:'主题公园专线。', osm:{route:'bus', ref:'TX7'}}],
+  movieworldHome:[
+    {mode:'bus', line:'TX7', dir:'往 Helensvale', on:'Movie World', off:'Helensvale 站', b:STN.helensvale, time:'约 10 分钟', freq:'约每 30 分钟', osm:{route:'bus', ref:'TX7'}},
+    {mode:'lrt', line:'G:link', dir:'往 Burleigh Heads', on:'Helensvale 站', off:'Cavill Avenue 站', a:STN.helensvale, b:STN.cavill, time:'约 40 分钟', osm:{route:'light_rail|tram'}}],
+  toHelensvale:[
+    {mode:'walk', time:'拖行李步行约 5 分钟到 Cavill Avenue 站'},
+    {mode:'lrt', line:'G:link', dir:'往 Helensvale', on:'Cavill Avenue 站', off:'Helensvale 站（终点）', a:STN.cavill, b:STN.helensvale, time:'约 40 分钟', osm:{route:'light_rail|tram'}}],
+  citycat:{mode:'ferry', line:'CityCat', dir:'往 Northshore Hamilton', on:'North Quay', off:'Howard Smith Wharves', time:'约 15–20 分钟', note:'一程 50 分，刷 go card 或银行卡。', osm:{route:'ferry'}},
+  kpTaxi:{mode:'taxi', line:'打车', on:'Kangaroo Point', off:'酒店', time:'约 10 分钟', note:'晚上拖行李打车最省事，也可以叫 Uber。'},
+  airtrain:{mode:'train', line:'Airtrain', dir:'往机场', on:'Roma St 站', off:'International 站', a:STN.romaSt, time:'约 25 分钟', freq:'约每 15–30 分钟', note:'私营机场快线，单程约 A$23，不在 50 分票价内；末班约 22:00。', osm:{route:'train', name:'Airport|Airtrain'}}
+};
+
+/* ---------- 每日行程 ---------- */
+var DAYS = [
+ {id:'d1024', date:'2026-10-24', wd:'周六', city:'syd', night:'syd', tag:'悉尼 · 第 1 天', title:'悉尼海港',
+  lede:'朋友刚下长途航班。先去住处放行李，再从海德公园一路走到海港边，看完日落回去。',
+  before:[
+    {who:'朋友', code:'东航', dep:'TNA 10/23 13:05', arr:'SYD T1 09:00', note:'武汉转机 4h35m'},
+    {who:'我', code:'JQ403', dep:'OOL 07:10', arr:'SYD 09:40', note:'到国内航站楼'}],
+  stops:[
+    {n:'悉尼机场 T1 国际', en:'Sydney Airport T1', ll:[-33.9366,151.1658], t:'09:00', kind:'air', note:'朋友入境、取行李，大约 1 小时。', q:'Sydney International Airport T1', img:'Sydney Airport'},
+    {n:'国内航站楼 T2', en:'Domestic Terminal T2', ll:[-33.9331,151.1796], t:'09:40', kind:'air', mode:'train', tx:TX.sydIntlDom, note:'我落地。两个航站楼之间坐机场线火车 1 站，或坐航站楼摆渡巴士会合。', q:'Sydney Airport T2 Domestic', img:'Sydney Airport'},
+    {n:'住处放行李', en:'Ashbury', ll:[-33.8967,151.1218], t:'约 10:30', kind:'stay', mode:'taxi', tx:TX.airportHome, note:'房东同意上午先放行李。'},
+    {n:'海德公园', en:'Hyde Park', ll:[-33.8731,151.2111], t:'约 11:45', mode:'train', tx:TX.homeMuseum, note:'Museum 站出来就是公园南端，往北穿过公园到 Archibald 喷泉。', q:'Hyde Park Sydney', img:'Hyde Park, Sydney'},
+    {n:'圣玛丽大教堂', en:"St Mary's Cathedral", ll:[-33.8712,151.2133], q:"St Mary's Cathedral Sydney", img:"St Mary's Cathedral, Sydney"},
+    {n:'麦考利夫人椅', en:"Mrs Macquarie's Chair", ll:[-33.8597,151.2228], note:'穿过 The Domain 过去。歌剧院和海港大桥同框的经典机位；累了可以跳过。', q:"Mrs Macquarie's Chair Sydney", img:"Mrs Macquarie's Chair"},
+    {n:'皇家植物园', en:'Royal Botanic Garden', ll:[-33.8642,151.2166], note:'沿 Farm Cove 往歌剧院方向走，累了就在草地上歇一会。', q:'Royal Botanic Garden Sydney', img:'Royal Botanic Garden, Sydney'},
+    {n:'悉尼歌剧院', en:'Sydney Opera House', ll:[-33.8568,151.2153], note:'外观、大台阶，以及和海港大桥同框的角度。想进内部可以订导览。', q:'Sydney Opera House', img:'Sydney Opera House'},
+    {n:'环形码头', en:'Circular Quay', ll:[-33.8614,151.2109], q:'Circular Quay Sydney', img:'Circular Quay'},
+    {n:'岩石区', en:'The Rocks', ll:[-33.8593,151.2085], note:'老街区，周末有 The Rocks Markets。晚饭可以在这里解决。', q:'The Rocks Sydney', img:['The Rocks, Sydney', 'The Rocks, New South Wales']},
+    {n:'天文台山', en:'Observatory Hill', ll:[-33.8590,151.2045], sunset:true, note:'看海港大桥和日落。', q:'Observatory Hill Sydney', img:['Observatory Hill, Sydney', 'Sydney Observatory']},
+    {n:'Barangaroo（可选）', en:'Barangaroo', ll:[-33.8630,151.2018], opt:true, from:10, note:'从天文台山往下走约 10 分钟，海边餐厅多。体力好再去，吃完从 Wynyard 站坐车回去。', q:'Barangaroo Sydney', img:['Barangaroo Reserve', 'Barangaroo']}
+  ],
+  end:{mode:'train', tx:TX.wynyardHome},
+  gm:{mode:'walking', list:[3,4,5,6,7,8,9,10]},
+  tips:['悉尼的火车、渡轮、巴士都可以直接刷信用卡或手机进出站，不用专门买卡。','第一天别暴走，晚饭后早点回去倒时差。','从 Ashfield 站走回住处约 20 分钟；不想走就坐 491 路，或者叫 Uber。']},
+ {id:'d1025', date:'2026-10-25', wd:'周日', city:'syd', region:'kiama', night:'syd', tag:'悉尼 · 南海岸一日', title:'Gerringong 和 Kiama',
+  lede:'坐火车去南海岸：上午在 Gerringong 岬角的草坡上看 Werri Beach，下午回到 Kiama 看喷水洞。下午走步道还是坐车，到时候看天气和体力。',
+  optLabel:'下午怎么回 Kiama：',
+  start:true, end:{mode:'train', tx:TX.kiamaHome},
+  head:[
+    {n:'Gerringong 岬角', en:'Gerringong Headland', ll:[-34.7452,150.8360], t:'约 11:00', mode:'train', tx:TX.homeGerringong, note:'就是那张躺在草坡上看海的照片的位置，往北看是 Werri Beach。午饭在车站和岬角之间的镇上买，带到草坡上吃。', q:'Gerringong Headland', img:['search:Gerringong headland Werri Beach', 'Gerringong, New South Wales']},
+    {n:'Werri Beach', en:'Werri Beach', ll:[-34.7360,150.8341], note:'沿沙滩往北走，北头是 Werri Lagoon 的出海口。', q:'Werri Beach', img:['search:intitle:"Werri Beach"', 'Werri Beach']}
+  ],
+  options:[
+    {label:'徒步版', stops:[
+      {n:'Loves Bay', en:'Kiama Coast Walk', ll:[-34.6978,150.8541], t:'约 14:00', via:[[-34.72856,150.83889],[-34.72601,150.84236],[-34.72207,150.84648],[-34.71798,150.84598],[-34.71398,150.85113],[-34.70997,150.85011],[-34.70603,150.85167],[-34.70170,150.85282]], note:'Kiama Coast Walk 南段：从 Werri Lagoon 出海口往北，一路是海边悬崖和牧场草坡，约 2 小时。下过大雨潟湖口可能过不去，就改走轻松版。', q:'Loves Bay Kiama Heights', img:['search:intitle:"Kiama Coast Walk"', 'search:Kiama coast walk', 'search:Loves Bay Kiama']},
+      {n:'小喷水洞', en:'Little Blowhole', ll:[-34.6867,150.8592], via:[[-34.69399,150.85705],[-34.68985,150.85363]], note:'比 Kiama 喷水洞小，但浪大时更常喷。走到这里累了就叫车去 Kiama，约 10 分钟。', q:'Little Blowhole Kiama', img:['search:intitle:"Little Blowhole" Kiama', 'Kiama, New South Wales']},
+      {n:'Kiama 喷水洞 · 灯塔', en:'Kiama Blowhole · Lighthouse', ll:[-34.6719,150.8632], t:'约 16:00', via:[[-34.68167,150.85523],[-34.67797,150.85546],[-34.67398,150.85856]], note:'这段经过 Kendalls Beach，后半段走镇上的路。喷水要看浪，等几分钟一般能看到。', q:'Kiama Blowhole', img:['search:intitle:"Kiama Blowhole"', 'Kiama, New South Wales']}],
+     gm:{mode:'walking', list:[0,1,2,3,4]}},
+    {label:'轻松版', stops:[
+      {n:'Kiama 喷水洞 · 灯塔', en:'Kiama Blowhole · Lighthouse', ll:[-34.6719,150.8632], t:'约 14:00', mode:'train', tx:TX.gerringongKiama, note:'喷水要看浪，等几分钟一般能看到。', q:'Kiama Blowhole', img:['search:intitle:"Kiama Blowhole"', 'Kiama, New South Wales']},
+      {n:'Kiama 港口', en:'Kiama Harbour', ll:[-34.6693,150.8586], note:'港口边走走，在 Terralong St 一带喝咖啡，再去车站。', q:'Kiama Harbour', img:['search:intitle:"Kiama Harbour"', 'Kiama, New South Wales']}],
+     gm:{mode:'walking', list:[2,3]}}
+  ],
+  tips:['周日一天公交最多扣约 A$9.65（2025 年 7 月起的价格），这一天怎么坐都不会超。','周末悉尼火车常有维修停运。出发前几天在 Transport for NSW 的 Trip Planner 查 10/25 的 South Coast Line，停运就和 10/26 对调。','悉尼开来的火车到 Kiama 为止，往南去 Gerringong 要换柴油小火车，周末大约 2 小时一班，赶不上就打车。','徒步版全天走路约 20 km（含进出 Ashfield 站），轻松版约 12 km。南风大或下雨就走轻松版。','带水、防晒和外套，海边风大。']},
+ {id:'d1026', date:'2026-10-26', wd:'周一', city:'syd', night:'syd', tag:'悉尼 · 第 3 天', title:'Bondi 海岸步道 + Watsons Bay',
+  lede:'上午走 Coogee 到 Bondi 的悬崖步道，下午坐 380 路沿海去 Watsons Bay，傍晚坐渡轮回城。',
+  start:true, end:{mode:'ferry', tx:TX.watsonsHome},
+  stops:[
+    {n:'库吉海滩', en:'Coogee Beach', ll:[-33.9205,151.2577], t:'约 09:30', mode:'bus', tx:TX.homeCoogee, note:'步道从这里往北走。', q:'Coogee Beach Sydney', img:['Coogee Beach', 'Coogee, New South Wales']},
+    {n:'克洛夫利', en:'Clovelly Beach', ll:[-33.9140,151.2680], q:'Clovelly Beach Sydney', img:['Clovelly Beach', 'Clovelly, New South Wales']},
+    {n:'勃朗特海滩', en:'Bronte Beach', ll:[-33.9036,151.2683], q:'Bronte Beach Sydney', img:['Bronte Beach', 'Bronte, New South Wales']},
+    {n:'塔玛拉玛', en:'Tamarama Beach', ll:[-33.8990,151.2710], note:'Sculpture by the Sea 今年 10/16–11/2 举办，展品在 Tamarama 到 Bondi 这一段，周一比周末人少。', q:'Tamarama Beach Sydney', img:['Tamarama Beach', 'Tamarama, New South Wales']},
+    {n:'邦迪海滩', en:'Bondi Beach', ll:[-33.8908,151.2743], t:'约 12:30', note:'Bondi Icebergs 泳池是经典机位。午饭在这里吃。', q:'Bondi Beach Sydney', img:'Bondi Beach'},
+    {n:'悬崖 The Gap', en:'The Gap · Gap Park', ll:[-33.8457,151.2852], mode:'bus', tx:TX.bondiGap, note:'南岬的海边悬崖，看外海。', q:'The Gap Watsons Bay', img:['search:intitle:"The Gap" Watsons Bay', 'Watsons Bay']},
+    {n:'Camp Cove', en:'Camp Cove', ll:[-33.8397,151.2790], note:'安静的小海湾，水很平。往北沿 South Head 步道可以走到红白条纹的灯塔，来回约 1 小时，可选。', q:'Camp Cove Beach', img:['Camp Cove', 'search:intitle:"Camp Cove"']},
+    {n:'屈臣氏湾码头', en:'Watsons Bay Wharf', ll:[-33.8435,151.2810], t:'约 17:30', note:'码头边吃 fish & chips。天气好可以等日落，晚上渡轮班次少，先查好末班；赶不上可以坐巴士回城。', q:'Watsons Bay Wharf', img:['Watsons Bay', 'Watsons Bay, New South Wales']}
+  ],
+  gm:{mode:'walking', list:[0,1,2,3,4]},
+  tips:['步道含拍照大约 2.5–3 小时，台阶多，穿运动鞋，带水和防晒。','上午走比较凉快，光线也顺。','380 路沿海边开，往 Watsons Bay 方向坐右边能看到海。']},
+ {id:'d1027', date:'2026-10-27', wd:'周二', city:'syd', night:'mel', tag:'悉尼 → 墨尔本', title:'CBD 半日 + 晚班机',
+  lede:'退房后行李先留在住处，上午逛 CBD，下午回去取行李，打车去机场。',
+  start:true,
+  stops:[
+    {n:'维多利亚女王大厦 · 市政厅', en:'QVB · Town Hall', ll:[-33.8718,151.2067], t:'约 10:00', mode:'train', tx:TX.homeTownHall, q:'Queen Victoria Building Sydney', img:'Queen Victoria Building'},
+    {n:'新州图书馆', en:'State Library of NSW', ll:[-33.8661,151.2131], note:'Mitchell 阅览室很出片。', q:'State Library of NSW', img:'State Library of New South Wales'},
+    {n:'澳大利亚博物馆', en:'Australian Museum', ll:[-33.8743,151.2131], note:'控制在 1 小时左右。想看画就换成新州美术馆，两个选一个。', q:'Australian Museum Sydney', img:'Australian Museum'},
+    {n:'新州美术馆（二选一）', en:'Art Gallery of NSW', ll:[-33.8688,151.2174], opt:true, from:1, note:'常设展免费。从图书馆穿过 The Domain 过去约 10 分钟。', q:'Art Gallery of New South Wales', img:'Art Gallery of New South Wales'},
+    {n:'唐人街', en:'Chinatown · Dixon St', ll:[-33.8786,151.2041], t:'约 12:30', note:'午饭。', q:'Dixon Street Chinatown Sydney', img:'Chinatown, Sydney'},
+    {n:'住处取行李', en:'Ashbury', ll:[-33.8967,151.1218], t:'约 15:00', kind:'stay', mode:'train', tx:TX.centralHome, note:'房东同意退房后行李留到下午。'},
+    {n:'国内航站楼 T2', en:'Sydney Domestic T2', ll:[-33.9331,151.1796], t:'约 15:45', kind:'air', mode:'taxi', tx:TX.homeAirport, note:'国内线建议起飞前约 1 小时到，行李托运起飞前 30 分钟截止。', q:'Sydney Airport T2 Domestic', img:'Sydney Airport'}
+  ],
+  after:[
+    {who:'两人', code:'JQ533', dep:'SYD 18:25', arr:'MEL 20:05', note:'目标价 ≤ A$95/人'},
+    {who:'', code:'SkyBus', dep:'MEL 机场', arr:'Southern Cross', note:'约 30–40 分钟，之后去酒店，大约 21:30 后入住'}],
+  gm:{mode:'walking', list:[0,1,2,4]},
+  tips:['出门前把行李收好放在房间，下午回来拿了就走。','不去 Featherdale，考拉留到黄金海岸的 Currumbin。']},
+
+ {id:'d1028', date:'2026-10-28', wd:'周三', city:'mel', region:'gor', night:'apb', tag:'大洋路自驾 · 第 1 天', title:'大洋路：Torquay 到 Apollo Bay',
+  lede:'早上市区取车，沿大洋路一路往西：Bells Beach、Split Point 灯塔、纪念拱门，Lorne 吃午饭，Kennett River 看野生考拉，傍晚住 Apollo Bay。',
+  start:{n:'市区取车', en:'Car rental · Franklin St 一带', ll:[-37.8081,144.9616], t:'08:00', nofit:true, note:'出门前墨尔本酒店退房，大行李寄存前台。', q:'car rental Franklin Street Melbourne'},
+  stops:[
+    {n:'Torquay · Bells Beach', en:'Bells Beach', ll:[-38.3690,144.2825], t:'约 09:30', mode:'car', note:'大洋路从 Torquay 开始，Bells Beach 是冲浪圣地，停车场就在悬崖上。', q:'Bells Beach Victoria', img:['Bells Beach, Victoria', 'search:intitle:"Bells Beach"']},
+    {n:'Split Point 灯塔', en:'Split Point Lighthouse', ll:[-38.4680,144.1045], mode:'car', note:'Aireys Inlet 的白色灯塔，沿悬崖步道看海。', q:'Split Point Lighthouse', img:['Split Point Lighthouse', 'search:intitle:"Split Point Lighthouse"']},
+    {n:'大洋路纪念拱门', en:'Memorial Arch', ll:[-38.4720,144.0446], mode:'car', note:'路边停车拍照。', q:'Great Ocean Road Memorial Arch', img:['search:Great Ocean Road arch', 'Great Ocean Road']},
+    {n:'Lorne', en:'Lorne', ll:[-38.5447,143.9808], t:'约 12:30', mode:'car', note:'海边小镇，午饭。', q:'Mountjoy Parade Lorne', img:['Lorne, Victoria', 'search:intitle:Lorne Victoria beach']},
+    {n:'Kennett River · 野生考拉', en:'Kennett River · Grey River Rd', ll:[-38.6677,143.8589], mode:'car', note:'在 Kennett River 拐进 Grey River Rd 慢慢开，看路边桉树上的野生考拉。别投喂，也别在路中间停车。', q:'Grey River Road Kennett River', img:['search:koala Kennett River Great Otway', 'search:intitle:koala Otway', 'Kennett River, Victoria']}
+  ],
+  end:{n:'Apollo Bay', en:'Apollo Bay · 住一晚', ll:[-38.7547,143.6700], mode:'car', t:'约 17:00', q:'Apollo Bay Victoria', img:'Apollo Bay'},
+  gm:{mode:'driving', list:['start',0,1,2,3,4,'end']},
+  tips:['走沿海大洋路约 190 km，纯开车约 3 小时；弯道多，看风景用路边的停车湾。','租车选开到 17:00 的门店（Europcar / Hertz / Thrifty / Dollar / East Coast），明天 16:30 前还车。','中文驾照要随身带英文翻译件，租车前确认租车公司的要求。','跟 Apollo Bay 的旅馆确认最晚几点能入住。','墨尔本酒店退房，大行李寄存在前台，只带一晚的东西。']},
+
+ {id:'d1029', date:'2026-10-29', wd:'周四', city:'mel', region:'gor', night:'mel', tag:'大洋路自驾 · 第 2 天', title:'十二门徒石，走内陆回墨尔本',
+  lede:'早上走 Maits Rest 雨林步道，11 点前后到十二门徒石，Port Campbell 午饭、加油，13:00 前出发走内陆回墨尔本还车。',
+  start:{n:'Apollo Bay 出发', en:'Apollo Bay', ll:[-38.7547,143.6700], t:'约 08:30', q:'Apollo Bay Victoria', img:'Apollo Bay'},
+  stops:[
+    {n:'Maits Rest 雨林步道', en:'Maits Rest Rainforest Walk', ll:[-38.7559,143.5545], mode:'car', note:'约 30 分钟的环形步道，大树蕨雨林。出发前在 Parks Victoria 查步道开不开。', q:'Maits Rest Rainforest Walk', img:['search:intitle:"Maits Rest"', 'Great Otway National Park']},
+    {n:'十二门徒石', en:'Twelve Apostles', ll:[-38.6656,143.1044], t:'约 11:00', mode:'car', note:'10/16 起要在 twelveapostles.org.au 预约到达时段（免费，含停车位）。', q:'Twelve Apostles Victoria', img:['The Twelve Apostles (Victoria)', 'Twelve Apostles (Victoria)']},
+    {n:'洛克阿德峡谷', en:'Loch Ard Gorge', ll:[-38.6464,143.0703], mode:'car', note:'只能在观景台看。', q:'Loch Ard Gorge', img:'Loch Ard Gorge'},
+    {n:'Port Campbell', en:'Port Campbell', ll:[-38.6196,142.9954], t:'约 12:15', mode:'car', note:'午饭、加油。最晚 13:00 出发回墨尔本。', q:'Port Campbell Victoria', img:['Port Campbell, Victoria', 'search:intitle:"Port Campbell"']},
+    {n:'市区还车', en:'Car rental · Franklin St 一带', ll:[-37.8081,144.9616], t:'16:30 前', mode:'car', via:[[-38.3400,143.5859],[-38.15,144.36]], nofit:true, note:'走内陆经 Colac 约 230 km、3 小时。还车前在城外加满油。', q:'car rental Franklin Street Melbourne'},
+    {n:'Southbank 河边（可选）', en:'Southbank', ll:[-37.8200,144.9662], opt:true, from:4, note:'晚上沿亚拉河吃饭、看夜景。', q:'Southbank Promenade Melbourne', img:['Southbank, Victoria', 'Yarra River']}
+  ],
+  end:{mode:'walk', nofit:true},
+  gm:{mode:'driving', list:['start',0,1,2,3,4]},
+  tips:['十二门徒石 10/16 起要在 twelveapostles.org.au 预约（免费，含停车位），按 11:00 左右订。','出发前查 Maits Rest 步道开不开。','最晚 13:00 从 Port Campbell 出发；还车前在城外加满油，16:30 前还车。','回酒店重新入住，取寄存的行李。']},
+
+ {id:'d1030', date:'2026-10-30', wd:'周五', city:'mel', night:'mel', tag:'墨尔本 · 市区', title:'City Walk + St Kilda 日落和企鹅',
+  lede:'早上女王市场吃早午饭，穿过市中心一路走到弗林德斯街车站；傍晚坐 16 路电车去 St Kilda，Acland St 吃晚饭，看日落和栈桥的小企鹅。',
+  start:true, end:{mode:'tram', tx:TX.stkildaHome},
+  stops:[
+    {n:'维多利亚女王市场', en:'Queen Victoria Market', ll:[-37.8076,144.9568], t:'09:00', note:'早午饭。', q:'Queen Victoria Market', img:'Queen Victoria Market'},
+    {n:'维州州立图书馆', en:'State Library Victoria', ll:[-37.8098,144.9652], note:'穹顶阅览室 La Trobe Reading Room。', q:'State Library Victoria', img:'State Library Victoria'},
+    {n:'墨尔本中心', en:'Melbourne Central', ll:[-37.8102,144.9628], q:'Melbourne Central', img:['Melbourne Central Shopping Centre', 'search:intitle:"Melbourne Central" shopping']},
+    {n:'唐人街', en:'Chinatown · Little Bourke St', ll:[-37.8115,144.9686], q:'Chinatown Melbourne', img:'Chinatown, Melbourne'},
+    {n:'皇家拱廊', en:'Royal Arcade', ll:[-37.8144,144.9640], q:'Royal Arcade Melbourne', img:['search:intitle:"Royal Arcade" Melbourne', 'Royal Arcade, Melbourne']},
+    {n:'Block Arcade', en:'The Block Arcade', ll:[-37.8159,144.9649], q:'Block Arcade Melbourne', img:'Block Arcade'},
+    {n:'墨尔本市政厅', en:'Melbourne Town Hall', ll:[-37.8150,144.9667], q:'Melbourne Town Hall', img:'Melbourne Town Hall'},
+    {n:'圣保罗大教堂', en:"St Paul's Cathedral", ll:[-37.8169,144.9676], q:"St Paul's Cathedral Melbourne", img:"St Paul's Cathedral, Melbourne"},
+    {n:'涂鸦巷', en:'Hosier Lane', ll:[-37.8165,144.9692], q:'Hosier Lane Melbourne', img:'Hosier Lane'},
+    {n:'联邦广场', en:'Federation Square', ll:[-37.8179,144.9690], q:'Federation Square Melbourne', img:'Federation Square'},
+    {n:'弗林德斯街车站', en:'Flinders Street Station', ll:[-37.8183,144.9671], q:'Flinders Street Station', img:'Flinders Street railway station'},
+    {n:'国立维多利亚美术馆（可选）', en:'NGV International', ll:[-37.8226,144.9689], opt:true, from:10, note:'常设展免费，过桥就到。', q:'National Gallery of Victoria', img:'National Gallery of Victoria'},
+    {n:'Acland St', en:'Acland Street', ll:[-37.8685,144.9800], t:'约 17:30', mode:'tram', tx:TX.stkilda16, note:'蛋糕店一条街，晚饭在这里吃。', q:'Acland Street St Kilda', img:['search:intitle:"Acland Street" cake', 'Acland Street']},
+    {n:'St Kilda 海滩 · 栈桥', en:'St Kilda Beach · Pier', ll:[-37.8650,144.9730], sunset:true, note:'看日落，然后去栈桥尽头看小企鹅：免费但要预约，选日落后约 30 分钟开始的第一场。', q:'St Kilda Pier', img:'St Kilda Pier'}
+  ],
+  gm:{mode:'walking', list:[0,1,2,3,4,5,6,7,8,9,10]},
+  tips:['看企鹅免费但要预约（penguins.org.au）：每周二 10:00 放出下一周的票，很快就没；选日落后约 30 分钟开始的第一场。','如果 10/31 改去菲利普岛，这晚就不看企鹅，改去 Southbank 河边。','市中心免费电车区内坐电车不用刷卡；去 St Kilda 出了免费区要刷卡。']},
+
+ {id:'d1031', date:'2026-10-31', wd:'周六', city:'mel', night:'mel', tag:'墨尔本 · 周边', title:'Puffing Billy 小火车',
+  lede:'默认坐 Metro 火车去 Belgrave 坐蒸汽小火车，下午回市区，体力够就去 Carlton 和 Fitzroy。还没定的方案：小火车 + 菲利普岛企鹅一日游。',
+  start:true,
+  options:[
+    {label:'默认：小火车 + Carlton / Fitzroy', stops:[
+      {n:'Belgrave · Puffing Billy', en:'Puffing Billy · Belgrave', ll:[-37.9077,145.3566], t:'10:00 或 11:00', mode:'train', tx:TX.toBelgrave, note:'往返约 A$66/人（以官网为准），周六容易满，要先在官网订。', q:'Puffing Billy Railway Belgrave', img:['Puffing Billy Railway', 'search:intitle:"Puffing Billy"']},
+      {n:'Lakeside（Emerald Lake）', en:'Lakeside · Emerald Lake Park', ll:[-37.9304,145.4597], mode:'train', tx:TX.puffingBilly, note:'湖边公园吃午饭，再坐回程的小火车回 Belgrave。', q:'Lakeside Station Puffing Billy', img:['search:Puffing Billy Lakeside', 'search:intitle:"Emerald Lake" Victoria', 'Emerald, Victoria']},
+      {n:'卡尔顿花园', en:'Carlton Gardens', ll:[-37.8047,144.9717], t:'下午', mode:'train', tx:TX.pbBackCity, note:'体力够再去；累了就直接回酒店。', q:'Carlton Gardens', img:'Carlton Gardens'},
+      {n:'Lygon St 意大利街', en:'Lygon Street', ll:[-37.7985,144.9668], note:'晚饭吃意大利菜。', q:'Lygon Street Carlton', img:'Lygon Street'},
+      {n:'Brunswick St', en:'Brunswick Street · Fitzroy', ll:[-37.7985,144.9785], q:'Brunswick Street Fitzroy', img:'Brunswick Street, Melbourne'}],
+     gm:{mode:'walking', list:[2,3,4]}, back:{tx:TX.fitzroyHome}},
+    {label:'待定：小火车 + 菲利普岛', stops:[
+      {n:'Puffing Billy 小火车', en:'Puffing Billy · Belgrave', ll:[-37.9077,145.3566], t:'上午', mode:'tour', note:'跟团，坐一段蒸汽小火车（看团的安排）。一日游起价 A$229/人。', q:'Puffing Billy Railway Belgrave', img:['Puffing Billy Railway', 'search:intitle:"Puffing Billy"']},
+      {n:'菲利普岛 · 企鹅归巢', en:'Phillip Island · Penguin Parade', ll:[-38.5105,145.1496], t:'日落后', mode:'tour', note:'傍晚看小企鹅上岸，10 月大约 22:30 回到市区。', q:'Penguin Parade Phillip Island', img:['search:Phillip Island penguin parade', 'Phillip Island']}],
+     back:{mode:'tour', t:'约 22:30'}}
+  ],
+  tail:[{n:'回酒店', en:'Hotel', ll:[-37.8120,144.9620], kind:'stay', mode:'tram', t:'晚上', q:'Melbourne Central'}],
+  tips:['Puffing Billy 往返约 A$66/人（以官网为准），周六容易满，要先订；赶 10:00 或 11:00 的车。','菲利普岛一日游起价 A$229/人，10 月大约 22:30 回到市区。','11/1 一早飞黄金海岸。选一日游的话，改订 10 点以后起飞的航班；10/30 晚上也不用在 St Kilda 看企鹅，改去 Southbank。']},
+
+ {id:'d1101', date:'2026-11-01', wd:'周日', city:'gc', region:'gc', night:'gc', tag:'黄金海岸 · 第 1 天', title:'Currumbin 看考拉',
+  lede:'上午去野生动物保护区，下午沿海往北，傍晚在 Burleigh Heads 看海。',
+  before:[{who:'两人', code:'航班待定', dep:'MEL 早班', arr:'OOL', note:'墨尔本比黄金海岸快 1 小时；落地后先去酒店放行李'}],
+  start:true, end:{mode:'tram', tx:TX.burleighHome},
+  stops:[
+    {n:'Currumbin 野生动物保护区', en:'Currumbin Wildlife Sanctuary', ll:[-28.1360,153.4870], t:'落地后', mode:'bus', tx:TX.currumbin, note:'考拉合影可选树上合影或抱考拉；抱考拉要求身高 140cm 以上、能托住考拉。门票和合影分开买，出发前在官网确认价格和时段。', q:'Currumbin Wildlife Sanctuary', img:'Currumbin Wildlife Sanctuary', link:{l:'合影官网', u:'https://book.currumbinsanctuary.com.au/location/currumbin-sanctuary/book/encounters/tree-kangaroo-encounter'}},
+    {n:'象岩 · Currumbin 海滩', en:'Elephant Rock', ll:[-28.1327,153.4906], q:'Elephant Rock Currumbin', img:['Currumbin, Queensland', 'Currumbin Beach']},
+    {n:'伯利角', en:'Burleigh Heads', ll:[-28.0890,153.4555], mode:'bus', tx:TX.burleigh, sunset:true, note:'国家公园海岬步道，看冲浪和 Surfers 天际线。', q:'Burleigh Head National Park', img:['Burleigh Head National Park', 'Burleigh Heads, Queensland']}
+  ],
+  gm:{mode:'driving', list:['start',0,1,2,'end']},
+  tips:['先坐 G:link 轻轨到 Burleigh Heads，再换 700 路到 Currumbin；打车约 25 分钟。','11 月阳光很强，带帽子和防晒。']},
+
+ {id:'d1102', date:'2026-11-02', wd:'周一', city:'gc', region:'gc', night:'bne', tag:'黄金海岸 → 布里斯班', title:'白天三选一，晚上去布里斯班',
+  lede:'退房寄存行李，白天选一个方向玩，傍晚坐轻轨转火车北上。',
+  start:true,
+  options:[
+    {label:'海岸城市', stops:[
+      {n:'SkyPoint 观景台', en:'SkyPoint · Q1', ll:[-28.0063,153.4296], t:'上午', q:'SkyPoint Observation Deck', img:'Q1 (building)'},
+      {n:'Surfers Paradise 海滩', en:'Surfers Paradise Beach', ll:[-28.0024,153.4315], q:'Surfers Paradise Beach', img:'Surfers Paradise, Queensland'},
+      {n:'Broadbeach', en:'Broadbeach · Kurrawa', ll:[-28.0310,153.4325], mode:'tram', tx:TX.broadbeach, q:'Kurrawa Beach Broadbeach', img:['search:intitle:Broadbeach beach', 'Broadbeach, Queensland']},
+      {n:'Pacific Fair', en:'Pacific Fair', ll:[-28.0355,153.4268], note:'大型商场，午饭和购物。', q:'Pacific Fair Shopping Centre', img:['Pacific Fair Shopping Centre', 'Pacific Fair']}],
+     gm:{mode:'walking', list:[0,1,2,3]}, back:{tx:TX.pacificFairHome}},
+    {label:'Springbrook 自然', stops:[
+      {n:'Purling Brook 瀑布', en:'Purling Brook Falls', ll:[-28.1690,153.2715], t:'上午', mode:'car', note:'没有公共交通，需要自驾或参团；单程约 1 小时。', q:'Purling Brook Falls', img:'Purling Brook Falls'},
+      {n:'Best of All 观景台', en:'Best of All Lookout', ll:[-28.2400,153.2650], mode:'car', q:'Best of All Lookout Springbrook', img:'Springbrook National Park'}],
+     gm:{mode:'driving', list:['start',0,1]}, back:{mode:'car'}},
+    {label:'Sea World', stops:[
+      {n:'Sea World', en:'Sea World', ll:[-27.9570,153.4252], t:'全天', mode:'bus', tx:TX.seaworld, q:'Sea World Gold Coast', img:['Sea World (Australia)', 'Sea World (Gold Coast)']}], back:{tx:TX.seaworldHome}},
+    {label:'Movie World', stops:[
+      {n:'Movie World', en:'Warner Bros. Movie World', ll:[-27.9077,153.3122], t:'全天', mode:'bus', tx:TX.movieworld, note:'旁边就是 Wet\'n\'Wild，一天只选一个园区。', q:'Warner Bros. Movie World', img:'Warner Bros. Movie World'}], back:{tx:TX.movieworldHome}}
+  ],
+  tail:[
+    {n:'酒店取行李', en:'Hotel', ll:[-28.0040,153.4300], t:'约 17:00', kind:'stay', mode:'bus', q:'Cavill Avenue Surfers Paradise'},
+    {n:'Helensvale 站', en:'Helensvale Station', ll:[-27.9217,153.3337], t:'约 18:00', mode:'tram', tx:TX.toHelensvale, note:'G:link 轻轨坐到终点 Helensvale，约 40 分钟，换火车去布里斯班。', q:'Helensvale Station', img:'Helensvale railway station'}
+  ],
+  after:[{who:'', code:'火车', dep:'Helensvale', arr:'Roma St / Central', note:'约 1 小时，到布里斯班后入住'}],
+  tips:['退房后行李寄存在酒店前台，傍晚回来取。']},
+
+ {id:'d1103', date:'2026-11-03', wd:'周二', city:'bne', night:null, tag:'布里斯班 · 回国日', title:'布里斯班一日 + 夜航回国',
+  lede:'白天沿河玩一圈，傍晚在袋鼠角看天际线，晚饭后坐 Airtrain 去机场。',
+  start:true,
+  stops:[
+    {n:'南岸公园', en:'South Bank Parklands', ll:[-27.4780,153.0230], t:'约 09:30', note:'Streets Beach 人造沙滩和花廊步道。', q:'South Bank Parklands Brisbane', img:'South Bank Parklands'},
+    {n:'昆士兰美术馆 · 现代美术馆', en:'QAGOMA', ll:[-27.4703,153.0170], note:'常设展免费，控制在 1–1.5 小时。', q:'Gallery of Modern Art Brisbane', img:['Gallery of Modern Art, Brisbane', 'Queensland Art Gallery']},
+    {n:'Queen St Mall', en:'Queen Street Mall', ll:[-27.4688,153.0255], note:'过 Victoria Bridge 进市中心，午饭。', q:'Queen Street Mall Brisbane', img:'Queen Street Mall'},
+    {n:'CityCat 码头', en:'North Quay ferry terminal', ll:[-27.4712,153.0196], q:'North Quay ferry terminal Brisbane', img:'CityCat'},
+    {n:'Howard Smith Wharves', en:'Howard Smith Wharves', ll:[-27.4616,153.0358], mode:'ferry', tx:TX.citycat, via:CITYCAT, note:'Story Bridge 下的餐厅酒吧区，坐 CityCat 沿河过来。', q:'Howard Smith Wharves', img:'Howard Smith Wharves'},
+    {n:'袋鼠角悬崖', en:'Kangaroo Point Cliffs', ll:[-27.4785,153.0350], sunset:true, note:'步行过 Story Bridge 约 25–30 分钟。傍晚看城市天际线，18:00 左右吃晚饭。', q:'Kangaroo Point Cliffs', img:['Kangaroo Point Cliffs', 'Kangaroo Point, Queensland']},
+    {n:'酒店取行李', en:'Hotel', ll:[-27.4690,153.0215], t:'约 18:45', kind:'stay', mode:'taxi', tx:TX.kpTaxi, q:'Roma Street Station Brisbane'},
+    {n:'Roma St 站', en:'Roma Street · Airtrain', ll:[-27.4659,153.0193], t:'约 19:15', note:'Airtrain 也停 Central 站。', q:'Roma Street Station Brisbane', img:'Roma Street railway station'},
+    {n:'布里斯班机场国际', en:'BNE International', ll:[-27.3842,153.1175], t:'19:30–20:00', kind:'air', mode:'train', tx:TX.airtrain, nofit:true, note:'Airtrain 约 20–25 分钟。国际航班建议提前 3 小时到。', q:'Brisbane International Airport', img:'Brisbane Airport'}
+  ],
+  after:[{who:'朋友', code:'南航', dep:'BNE 23:00', arr:'TNA 11/4 11:30', note:'广州转机 2h45m'}],
+  gm:{mode:'walking', list:[0,1,2]},
+  tips:['退房时把行李寄存在前台。','11/4 中午到济南，11/5 上班。']}
+];
+
+var FLIGHTS = [
+  {d:'10/23', code:'东航', r:'TNA 13:05 → SYD 09:00⁺¹', who:'朋友', sub:'武汉转机 4h35m', p:'¥2469'},
+  {d:'10/24', code:'JQ403', r:'OOL 07:10 → SYD 09:40', who:'我', sub:'', p:'≈ A$83'},
+  {d:'10/27', code:'JQ533', r:'SYD 18:25 → MEL 20:05', who:'两人', sub:'', p:'≈ A$90/人'},
+  {d:'10/28', code:'租车', r:'墨尔本市区 ⇄ 大洋路', who:'两人', sub:'10/28 08:00 取车，10/29 16:30 前还车', p:''},
+  {d:'11/01', code:'待定', r:'MEL 早班 → OOL', who:'两人', sub:'墨尔本比黄金海岸快 1 小时；10/31 选菲利普岛一日游就改订 10 点以后起飞的', p:''},
+  {d:'11/02', code:'陆路', r:'Surfers → Brisbane', who:'两人', sub:'G:link 轻轨 + 火车，约 1.5 小时', p:''},
+  {d:'11/03', code:'南航', r:'BNE 23:00 → TNA 11:30⁺¹', who:'朋友', sub:'广州转机 2h45m', p:'¥2652（学生价 ¥2502）'}
+];
+var OV_CITIES = [
+  {c:'syd', o:1, ll:[-33.8688,151.2093], go:'d1024'}, {c:'mel', o:2, ll:[-37.8136,144.9631], go:'d1028'},
+  {c:'gc', o:3, ll:[-28.0024,153.4315], go:'d1101'}, {c:'bne', o:4, ll:[-27.4698,153.0251], go:'d1103'}
+];
+var OV_LEGS = [
+  {a:[-28.1644,153.5047], b:[-33.9366,151.1658], mode:'flight', lb:'10/24 我', bend:-.22},
+  {a:[-33.9366,151.1658], b:[-37.6698,144.8422], mode:'flight', lb:'10/27', bend:.22},
+  {a:[-37.6698,144.8422], b:[-28.1644,153.5047], mode:'flight', lb:'11/1', bend:-.18},
+  {a:[-28.0024,153.4315], b:[-27.4698,153.0251], mode:'train', lb:'11/2 火车', bend:0}
+];
+var JINAN = [36.857,117.216];
+
+/* ---------- 当地交通怎么付钱（总览页） ---------- */
+var PAY = [
+  {c:'syd', t:'悉尼：火车、地铁、巴士、渡轮、轻轨都直接刷银行卡或手机（Opal 系统），进出站、上下车都要刷，每天自动封顶。机场两站进出另收站点费。'},
+  {c:'mel', t:'墨尔本：2026 年起火车和电车也能直接刷银行卡或手机，但海外卡不一定每个读卡器都认，稳妥起见买张 myki 卡。市中心免费电车区内坐电车不用刷。SkyBus 单独买票。'},
+  {c:'gc', t:'黄金海岸 · 布里斯班：Translink 全网一程 50 分（巴士、G:link 轻轨、火车、CityCat），刷 go card 或银行卡、手机都行。机场快线 Airtrain 不在内，单程约 A$23。'},
+  {c:'', t:'坐车前点每段交通下面的「实时查询」，用 Google 地图看实时班次。'}
+];
+
+/* ---------- 版本记录：最新的写在最前。旧版本是 v/<号>/index.html 里冻结的整页副本（tools/snapshot.mjs 生成） ---------- */
+var VERSIONS = [
+  {v:3, date:'2026-10-14', title:'墨尔本改成大洋路自驾两天 + 市区一天 + 小火车', notes:[
+    '10/28–29：大洋路自驾两天，10/28 住 Apollo Bay；第 2 天看十二门徒石，走内陆回墨尔本还车（原来是 10/30 跟团一日游）。',
+    '10/30：女王市场和市中心 City Walk，傍晚坐 16 路电车去 St Kilda 看日落和小企鹅。',
+    '10/31：Puffing Billy 小火车 + Carlton / Fitzroy；也可以改成小火车 + 菲利普岛一日游（待定）。',
+    '去黄金海岸改成 11/1 一早的航班（航班待定），黄金海岸住 1 晚。',
+    '悉尼、布里斯班和 v2 一样；黄金海岸只改了 11/1 怎么到。']},
+  {v:2, date:'2026-10-09', title:'悉尼住 Ashbury，加 Gerringong + Kiama 一日', notes:[
+    '悉尼住 Ashbury 民宿（两间房，已订），每天从 Ashfield 站坐 T2 / T3 进出城，来回机场打车。',
+    '10/24：放行李后从海德公园一路走到海港，天文台山看日落。',
+    '10/25：新增 Gerringong 和 Kiama 一日游，下午徒步版 / 轻松版二选一。',
+    '10/26：Coogee 到 Bondi 步道之后，加 The Gap、Camp Cove 和 Watsons Bay，坐渡轮回城。',
+    '10/27：改成 CBD 半日，去掉 Manly。',
+    '墨尔本、黄金海岸、布里斯班和 v1 一样。']},
+  {v:1, date:'2026-10-03', title:'初版：没有 Kiama，悉尼酒店还在比较', notes:[
+    '悉尼：10/24 海港，10/25 CBD 城市漫步，10/26 Coogee 到 Bondi，10/27 Manly 半日后飞墨尔本。',
+    '悉尼列了几家 Hyde Park、Town Hall 一带的候选酒店，还没订。']}
+];
+
+/* ---------- 每段路怎么走（列表、地图和 tools/fetch-routes.mjs 共用） ---------- */
+function bookedHotel(city){ var hs=HOTELS[city]||[]; for(var i=0;i<hs.length;i++){ if(hs[i].booked && !hs[i].areaOnly) return hs[i]; } return null; }
+// 住处：订了酒店就用酒店的位置，否则用城市的默认落脚点
+function home(city){ var c=CITY[city], b=bookedHotel(city); return b ? {en:b.n, ll:b.ll, q:b.q, booked:true} : {en:'Hotel', ll:c.base, q:c.baseQ}; }
+// 某天（第 oi 个方案）的站点：head（各方案共用的前几站）+ 方案的站 + tail；方案里的 back 会替换「回酒店」那一站的交通
+function stopsFor(d, oi){
+  var op = d.options ? d.options[Math.min(oi||0, d.options.length-1)] : null, tail = (d.tail||[]).slice();
+  if(op && op.back && tail.length) tail[0] = Object.assign({}, tail[0], op.back);
+  var all = (d.head||[]).concat(op ? op.stops : d.stops, tail), b = bookedHotel(d.city);
+  return b ? all.map(function(s){ return s.kind==='stay' ? Object.assign({}, s, {en:b.n, ll:b.ll, q:b.q}) : s; }) : all;
+}
+function startPt(d){ if(!d.start) return null; return d.start===true ? Object.assign({n:'住处出发', base:true}, home(d.city)) : Object.assign({base:true}, d.start); }
+function endPt(d){ if(!d.end) return null; return d.end.ll ? Object.assign({base:true}, d.end) : Object.assign({n:'回住处', base:true}, home(d.city), d.end); }
+// 一天里的每一段路：from → to；s 是这段到达的站（或终点），i 是站的序号或 'end'
+function legsFor(d, oi){
+  var stops=stopsFor(d, oi), st=startPt(d), en=endPt(d), prev=st?st.ll:null, out=[];
+  stops.forEach(function(s,i){ var from = s.from!=null ? stops[s.from].ll : (s.fromLL || prev); if(from) out.push({from:from, to:s.ll, s:s, i:i}); if(!s.opt) prev=s.ll; });
+  if(en && prev) out.push({from:prev, to:en.ll, s:en, i:'end'});
+  return out;
+}
+function nearLL(a, b){ return Math.abs(a[0]-b[0])<3e-4 && Math.abs(a[1]-b[1])<3e-4; }
+// 把一段路拆成小段（步行、坐车、换乘……），补上每小段的起点 A、终点 B；没写的短距离步行自动补上（auto）
+function legSegs(leg){
+  var s=leg.s, tx = s.tx ? [].concat(s.tx) : [{mode:s.mode||'walk'}], out=[], cur=leg.from;
+  tx.forEach(function(t, k){
+    var A = t.a || cur, B = t.b || (k<tx.length-1 ? (tx[k+1].a || leg.to) : leg.to);
+    if(!nearLL(cur, A)) out.push({mode:'walk', A:cur, B:A, auto:true});
+    out.push(Object.assign({}, t, {A:A, B:B, via: t.via || (tx.length===1 ? s.via : null)}));
+    cur = B;
+  });
+  if(!nearLL(cur, leg.to)) out.push({mode:'walk', A:cur, B:leg.to, auto:true});
+  return out;
+}
+function segKey(g){ function r(p){ return p[0].toFixed(4)+','+p[1].toFixed(4); } return [g.mode, g.line||'', r(g.A), r(g.B), g.via?g.via.length:0].join('|'); }
+/* @data-end */
+
+/* ---------- 路线形状：tools/fetch-routes.mjs 从 OpenStreetMap 取来后写在这里，不要手改 ---------- */
+/* @geo-begin */var GEO = {
+"bus|373|-33.8762,151.2099|-33.9205,151.2565|0":"fmwmE{d|y[GfAd@Bz@W\\m@F_Ld@iBxUk[xScChXaL~QsEd]aEjSeBfKeB~BaBzM{PhDyJ|FuRfGsLpBsBxJsE|BeBrAyAjCkAh@g@pB}Ib@wEhZeJhDmDd@gChAmK`DgLtC}^GQLI`CaZ{@M",
+"bus|380|-33.8906,151.2747|-33.8473,151.2861|0":"jgzmEazhz[uHyIc@mCFyDXqBnCiIHeAS{Ex@yBIo@g@{@mC{Bu@EyC~@w@O}CuDi@_@eCPeCr@aC~ByFpD_KCoARuDtEaB?c@Vk@tGK\\]LyZqD}AXmUwCaMsB{@vJ_I}@F{@aSgCeBhPaGn@eAMw@e@yDqE}MmM}@sBq@]iAgBgNcHiDs@qDwA}MgH_Be@_BA{Hl@a@Tc@dA",
+"bus|700|-28.0921,153.4521|-28.1365,153.4860|0":"pvmjDmorg\\tABhBd@fJpG|ANvAc@t@u@p@mAh@mE^uApM_QlGqTl@oAt@}@dAm@xSuHtr@qYn^{P`a@iT|NsIlLeEvCsCrVc]dAmBhBeGhAqBdLcJ",
+"bus|700|-28.1345,153.4872|-28.0921,153.4521|0":"pfvjDsbyg\\dB`G_KpHmAlAaAdBgB|FsAjCqVz\\aChCkB`AiJxCiNhIeb@~Tk]fPur@pYyThIgAbAy@|AuGpTuL|Ok@~Aq@xEu@vAcA|@eB`@aBS_JkGiBc@kBGeBNaBzA",
+"bus|705|-27.9570,153.4252|-28.0005,153.4270|0":"fjsiDozlg\\@aIxSF~Dg@pAVnG@rFc@pBs@hAPjFUrFv@jAMxDsAfBsAbA?tEq@dGVpBVpEjAhAx@Vt@rA|In@rAl@f@dGxClG~DrHfAjAx@`D{Ana@a[jD}AxI{BbEWpT`AtVlBpUdCJKMO",
+"bus|705|-28.0005,153.4270|-27.9570,153.4252|0":"bz{iDwemg\\`@LKd@oa@eE}\\cBiDAyD`@uGfBaF~B_^rXoDrBmBr@e@eAg@_@mHsAkGoEwGmCgAsBy@uHg@eAmAeAaH}AaF]yBFoCl@q@l@iAJsE`BaBVcHw@iE^{@VkAIkGj@{GBuAVaE]ySGA`I",
+"bus|TX7|-27.9077,153.3122|-27.9217,153.3337|0":"rniiD{{vf\\g@j@o@JmGB[o@jNqQfAu@fA[JYSuAvDiApFe@tEw@dKeFXtAfCu@L^kCfAYMB]YuAz]yKpFqBvAaAhTyRtGoHbDeHr@_@dCk@p@kMSaFk@mCuGeR",
+"bus|TX7|-27.9217,153.3337|-27.9077,153.3122|0":"r_miDei{f\\pGxQn@bDNnFs@xN_BT_B~@mCdEsHlIiTxRwA`A}d@rOTfAfCu@L^kCfAYMB]UgAqFfDaC`AmBf@wLzAu@fAr@|FO`A{AvAeA~AkB~Au@rB",
+"car||-28.0040,153.4300|-28.1690,153.2715|0":"~o|iDqxmg\\N~EbF?tBc@WvDdCMtJnAzBfC~LhIfC`DpIp[YxKe@rAgD|_@NnBzUdCja@gBhj@bHzOd@|SbFpJb@bx@|JbGChI}AxEbSnXfXbAXfLjMtAfFFzNj@p@`f@{HnH_@lVn@p]nIzF?lOsArDp@dCbBtPz^V|EsArQZ`CpC|C~BhGpKdDuCtFkCxOiPrf@cCzJR~BtCzFTdG_@rHpDbHhDrKKbd@jCdE`IzBbBnB|EpSrBfRvC~O|@nBbChBxKbA|CpC~IrU?|LdAlG`H`NdDtU~BxFtGnFzI`DrYjDzRsAnP|E~DpCjMjUpEh@xDaA|F`CjApEy@rBVvB~DxFhBLbBrAlBgCz@UvFtCBv@{BjDSrBf@t@vBq@DfCaEdGpCj@`@`DeAtA{D|AIt@dCjMoAlDxEzHdD|BtD`A`AzBN~DaCdU^tKz@zCtG`ItGdBdAjG{AbEEpB~DqB`E[zH^rD`Cr@{B|AI|Bd@bAjCdF~A|FsFpBu@VuCz@GzA~AeCtHzAxGaCvCrBfGjH~AFnCd@`@xAc@nE?hGlAhA_@`AuCzCBn@p@uCzGcOrIyD|EaCnA@j@hErBtBKzAp@lC_BhBJpB~A`C_@bDzAlA~AxAi@xMs@bB`CqAlGiEzFqM|D}ChKgDfDH|@tMoAvDyAjBKrGjAv@t@vFSzFtCpBk@lCn@fEcCh@d@l@vGrDdC~DdGdDbAzCMnCbCrCr@~GP|EmAlGf@xH~IhNjJ|@qAa@s@~_@up@",
+"car||-28.1690,153.2715|-28.2400,153.2650|0":"fw|jD{ynf\\_`@tp@`@r@}@pAnGjLlAx@xD?hClA|BR|VaFdBl@rD~EpLtAxC@nDv@fNo@pJ|DxSy@jCbF|FfBpErCdNzBdEaAhKL|E~CrAVtLg@fI_B`FNzHuD|CAbE_AxD~AbQrA|EnAhBY~GcFnJjBnEAfI{EvBuC\\iGlEmJlEsEpEExCeAdEBnJ{CdFnC`@zDbAxA~GBhCy@xEEnAyALsAlBqBzZePtC}DhJgCvK_@hEcBnEoDhGrGt@bDA~I",
+"car||-28.2400,153.2650|-28.0040,153.4300|0":"~rjkDgqmf\\@_Ju@cDiGsGoEnDiEbBwK^iJfCuC|D{ZdPmBpBMrAoAxAyEDiCx@_HCcAyAa@{DeFoCoJzCeECyCdAqEDmErEmElJ]hGwBtCgIzEoE@oJkB_HbFiBX}EoAcQsAyD_BcE~@}C@{HtDaFOgI~AuLf@sAW}E_DiKMeE`AeN{BqEsC}FgBkCcFySx@qJ}DgNn@oDw@yCAqLuAsD_FeBm@}V`F}BSiCmAyD?mAy@gGcLqNsJqDaFsEbBsFeC_LVqSmI_EeGsDeCm@wGi@e@gEbCmCo@qBj@{FuCwFRw@u@sGkAkBJwDxAuMnAI}@fDgD|CiKpM}DdDyDxB_IgBqCyMr@yAh@mA_BcD{AaC^qB_BiBKmC~A{Aq@uBJiEsBAk@`CoAxD}EbOsIfCcFHkAgEa@aAtCiA^iGmAoE?yAb@e@a@GoCkH_BsBgG`CwC{AyGdCuH{A_B{@FWtCqBt@}FrFeF_BcAkC}Be@}AHs@zBsDaC{H_@aEZ_EpBDqBzAcEeAkGuGeBuGaI{@{C_@uK`CeUO_EaA{BuDaAeD}ByE{HnAmDeCkMHu@zD}AdAuAa@aDqCk@`EeGEgCwBp@g@u@RsBzBkDCw@wFuC{@TmBfCcBsAiBM_EyFWwBx@sBkAqE}FaCyD`AqEi@kMkU_EqCoP}E{RrAsYkD{IaDiFyDkDoHeDuUaHaNeAmG?}L_JsU}CqCyKcAiBkAoAsB_DyPsBgR}EqS}@wAoIcCeCkCcCnAwMfAoFzAmHBaGr@wGeBuReAiBuAcA_C}VsCkEJuHpAuDG}JaFsFw@_Kz@gQPa[bI}CyKiAu@uAoDsN}cA}CuJeV}ZkTsM}RiQwC_GeIeYwBqCIeBj@{Ca@kRqEec@rGgq@lBwFjJ{MOsCw@_AwPoEkQ_Aoj@}Ggc@`BeIeAoAyA_Ig@Qm@tFyn@s@qGqFuR_HsHwHqE_B]eAeB_I{AiDXdBmRiJi@g@fGUC",
+"car||-37.8081,144.9616|-38.3690,144.2825|0":"rkweF_ywsZy@d@nAzDhE{AtCdOqAt@c@vHx@~EaFLz@zHpBrJrTlv@qMvZyBhKmBnOcFIq@v@]jJ`CzZFpLqHnzAXbIhBrFdg@|n@vGpHl^v[rIdL`J|TjDpQdAhLPzTiBv[}@`e@tAn~AlAb]{FbBiEa@_BpY}S`SG`A`[`bBfD|GlOzRpCjGrD~M|Vla@pmAffDzGxMtFxE~F|BbzAlU~JnF~D`FvCdG|AtFdAzHpJzuBvw@x`FpBpIfCrFrGtHjKzEhKl@dWiDhGE~c@tK`F~B~HtIxr@vjAtlC`}KhyEboKvc@`|@r[fq@j{A|rD|_@xcA|vFnvOlOxXjRj`@hrAteBrEzIjGjYxIvk@xCpWjAjSVd_@aDfoBh@fRdElUtF|MjDpF`K~JhLbGlu@|MhTbFlh@bS|NnKbOnSpG|GxHhFnIbDfR|DxRlB~UPxWmAtT|@|mA`RhLzDlOlKnMzPbGtOzB|IvGv`@zGjQnIrJrFnDvGhC`SxA|n@gCjQHxZzDb^jKfMzBzPTzN{AvM_EjQyKvJgK~Sk]vIoLdJqJdOyL`NeJzGoCzJqAzIZhKjDfHxF`DfEdI~PbFvHnkA`mAhGjHfEpHtEG|AtC|D~Aj\\hZtNpKriAjKtM`@`Ba@rPdE`wBfVvH~D`K|MfDpBdE`AbFJtt@sEhFHzkD~_@nBe@bKfC`]lDzi@gEzTx@~I]rE~AxBvCtClQ`CxElCdB~EXzMaCdCkB`HwJ|I}CgB_GoG}k@~Ic~AfJLb\\rDjb@~Gxm@`HzBs^dAyBzBe@bR|GtSlLd@SpFdJdEhEh@b@f@qB",
+"car||-38.3690,144.2825|-38.4680,144.1045|0":"f}diFsdsoZg@pBsAi@eKePm@NnCfFfCjL~KtI|BfEr@jEfA~XzC|IuStkDhOzBzBbAtCfCtC|FbAnGBtF_E|o@DrLtm@bdCrCtDxEv@|DuAbH{FxEObE`C~EfLdCjCrEn@nImBpEjAvLbJjI`Ov[|Q~JfSnFxFlGtBx@jBEhKhA`HzBnDxDdC`Dh@hLcA|LoJlAStAd@vEdSvNfSpAnIQfF`@bBxDjAhAjAfBlFvE|EhGlMxH~EnMjLhHrK~F`SnAfPOdWp@lQ~D`VhCzo@rCfK~@`JzB`JnBhStFbN|EjXvB|BjG`BpCbC`AbCnC|NhH|GjI`LbUlKfFpExE|GtPhLd`@ha@`DtAdW|CvBz@hEmLhXhR~@sAzIxF",
+"car||-38.4680,144.1045|-38.4720,144.0446|0":"~gxiFclpnZsJyFgE`LkC|@K`Jc@N`@xCdErHh@|CeC`OK`G`@lDfD~JhHzGlBpGf@rKKtHp@~JGxi@fAlu@}@bJjFva@tB``@vDf^dAvTdCvL",
+"car||-38.4720,144.0446|-38.5447,143.9808|0":"~`yiFwudnZ~H`[xF~PdCvFdFrHlEnEtEvA~F?jC}Bv@?lD`GCpA{ArBGdGTfBrB`DNpA}A`D_@vFyDbBRzBrAPxCcAzGJdAnG]jEp@dEx@fAdABXeAsAkEj@cEL}OxDoKvB}@dALdFlOxEjKjBvBn@lE~ArBOzKr@bGh@zB`CnA~@~EpDtB`Fz@nDdDr@hFfIlBfDfHnFbCKzBcB~@k@tAh@bGdAORoDpFg@`BrBfBhG`EdI~BrB`D|@hFK~Dr@vJdFnKjBnJzJxChIx@zFxErB|OvQbMvKvNbVnYhT~H`DnLpMrFrCfQnOjFbHnI|PpEdG`AUlHaIbFg@jHRbJ}@`EaEjA_JxEuN",
+"car||-38.5447,143.9808|-38.6677,143.8589|0":"pggjF{fxmZfJ_PzEaLdSdBnFxExFpAlHpKxBzOTbHy@x@oELi@bAXnB~Dv@fD`DbCe@`CaFvDNxEvAdJyAtO|KhEp@fE~BvBtElDxSFpDuBvDHpB~BbAjAdBjFzBpI`@|BhDbBh@hErEjBfDlCdBhGlIL~C{@|G?`DxA~EdCnAd@dBeAdFIdDn@~JcAjCwCxBSzB`@jBhAp@~GAjAfC~GlFnBbEvD~@xBjIdCrDn@dCxA|JExBhAnDNvC|EbApBhFrIfGp@pEdALbBo@pBfBnBhMhBnFfCfRzA~An@pCrEbF`DlHtE~BbEzEpFdBlFnHzOuCtB{AnIqBjL~HvE}@`E\\dIbEvMvJtD^zElH`BGbIwDdD\\hLfQjFzEbBf@bFK~MjKfBhCxG|@rA~AhFtBjHvIlDrHnHzKVhBw@nD@hCfBrGxM~KpElIdA|EgAjIbBfDlFdBvGaAxDaCfDb@dGa@~@a@rBqDtEiAnAXNfAo@|Dx@hKvBbELxDp@lC~GfLdKdIdD`@hAbA~@jCd@nEzCfBlEhIjBrI`BvD`AlK~DbIbFzG~DxBpD~DdHz@hBbApDrHtMxItJhKxIY|KnBdDzHxD~@~AdMuAR?fA",
+"car||-38.6196,142.9954|-37.8081,144.9616|2":"l{ujFexwgZqBgCa@uBaFyJcBmAyH?wK_CyGyC{LsAqD?ySjC}i@oGgEgC}`@mc@aJmC_G_GqKuBmIyEqOqBcPsFoKi@aRfDaGRyl@uFgB^qEpEeI|DwN`EeCHoCkAiEsFgFiDsIsLaCgBivBqTeCwA_CcE{BwXqCoG}CmBkNqB_LsFcISwN|@sQiFuT`@_b@eFsyAoMwNeCyyAeNwCn@yF`G_o@v]eEr@oF{@sImEcIgP}KqJ}XqO}YgWkCyDuCuNsD_KsHcLkCaCyEgAeUZ_[yD{EgC}Zo_@_PcO_FmA_Ui@{TeFkNG_IgCcSoW_Mgj@uIoQiNcd@iUoc@{BoBsD`@cP|GuExCwJM_D`BiGbKaBpKuAzCiDtBqM`AkBrAiBtNb@dGc@jAiDfCIpF]r@aDfAyB|DwElBwEnEwNpJySvBmH|CaFnE_Sl]oAz@ePxCyErByFl@{BlAsF`HsUvE{}@eIyB|Ao@fIo@rBiBbB}Ct@c{@sHcBr@aHxHuG|EcSdHwKqj@aE_OeC{BmEmAoWwC_E?oDkYcHqb@{F{SkFsKiE_FwJqOc[k[va@sj@hBaIfBq]fH}XtJ_[nEcHxKiWfPiVbd@wl@vIgThH_U~DsRpLsWhAaM}BcVnEak@Mc_@jB}TnEaLrDiNpF{sAdGaa@mBk{AlFcmAi@eJ_MwXym@}aAaZqa@uCqJ{AsT}AeHi\\{j@oCuHy@eFQcL`WmyEFyr@cCmXs\\}qBoHo^e@{HdAk_@rCya@Vu_@~IoIth@e{@tQwb@xNsXfBkM[eUnEka@xFwWzC{UvGk]E_S\\wGpG}U~BeDjH{FxCsFr@aEnA_Ui@aKkF{UcC{VKmFvFoZbAmKFoM_BaSHsFdCcXtImh@Z{My@kIob@ogBqQgoBy^udEwO}tEjBogAzJekBrPuwAVcEMiP^nO_Aym@UeCeCoHsNyy@kKu_AuBmJmH}NqYeVkMiSaAuDuCkBaAaHw[uq@_EoKiT}`AuTeq@qCkOwA{YAyP|FwoAp@gf@iA}|Db@ua@SiKqAcJaK{\\et@ktEa@iQtC}f@AsPm@mNmCgWmKos@eUsjBqFaYqBqiAwD{f@yEaS{M_YqD{KeHkd@gMg`@kHkZ{l@kvCgk@efBc_@_cAwA_Ke\\qtE_^unAs{@{jE_BmCcReLqRm_@kEkMcG}vAmC}]gPobB{Mmw@u^i{AoL{`@y[soAeFaVuDeYuAsSe@iVgAsfG_BaiDaAe_@iAs}ADy_@cBknBj@gt@mDmtFjBkb@xDoUnEeNhRu]lD}JxDoRdAyL\\mPe@{OkBmP{GwVgL_Tup@wr@{OkNeCAi@m@gOkw@yIcT{Vcf@{d@_i@goC_xC_bBml@^kBkCaAjC`AnBiKeEqAwNvt@[lEos@iGsElAyFpF}DxB}RdEoWaCu`AgNc]sDgCj@kIzGuE`@knC}YwI_BaK{Gc{BguCuFyDeRaFwJoI}EuJ{CgQuC{HqT_]}{@ihAiEmHsM}YaSg_@qiGu_Qq_Aa}Bqp@}}Aut@myAwlEowJuMwQiCoFsBeIqBoTqBwKy~AgzGeZymAkCuHiq@uhAgHsHqJuDa_@{IeGBiX|DcK]aEmA{GoEaHoKyE_Tyu@yyE{J{wBoA{IcBoFcHuKyJaGyyAeUmHmCgGmFgFgJqrAynDsGyKqUaYyFqJkAcGOiEdAon@Sym@yCqpAsAcuBr@o[pCyi@UmP}@oJuFsVqKoTwG}Hob@k`@mg@go@oCsFaAaG|HmgBqCia@VsOyIcZwC}T^iEbIeVnGgI|HuFyIsa@nFHzEeBsG{\\aFdB_AaFx@e@",
+"car||-38.6464,143.0703|-38.6196,142.9954|0":"~b{jFklfhZeB`@i@cCaEHiJeDoJxR_DpMuAlUmD|Uu@tT}DnRHnLa@rDaBdDgCzAsCRyJiA_D`AoCtCyb@p|AsAlKk@xSyPrjAoKdiA[nIXlDz@|ClBlCcPxNpAdD",
+"car||-38.6656,143.1044|-38.6464,143.0703|0":"~z~jFoamhZiCwMmFrCsKxPeOtXuRve@kc@jz@oUl_@wUfh@hJdD`EIh@bCdBa@",
+"car||-38.6677,143.8589|-38.7547,143.6700|0":"bh_kFcm`mZ?gAtAS_BeMlM{FzBgHtBsAnAP^dFSzEbA|F`IrJ|@|CFxBfAhC^hEc@tEJdHnHj]xC|Jr@vIUpH`AhEhKnIlOpBp@t@hApEjDq@rBVpCjA~B~BxFv@~CzDjEjAz@Gx@gCr@c@|IjAzAdAvChFc@fJp@~Em@zJV`DcAbMdAfMOhBeB|CI`GoCvAc@dBh@vOvBzEJbE`ChC`C|MdAnNcBnF?dClCbD~C|Kv@dL~HlIhCvHx@vf@vCjVtExU~BfIbBtKnHtVxDhYnBtCfGd@`AhA^nF}@~EP~BnEpFx@hCPvEc@tBkAj@e@vAY|LeA|BJ~Fk@hCTr@jCZt@|@bClGbBlIB`B_B|CNdHn@x@vCHfEjHtKpJ|DrH`ClHbAfNzGrUd@bUrK|Zz@hHhDvINlCmA|HnBbLbM~Ox]tq@n@`GyBhO\\pJtAdDzKbO`DbSdGpJ|C`WvQph@~BdUpJj]xNxVxKxOdStR`YhRfc@~KrKCAeBq@}A",
+"car||-38.7547,143.6700|-38.7559,143.5545|0":"zgpkFop{kZp@|AhCYd@rAhFeAbM{FxA_EtLpAdBvAhClIba@lX|NhE`Wh@xEzBtYbj@`BvErUjsAh@~GeA`O_G~VgHpTmHhj@yEzMaAhQaLpSoG`Iq@lHA~LmAbFwErDkFh@sGjD_Ta@qM\\qBr@qP|LoCjEsBtNoBnFi\\jo@kP`QiFzIqB~A}Fd@oHkFgBg@gFPuCzAcH|LeEhCaF~JiBlM}EhQoElEaB`Da@fFzA`K^tNjApF`CxFtBtKzDlCnFTzF~AvF_AtB~@|C|PjGvDrDtHXjVhA~D~B|ArD`@fJkD|HpArHgA]aB",
+"car||-38.7559,143.5545|-38.6656,143.1044|0":"jopkFs~dkZ\\`BvAXtGjF|KYrBn@xKrMdCdI~AdBpDLnJ}E~AOx@ZdBdF~@v@`FKbCx@fGjFnEjWrFtGhMvIvBl@jF\\xMsApBPrCxB`EdI~JxGxAvEArF{AtGcBrDyLfMyHxRiOfFwBzG}EzDaFvMeJzKi@dDRfDtFhLfEdOB~BiApD_BpAiCXcNaFqB@yB`AwGfL}J`Vo@rO{AjHeVbUiAvFxD~WiDrRMtEzCbSxFbPm@bNjBhQD~Lx@lCfI~ElDxFxAnHbIbNzHxQh@lBUdJVhCrGzFn@hC\\zLpExFv@zNx@|BfItHl@pC[lP`CtUhE|Ep@xB]lB_CxDg@rCPtC`EdPMpEuCvMHtAfApAvJfC|FuAlDd@~B`EL|HgDnHaF~BcWiAyDd@kQ`GaEVeG?a\\iDsDVwF`Ce^jZyD~B{Dr@uEFmDgA}NwKya@wDmFRcRbDiKlDaEvCuBpGoAnLe@lNgEhMgP~r@aDjHiBdB_Cj@uJQwJfBePwGy]gDaFj@{BxCq@bE~BfMLfIeC`H_J~M_IbGeIgBqD?iIvBwE~BwBhCu@tCi@vKp@dY{AhEqBrA_FV_HwC_KDiDi@gJwNuD}CwAYaHMuR|IeCb@qCQ_EyCuRgWaFgE_F[eFfCuDF}BqAmIgK{C{@aEp@{BtCHfAdJ`It@dCa@`PqBnKCpDrAbCbGzDvBdOjAjCdI~DvBvChA|GCdKhBdJ`BnO~CjGzG|FxBzFnElGlArD`B|SlCnH~GrLzDtCtEpBlNfCdSzRdDjA~Ix@vGhEdBdLnCbGd@xHzBnJzBpDbHlGfEjN?dDeEtK`@tPnBfGnF|G~CtLxBvC|FhEvBj@fKXpFjFbN`G`ExHzFfRnCxNbBlDjHnEbMhB`N|HnBlEb@nIlAlDpMlM`ClFv@xFBzVrArRpFnTxBzB`J^pAp@bNpWtF`HvBdGbL`IlBhCZdDaBdUjCfMwItIJbA|B|Aj@jF_CrFpAtEm@|OgB`K|@zDbG|JVtBo@~DB`J{@f@sFRgCrGkIpHi@rD}DnCc@fB^pC[~@uTvAa@|@JpDcAZ_ECqCmB_DdA_H_G}F}CwDv@yAaD{Bj@aEKeBvBmG`@_AtAkBtHc@lG{B|DwAn@sIAsHdAmGnEkMfEoH|F}PrBaCbAuO|TqChGiB`JiCrEcDrBiJnCaI|GiZhOyCvFs@jJxAnI|HxMpB~FVbHkBvIwHvIcCpEiW~u@aCdFe^pa@mVfT_x@~gA{KjUiCfMClRkBlY\\dHbBvFvNtNdFrLdL`RtCdDdKtHxIdMvFxCtLGlLvBrCtAtGdJjCjHZzDcApEsBvCaCj@sF_@yHvEsMlCgGlDcGtHqBbAiI\\sIfEqSxSeOt_@eFrWgBf[sB`NxAxTk@|FkM|Y{JdPsGhWeEnGwDjBhCvM",
+"ferry|CityCat|-27.4712,153.0196|-27.4616,153.0358|6":"rltfDwu}d\\zEkDtAmBh@wEvDI`FwB`Aj@z@bBxAHnEyJpAg@pFeJ|@a@tDh@v@ObDiFbBcFHkDeBoIiBmCoDmC{NyCcIOqQr@iSfBwLxFgA_Ao@iCcKaEoCyDcA}DA}B",
+"ferry|F9|-33.8435,151.2810|-33.8604,151.2113|5":"`aqmEcajz[tDji@nEnWjFhQpD|IvItPzGpGtJpCdQd@llAgE~OaC}SjGoLtEwHnE_DfEuAdGYxDq@~Nk@lc@y@nHaXtdAoDpRyAxSmD`mAH~CzA`DnPvI~CzClCiBvAE",
+"lrt|G:link|-27.9217,153.3337|-28.0010,153.4285|0":"rmliDs~zf\\\\S\\t@gAn@j@dAzAT`@MJcA]sBwGwMtAeAxDoHrEtC`BjBjMbZrAtBxA~@n@FjAMpA_@pKoG\\FnIeEhIeDtf@iN`T}GvPkGra@{PlKgD^e@zS}F~EoCdC{BhCcDdCcFlBkHx@}GbQ{tB|EywA]iFcAyD}A{CkGkIsAaCwA}D}@}EUwDFaFzIuhABkBa@kBqQc`@ju@we@`JmE~J_Dld@uInHmCdH}EpXgTrFoCfHmBtFe@z_@rBjV`Cp@{GxD@dEv@d@CCa@",
+"lrt|G:link|-28.0010,153.4285|-27.9217,153.3337|0":"f}{iDcomg\\B`@~JmAo@bBSnBG|GcABcFqAuDi@w^sD}\\cBiDAyD`@uGfBaF~B_^rXoDrBiDhAek@pLyJfDsWbOuw@rg@eTrIuBXuA?kHs@iGIoIkAgFC{DXmLnBePCsE~@gIr@eAd@q@r@oG`PeC`F_@bBiApPRxTU|FySz|AaCt]o@hFsFdVgTj|@w@jByMxSy@bBaB`FwA|H_BzXg@lC{A`DeL`QaAdC_@hBWhDDvC^hCbA~C`A`BbBfBdL`HgDrG_B~AfGzLf@tCl@r@Ip@k@Hc@e@qB]k@eAfAo@]u@]R",
+"lrt|G:link|-28.0010,153.4285|-28.0275,153.4310|0":"l}{iDwmmg\\jIkAzCItCa@~EB~FgAne@mBfCH|N`BpN]|XvCpBEf[gE",
+"lrt|G:link|-28.0010,153.4285|-28.0921,153.4521|0":"l}{iDwmmg\\jIkAzCItCa@~EB~FgAne@mBfCH|N`BpN]lVpC`E?zSmCnYiEzDDzZwDd@Yf@uA`N}HrBs@rqBg[xCB`N~DxABlBW`NmElb@i[zKmEjIkChX_Hbi@}N`LyEfFeBp@o@^w@r@kH`@kAnBwAhBG",
+"lrt|G:link|-28.0347,153.4292|-28.0010,153.4285|0":"rnbjDu}mg\\{BHgL~AwDGoQtCq]hE}CGoUkCcOZgN_BaDMmIf@g[dAsFfAeFCqC`@gDJ_IhA",
+"lrt|G:link|-28.0921,153.4521|-28.0010,153.4285|0":"thmjDchrg\\gBB}@^k@l@c@jAw@vH_@r@u@n@cF`BuLfFqZ|HyKfD}c@rLsKnEcBfAg_@~XmO|EeDFmM{D}AQkAHcrBj[cA\\}NfIi@xAi@ZwZvDwDGoQtCc\\bEuD@eVoCcOZgN_BaDMmIf@g[dAsFfAeFCqC`@gDJ_IhA",
+"taxi|打车|-27.4785,153.0350|-27.4690,153.0215|0":"r{ufDws`e\\DlB~SbIpMGhD\\vDrAMdBk@nAeAl@cGIaGdBep@`e@}BxBaFlDi@Hm@QaEaFkP~OJN",
+"taxi|打车|-33.8967,151.1218|-33.9331,151.1796|0":"jm{mEg~jy[Hf@jEqAe@kCaI{Moa@gAqHuDsAY_ATSZmCbK]Na@QgYaQ}M_]eUxMiAeI}BmKyAqDmFgK]gEJcB`@yAp@uA|@{@lEuA`A_BKoBwBqMAsBmA}N]oMh@uLdByKrBwGrFgMzSqc@rJ{TbJwPfGwJxJcKxG}EdGuCft@_WnPeExx@}JvIK`DRvFtA|HzDrGpGfQjXzCxBvB\\lBAtMaCrAu@jAsAx@qBPuAD{EaAyJEiDzA{Mn@kDx@qBnBaClBi@fKt@pCUdCoBbDoH|@_@pDSvAVz@z@`AtEBfAg@xImAdLSNgBOSlC",
+"taxi|打车|-33.9331,151.1796|-33.8967,151.1218|0":"|pbnEogvy[RmCa@QbAwO[qAuGoA}AA{BtA_B\\{A?eH{@_Dh@eAr@_BtCkCrQIxDhAtNKzCg@dCuBpC}Az@sKxBuBNuDY_CsAaPuVcFaGgHuEkHwBkFc@iICsGdAkNzEqGtAcSPuIjAwCHc[xJu_@jNyFxC{J~HiHbIoQ|ZkJjTcX~j@qCzGoBzH}@pGo@jJ^bPb@dHjBrHlD|HP~Ca@|CoAhCeB|@wCl@iBlBy@bERbCjFzKvAhEt@bD~AjMt@lClPzb@bEtEjRdLfQxInBzAzH~Ch[v@j@YbFyLfBuBhNgEDUo@_EkEpAIg@",
+"tour||-37.8120,144.9620|-37.9077,145.3566|0":"|cxeFy{wsZmC^h]}LoLkm@~O_HfLwQhPwB~VeVtB_Fh@wQxCiJzZoYrF}JvEwWBqGsDqQeLuWl@o\\eEaSGyKrE}c@|BmI~\\g[hEcIp@mJkBmXbEcSvKsJv\\_B`LkH`EyIpHc`@lK_SjHsVzHcKpJmFd|@mQdVwQrZuLzJqMzCyRsAya@t@wLti@inAzDkUlLutAnCeMlOq]|FuTvQkqCxMgY~b@ub@dc@_`ImBgIwt@y_Ba@uaAwK{qAyGgLoVyx@ko@ejAiFem@kAmBfHgZ|[sf@d@g[cAmVjFaQbIaNbKua@B_d@aCiNlAgAnHf@|CyD|Wel@`Nab@`L_O~Eu[pHsLs@qRvImo@YyFdL}IiAsF}F_EzAaE_D{Ck@d@",
+"tour||-37.9077,145.3566|-38.5105,145.1496|0":"bzjfFw}dvZ~FtA`OaFtFlFnHmAdG~ClSpXdI_RnAgIxQmF~GeJG_LbA{C`O_@zGbFxItMzSlNbF\\dPiFzYzI|l@td@zkAlf@xE~NvOlfCdAvEjD|Dzt@`LxFzD~IpNvLlEpOWrS_SjJwB`mDp`@lM_Kbk@}r@xmAgjAvLyOha@cdAhU}~@`IgT~LcSdc@qd@nWy]bTqa@nPod@~Lsh@nG_d@hWqiDhK__AzP}w@|b@utAxMyv@nEap@bAg_As@mTqGqLCiCxcCv[r\\l@pIoDhO}OpNcIrNcCjSHlgCl_@|NrAzBcA`QzFleDbc@xBo@`LxHvp@`Zt[zJvQ[h^mJnKfD~HlNbEhC~BmGnXi|DtFkTnLsO`UsJds@yD~IwClFeFdoAceDny@{dAlImBjLHxwBfWha@aBjjEjj@tLXtP_Hdm@am@nSm^t_@_WdkAyGjlB}]nQz@`KzEhV~UxeBlrB`{@v\\xPfWnm@p_@dt@rq@jM|R~~AtxDfEjFdI`DvyCx`@~}@la@h^vd@lInGvaBhQxIzC~IpK`e@zaAljAtdBfIjRnKv~@eU~eDN~JjFv]cI`rA~@pVeAjFq`@xw@oAbHbAj}@vGzVfTfNxGnh@uv@jrEalAvwCgIjMcIlbBM|}QxJnKnKjXr`@tk@~BpKxWkQByG",
+"tour||-38.5105,145.1496|-37.8120,144.9620|0":"rq`jF_p|tZCxGyWjQ{FuOw\\qg@oKkXyJoKL}}Q~GcxAiA_IrKuKbmAwyCnt@ioE?qMsE_]eS}LoDgJsDuSg@y`@|@u[xb@y~@a@eY|HqmAGsImEgU_@kMdUwhDiKey@oIoTanAygB{d@m`AoIoImhBqTuIoFea@mg@c~@qa@wvCq_@mKmD}GyJezAirDaOiVus@aq@mm@s_@wPcWa{@o\\cdB{pBwUkUaJgFwSw@_gB|\\ogA`G{InBkZzRgU~^kl@bl@qJnGuJlBmtE{l@q_@fDqzByWeN@cQdKkm@tv@qkAj_DaFrIeQnIqk@dCwJxBqP~H}K`OeEbOyC`ZuVhpDoEkBgIwMmCSsIgHw_@xJkTA_tA_k@yvImkAwBr@sPuBqOzBaNlHiWnVm`@{@}cB}TqFCiFvDyCnKoCbzAuGhr@gMjo@u^thAmOnq@wIpn@qYbuD}Fth@}N`q@kRvh@_^jn@{n@fs@gNbT_JbV}Tl}@{Yfw@yK`SmyA~vAehAzvAaVtQwc@rSeR|UiJx\\cPlsB_YhoAeLdWexA~}AcRlJyYbGgSxNo_CprDytCvzDww@h{@io@v`Asl@zg@qH`KsEzL{BvMcNzbCsElRkOh]yDpO_MpuAeDxRsj@fqAu@rLpAna@iCbR_KtNs[jMcVzQyy@vPyKdFmIrKkHpVmL|TsGf^iEbJ{LrHw[pAeL~JuD`RjBbXq@|JqDnHk]`\\_J|n@LxJ`EjTs@~ZvKtV|DtRG~GmElWsJbO{TnRqCtHqCnXiYpZuPjCmNtSif@pQnLhm@eA^",
+"train|Airtrain|-27.4659,153.0193|-27.3842,153.1175|0":"|hsfDet}d\\zEgI|@uC`@oEAkESqB{@gByI_Mig@iYyYsXeEeC{M}EcGu@gc@dAaDOaPeH_GuDuHuAkIBuTdE{F?_EaBgG}FwCkBcZiDaOcC{QeFcDcCcA{BkF_SGuDd@qIs@wFgCyDqGqDyMsK{AoB_AsCSsExAiQl@eCdEmKf@}D?kDc@{DaA{CwIcNsBwE{AwGc@sGBcEh@}Fr@eD~BcG~CqElScShC_EjB}ErAsHTwGa@oH{AaHqEwIwh@wp@}DyIaBwOw@iDiC}EqCsD{SmKePaGk~@ec@}KwH",
+"train|Belgrave|-37.8100,144.9626|-37.9090,145.3553|0":"xvweF}~wsZ_Jyd@MmEf@sElAcDzCaDjh@_SpFuDbD{EhVgg@dFiP`F_YnA{CnFaIlAaEpFmaArAid@e@_N}AwH}Pm^gPkVsBoGu@mHJcGrBkZ\\mU|Ckh@bAgZpD}[v@wDzBwEbHcI|ByG`@oECaT_@oYuCmV_@sJhAke@G_EeAwG}GeSy@uEWiELiGvFyl@H}He@{HuAaI_DuIq[si@}AyFe@qFWiZXwNdS{gC]kHwGgRw@{HfA}ZD_SbIypAN{KaCk\\cDsX}@{RyGaz@c@sMuCa_@pFscByBa`Am@}GkAcGsRcm@i@uHd@gHfCyHnEoEhLmGpiAwg@hEcD~C_F|A}E`L_aAtAgGdDgItGsI`uBeqBbEwCzVgLtM}D~VyElMgDtE_CnSiOrtAmj@xDyBfDiDlI{PtFiRlC_Y?qSx@_FjBwChFwDpAcBnFiM~D_HpKiU|Qof@jCsEtFgHhC}GxA{OtFqNpBgOdGmNt@wNrAgMvEoPDeEs@}D}AeDwC_D",
+"train|Belgrave|-37.9090,145.3553|-37.8109,144.9729|0":"lbkfF}udvZvC~C|AdDr@|DEdEwEnPsAfMu@vNeGlNqBfOuFpNyAzOgCpHcInK{BdEiDjKiFnLmCdIqKhU_E~GoFhMqAbBiFvDkBvCy@~EHfNSrIeBzQsGbTmIzPgDhDyDxBauA|j@uVlQ{JbDsa@jIi^dOcGvDyfAhdAsNhOk]j[kHnJmCtGyAbGaLjaAeBrF_D`FgFvDshAdg@eM~GaElEyBjHc@bIj@rG~BtHtCvGzBjJbFpOfA|Fh@`GzB~aAoFxaBtC|_@`@dMdGru@`B|WzFfm@\\|HQ|IaHrhAYr[sA`ZLlDp@lDrGzQ^pHoSdhCWrOXvYh@jFdB`Gz\\|k@|BtHjA`IXhIO`HmFlj@SxGhA|JjHtT~@jGHvEiAbe@^nJtCpU^hZ@dTg@`F{BhG{GtHcCfFs@vDsDb\\_AtY_Djh@YtS{Bn]CdFr@rGzArEjQ~XdPv\\dC|Kb@fK}Bvi@}El|@qAvEwH~LuF`[mD`LwE|K}Ql^kCpDqFtDo_@jN",
+"train|Puffing Billy|-37.9077,145.3566|-37.9304,145.4597|0":"xyjfFa}dvZyDyBc@mBzA{JpAoDvAsIX_Fm@_FJwAp@y@~@Mv@`@hAxBv@d@nJLlBqAvAeC\\{BJcG^cA~@g@tDE~AsAr@kBfBcK~CsFm@uIjAcQr@}AxC{BLgJZeBfAsBpDkCVeGbCiEm@uIRaF}AsGwBmB{FKk@m@KiAfC}DfEBlC}Ap@qCaAwCJyA`CsDlFcCrBiFMwCiB{CqDqK[qGn@sHrAuGjBqOdBwDdEyE|AkGf@wFBeMZcArC{CR{@cAqI?uC`@qChA_D|C{EfEeNfBcB`G_CnAwBzCyMZkF[oEaCwIGkDdAqD|EyDp@mARyJn@kDrCuEfCuHjPoP~@}BCuBkCwLaJyLqAaD]_EDoJlAiGbDoE|E}AhIX|@}@JaBeAiDeAsAmRyImAkBYwBf@eBrEqDhJyAj@iA@{Ak@{AqEmEgBa@qAt@cApCkApAgJrC",
+"train|Puffing Billy|-37.9304,145.4597|-37.9077,145.3566|0":"fhofFkayvZfJsCjAqAbAqCpAu@fB`@pElEj@zAAzAk@hAiJxAsEpDg@dBXvBlAjBlRxIdArAdAhDK`B}@|@iIY}E|AcDnEmAhGEnJ\\~DpA`D`JxLjCvLBtB_A|BkPnPgCtHsCtEo@jDSxJq@lA}ExDeApDFjD`CvIZnE[jF{CxMoAvBaG~BgBbBgEdN}CzEiA~Ca@pC?tCbApISz@sCzC[bACdMg@vF}AjGeExEeBvDkBpOsAtGo@rHZpGpDpKhBzCLvCsBhFmFbCaCrDKxA`AvCq@pCmC|AgECgC|DJhAj@l@zFJvBlB|ArGS`Fl@tIcChEWdGqDjCgArB[dBMfJyCzBs@|AkAbQl@tI_DrFgBbKs@jB_BrAuDD_Af@_@bAKbG]zBwAdCmBpAoJMw@e@iAyBw@a@_ALq@x@KvAl@~EY~EwArIqAnD{AzJb@lBxDxB",
+"train|SCO|-33.8840,151.2063|-34.6726,150.8545|0":"|}xmEgn{y[xDvC`FdIvCfDlG~FrNfKrEtFlEtHhHbUpDfHrErPnG`LjFzDnI~CzWnExElCjD~D`D|HdGt\\vDzK||@||AvDpE~DrCdDrAjMhAtGdCvJrHfHtHxFvH`JbJrC~Ave@bRtGhFzMnPrKvGlfAbd@jc@nLvM~BdGxDjDnEnCvG`B|JdK~{@LvFw@pI{DzQe@bEObEXzPM|DyAtGiMx\\iAfIGjGnBn]nAvIlA|NpAvEbC~FtCtEpDfElMlIhLnDvHbF~Bv@jFV~QqCzEAdEdAhJdGhDnApDZfI?tDx@nDvB`PnMbGvFrXnZdDjClDbB`IlAtFa@~DyApKwGzEiAbCCdC`@rB`AbOpPxEfCvCx@|Hb@nZcBxGX`HdA|DfA|FrCr{AhbAdJfEnHtAhGRrVwBzFB|F~@lF|BrGvFdDlFvArD`bAvhDxDjIbHhKtF~FlIjGrNlGtOvCfI`@nh@OfGp@hGpBnHfF~eA`jApMvInHxCzHnBhLnAr`BnEtUa@|kAgHtOpAjBMtMmF~BWft@nElD}@tBqBfEyGzDmAbBJbC|@~FfJxIbD~@z@pCbGxIpWdCfCxDv@hDe@jDmCxAmEAwG{AgEgFoFkFiLaFkGiAgEEsD^gClByD~KaKzBoAxB[pBHdB`@hBtA`BlCrB|JpAhCvClB`HnBtCfCjCpFxEhOpBpDbBbAxCVtCw@nBwBbAsEE{Bc@wBsF}HqDqKkH{HgAeC]{CLyCnAuEtPaYbBcC`BgAbC_@dAHjJfE~Kz@|@d@nCnCpDtIvAfK|@dDjCdDjBt@lAFtAC~CcAbPqPnCkG|@iK|AsC|BoAvCOjQz@xEhBzIbF`Fb@`D[fDgAbQgJfDUnBd@rAdAjDlGtAlA|Bp@zH@tBz@lArAp@zA^dCSrJVzD|MrZvBnD|BzA~KlApBz@xBpCnB~FzCfFfEnClG~BfB`B|BjFb@rCH`JWxMR~El@nCtA|BjCfBxKt@|B~@xAvAvA|CdBjGv@|Nf@|CrBzCnCxA`DNfD_AnCuCt@yBXaCk@iOv@}J@sKh@wDdBeDpCgBdD_@fDr@jCzBrFhJ|RzThDlFvAtFvI|f@zC`FvChAfDGlv@mQ|CKnBd@vAbAvHvK|NlKjE|A~LjBtCrAxDnDpUz^tAlFfA|JbApChCpDpBrA|Bn@|FNjDp@xC|BvErGdD`BvBV|N}@vDn@tCzBjApBjCbPfAtB|AbBb]fPzS~NxHzBxSbDtD~AdaAtoApGnFveAlv@xBr@`EH`WkFhIClr@lRzGf@~C]hE{A|LuJ|DwBnEq@tEZddBlf@tGrAhKpD`{Abc@t`Cby@`HpAvkEhk@~IzBnGbDdIpHzEbHpCjFlCnIzBtNpD`n@vAfK~ZfiAxDnLnDpIhG`LfIxKnv@ft@lFvGfFdJnE|KrCvKvVfyA~EhO~FdLxfAbqAlKxKpN`MnN~J~KxGl{Atv@nHpB~HlAzOZjmBiLtQqBbPqD`LyDdaC_cAzNyHjGqGtE{JxeAszDpG_LfMcM|DyF|C{GdI_V|BqEpD}DlEcClHsAtFLj~Bbg@tEh@hHD`IaAjHeCjVcQnFmHtGeSnD_Gpb@e_@`DkBpFyAfIMxFhAzDnBbYzQzC`AnCTvDYpC_Ax_@uVbEgExHsMdCyAtCg@xDX~BnAfKnMnE`DhD|A~ElAbg@hH~CLhFg@v_@mNbGPzBz@hBvA",
+"train|SCO|-34.6726,150.8545|-33.8840,151.2063|0":"v~rrEswvw[}EiD{FSw_@lNiFf@_DMcg@iH_FmAiD}AoEaDgKoM_CoAyDYuCf@eCxAyHrMcEfEy_@tVqC~@wDXoCU{CaAcY{Q{DoByFiAgILqFxAaDjBqb@d_@oD~FuGdSoFlHkVbQkHdCaI`AiHEuEi@k~Bcg@uFMmHrAmEbCqD|D}BpEeI~U}CzG}DxFgMbMqG~KyeArzDkCrGgCvDsDvDyI~EagCbfAaLxDcPpDuQpBkmBhL{O[_ImAoHqBcyA}t@qJqFoOmKiQsOmKyKyfAcqA_GeL_FiOwVgyAsCwKoE}KgFeJ_HiIss@op@iNiSgIeQyDoLa[iiAaBeN_Dek@{BuNmCoIqCkF{EcHiIkHoHqDcHeBsrEam@geCwz@otEirAaGIaEbA}PnMkE|A_E\\aGi@kr@kRgI@aWpFeEK{Bs@yeAwv@iGiFiDsD_|@cjAsD{AaUoDsGqBwOuKq_@gRkBuAuBqDmB}M{@{BuAeBiBiAqDo@}Lx@yDSeDcBqFoHaCeBiBc@}HY_Co@qBuAmCuDaAqCiA_KsAiFqU{^wDoDsCqA_MiBmE_ByNuKwHwKwAcAoBe@}CJmv@lQgDFwCiA{CaFaJyf@}CwIaBkCyRyTmF}IeC_CmDw@eD\\mCdBeB~Cc@lCG~Lw@`Mh@|MqAlF{AnByCvA_DLcDaAkB{AaAoBg@_DUqIa@mDeBiGyA}CeB}AkBs@eI[{Bo@cBqAyAeCk@eCUmFXuMI_Je@qC{BkFgBaBmG_CeEkC}CeFoB_GyBsCmDiA_J{@aC_ByBqD}MuZY_EVkJYuB}@wB_AcA{BaAqH@eCq@yAsAiDiGsAaAiBg@gDT}PdJkDjAcDVgFc@{IaFuEgBmQ}@sCR}BlAuAjC{@dKg@fBmBhDaPrPgDhAuABmAGmBu@oCgD}@iDq@cHo@aCiDwHkCkC_Bo@{Js@oJgEaET_BdAiBfCmP|XcAfDUbEVjCdAdCnH|HpDnKfGbIb@nBF~BeA|EaBlBoCbAwC?wBy@sBoCyFeQmCsFuCcCiJyC{BiC{CoMu@sA_BaB_Bq@aDWwBZwBhAaL~JiBrDa@lCDfDfAbEbFlGhFjLjG|Gx@|CNxBM~CyAxEqDlCiDb@aEy@gCmCyIoWoC}F_LcFeDaGyAaBwB}@cBKwDhAgEzGsBpBuD~@ws@sE_D`@mI|D}Dp@yPmA}kAhH}Q^aNKiuAeEkLmAgOqEeHuDsG{E}eAajAmHeFgGqBiGo@mh@LiI_@wOyCqNmGoIkGuF_GaFcHaE}HcD}I__AqaDuAsDeDkFsGuFkF}B{F_AuFCsVvByIc@_IoBiG_Ds{AibA{FqC{DgAcHeAyHYmYdB}Hc@yCy@{EkCcOqPuF_BaC@aCf@eP|IiEfAsFJcGkAoDcBeDiCsXsZcGuFaPmMmDuBsD{@gI?sD[kDoAiJaGeDu@eIDoOxBoFW_Cw@wHaFwQeGwGmFoEmFcC_EcC_GqAyE}CwYwBm]FoGhAkIzIiWpC}Fx@mDPoEYuMLmH|F}]Z}EKiDoE{_@iBmKa@kHiAuIoAqG_CuFkDmEaEsCoE{AmJsAe`@eKu[sLmGiDic@cRuKyG}MoPwE}DuHoDwHiBeGgDsPkHi^c`@mHuFcGsB_MeAiDuAaEuCwDqE{|@}|AwCaIeJkc@cBcEiD{DyEmCyWoEqI_DkF}DiHcLsEaQgCiFqGwScHqM}CkD{NoKgHwG_CqC_D}FyF{E",
+"train|SCO|-34.6726,150.8545|-34.7447,150.8177|0":"v~rrEswvw[x\\`YbEpC|JhEdM`CfGVnHOpqAgKvi@tCrNtBjDUzI{C|BDjBj@vQ~L`DvCde@hcArGlKbH|HrL~IrcBnaA`K`I",
+"train|SCO|-34.7447,150.8177|-34.6726,150.8545|0":"baasEgqow[aKaIscBoaAsL_JcH}HsGmKee@icAaDwCwQ_MkBk@}BE{IzCkDTsNuBwi@uCqqAfKoHNgGWeMaC}JiEcEqCy\\aY",
+"train|T2/T3|-33.8613,151.2107|-33.8877,151.1258|0":"rptmEyi|y[s@zOVxDpBhErA`A|Bl@~FQ`MwAhMClEm@tDmBhBa@vJWvNhAzCiA|F{GhDgAdGXxMvBhHjCxH`GjQrWzPpNnGzH~C`HvDpLpBnLbEvQfGjT|ClSj@`OCnF_@zKu@dFiBlGsFlL}ExQaA|FM|IbBjQJnE]jI_C|Li@vG|ApXM`HaAvKsAvH{Sh|@_@vEeAp^mJzd@",
+"train|T2/T3|-33.8660,151.2058|-33.8877,151.1258|0":"lmumEil{y[xOMlEm@nFeCvG]fDA~MfAzCiA|F{GhDgAdGXxMvBxG~BhIlGjQrWzPpNnGzH~C`HvDpLpBnLbEvQvGhV`DjVXxNe@vNu@dFmArEoGfN}ExQaA|FM|IbBjQH|G[|F_C|Li@vG|ApXE`Fk@hHeCdPwRnx@o@pGeAp^mJzd@",
+"train|T2/T3|-33.8840,151.2063|-33.8877,151.1258|0":"``ymEer{y[rEdEbP`VzPpN~ChDnBpC~C`HvDpLpBnLbEvQfGjT|ClSj@`Oc@jS]xCaCxIsFlLyFjTo@|FCjGbBjQH|G[|F_C|Lc@xECfD|A~WgAhPaCdNgRxv@o@pGeAp^mJzd@",
+"train|T2/T3|-33.8877,151.1258|-33.8731,151.2068|0":"xtymEkwky[vHu[`AcG`@wGf@qVp@uGfR{v@|BaNbAePwAsUAwDj@yG~B}L\\_IKwE{AmNEmJjAqI|EyQtFmL~BwI\\wCXaNa@iT}DwUmC}IiFwTcDqQoHsScGgIoScQcMwQwCeDeIoGaDoAmM_C}Gg@qBNiBx@sFpGoBbAcCTcLo@",
+"train|T2/T3|-33.8877,151.1258|-33.8764,151.2097|0":"xtymEkwky[vHu[`AcG`@wGf@qVp@uGbQqs@zCcPhAmQwAsUAwDj@yG~B}L\\_IKwE{AmNEmJjAqI|EyQtFmL~BwI\\wCV{KOqSeAwIgC}MmC}IiFwTcDqQoHsScGgIoScQyNuSgLwJyEcBuKkB{Ic@oDrAaFbGqCnAaBHoQeAqENuIbDaPXiUbBuC]mCiBsAcCi@sDlBoc@h@gBjAiBdBiArBa@rBH`CbAnGlIrBrAve@tDxUtJ",
+"train|T2/T3|-33.8877,151.1258|-33.8840,151.2063|0":"xtymEkwky[vHu[`AcG`@wGf@qVp@uGbQqs@zCcPhAmQwAsUAwDj@yG~B}L\\_IKwE{AmNEmJjAqI|EyQtFmL~BwIf@qGJ{T]uI}DwUmC}IiFwTcDqQeFkOoBeEcDmEqSeQoOkTiG}F",
+"train|T8|-33.9350,151.1664|-33.9334,151.1810|0":"n}bnEstsy[pBuJToIu@sFqHcSiBqIUoKv@mQ",
+"tram|16|-37.8176,144.9670|-37.8680,144.9772|0":"dfyeFu}xsZ`o@aUrCo@xFi@pLZnIOhC]lBs@zBgBbEeH`CmCdC{AlFaCv|Bsl@h@TdAxCd`@~v@lAhAr@P~DXpA_@vAoArHuMdByFd@sC",
+"tram|16|-37.8680,144.9772|-37.8100,144.9646|0":"d|bfFq{zsZe@tCeBxFuHvMyApAoA^q@?}Dg@aAo@Ya@i`@cw@_AqCWSY@o|Bpl@mGtCmCpBeAvAq@dCuBfE{FpBkCd@gJRsL[{E^sCl@u}Alj@",
+"tram|96|-37.7985,144.9738|-37.8136,144.9658|0":"jpueFokzsZ~fAhKpAB~Bg@XDT^|Kdk@",
+"walk||-27.4616,153.0358|-27.4785,153.0350|0":"|qrfD}x`e\\jg@[zBC?GQ?BhBtIMjAPVKrA^`HQnPK|A@p@PFQjMO@vBI?",
+"walk||-27.4688,153.0255|-27.4712,153.0196|0":"~~sfDkx~d\\QWjAeA`A|@zC`Fn@l@?LpBrC@`@lA`BCPVz@LJdAvB`FtLyCdBIQg@XQg@IFQK}@j@{@oB",
+"walk||-27.4690,153.0215|-27.4659,153.0193|0":"d`tfDm_~d\\_LrKO\\UnAk@ODYqBc@DSIA@KIf@",
+"walk||-27.4690,153.0215|-27.4780,153.0230|0":"d`tfDm_~d\\`LwKzBnC?TPFNMHNxAgATPHv@Xh@`C?`AI`FwBb@H\\`@z@bBl@Tj@KSVFCFNl@[LZh@M|A}@CE~AiAHD`@c@DDPIjAV",
+"walk||-27.4703,153.0170|-27.4688,153.0255|0":"nhtfDkc}d\\FJMNl@|@WJMVICuAsBK[S@U^Ml@BXRHNMFcAkCiMyEcH{AiBWCXqAvCqI^]a@i@lBkCIIXYmBaChAiAPV",
+"walk||-27.4780,153.0230|-27.4703,153.0170|0":"lxufDsh~d\\TDQn@CfA}BrACZ^bA[TO^BXP`@CHuFrDcAb@oKvGyGxDWGa@s@w@FqAdAYhAW^qB|@{@mALOGK",
+"walk||-28.0005,153.4270|-28.0040,153.4300|0":"bz{iDwemg\\CJj@N~C^HWj@oHzEm@Rg@dBEjAUb@yEGA",
+"walk||-28.0010,153.4285|-28.0040,153.4300|0":"f}{iDcomg\\BPdJeAdCGdAQHG\\cE@QGA",
+"walk||-28.0024,153.4315|-28.0010,153.4285|0":"~e|iD{ang\\M??f@Q@?v@g@zGMCc@lEyC`@CQ",
+"walk||-28.0040,153.4300|-28.0005,153.4270|0":"~o|iDqxmg\\F@c@xEkATeBDSf@{El@k@nHIV_D_@k@OBK",
+"walk||-28.0040,153.4300|-28.0010,153.4285|0":"~o|iDqxmg\\F@AP]bEIFeAPeCFeJdACQ",
+"walk||-28.0040,153.4300|-28.0063,153.4296|0":"~o|iDqxmg\\F@QzBJBGr@FVJGdCFLMFg@HH@EN@An@hBAh@UDOb@Eb@g@l@?Ge@",
+"walk||-28.0063,153.4296|-28.0024,153.4315|0":"j~|iD_vmg\\Fd@m@?i@d@v@kJ]@}Fs@mFZAOc@IASoEN?g@L?",
+"walk||-28.0275,153.4310|-28.0310,153.4325|0":"zbajDy~mg\\Hc@^AD]fGPRCBKv@MHL~B[FLh@AdC_@JUYaD",
+"walk||-28.0310,153.4325|-28.0355,153.4268|0":"vxajDchng\\X`DKTRN@NRCTbCZv@Hp@dFe@zF{@h@xAATVr@`@dGGC?d@\\fD?~AFt@hDYBb@",
+"walk||-28.0355,153.4268|-28.0347,153.4292|0":"ztbjDodmg\\Cc@}AL?I`@Ka@eFMWYQFKUgAJWSw@",
+"walk||-28.0890,153.4555|-28.0921,153.4521|0":"fcmjD{wrg\\tBD@\\NVKnBJTe@hFQZRvAh@?~BVAH`@DBHTQZFLObBL@OnABlAJO~A",
+"walk||-28.0921,153.4521|-28.0890,153.4555|0":"lvmjDubrg\\N_BmAKoACANcBMMN[GUPCIa@E@I_CWi@?SwAP[d@iFKUJoBOWA]uBE",
+"walk||-28.1327,153.4906|-28.1345,153.4872|0":"jtujDgsyg\\RNMTAl@g@Z?Fd@jArG_DVD`EtJQJGMcA^v@~BaBhB",
+"walk||-28.1360,153.4870|-28.1327,153.4906|0":"`ivjDw|xg\\F\\HIBUSSUiBmCqGJK[u@Q?cC}FgARkG~C]aAf@[@m@LUSO",
+"walk||-28.1365,153.4860|-28.1360,153.4870|0":"blvjDovxg\\q@_C]s@IHG]",
+"walk||-33.8397,151.2790|-33.8435,151.2810|0":"bipmEwtiz[DQyBcBAW`KkHXIPBJIbA~Aj@_ApBsA~@c@rBc@BHIXRpBHBFZ",
+"walk||-33.8457,151.2852|-33.8397,151.2790|0":"rnqmEo{jz[WAUZsCP{EfCGRK?C^u@ROPm@|DeCpBaA`B}@~@gAv@QCk@RoJ`H@VxBbBEP",
+"walk||-33.8473,151.2861|-33.8457,151.2852|0":"nxqmEgakz[Ob@MG?e@KM@UIQFS}@~@_@U_DrDMVM@CPJ@",
+"walk||-33.8568,151.2153|-33.8614,151.2109|0":"~ssmEsf}y[j@qAjDn@k@pFtB`@b@Xh@t@Ft@Vv@b@b@hC\\rFZh@V\\j@Nh@[pFh@B",
+"walk||-33.8590,151.2045|-33.8630,151.2018|0":"vatmEcc{y[f@SASv@?FKx@A`@HHJJGZp@\\^z@P`Ah@@d@]@@\\L?DvBNLLCCJf@Ac@JdDQ@Xr@LGp@z@PTGh@NBR_@Tv@n@GHPR",
+"walk||-33.8590,151.2045|-33.8660,151.2058|0":"vatmEcc{y[f@SASxBM`@HHJJGZp@\\^z@P`Ah@@d@tG[F[f@k@PCn@Pd@uB`@]L?J[v@g@r@M~Hg@BP?If@CCk@f@C",
+"walk||-33.8593,151.2085|-33.8590,151.2045|0":"pctmEc|{y[KpAWDSXSzBOIDPjAb@GZWIk@hDDl@HGDFX?Px@ClALt@IL@z@g@R",
+"walk||-33.8597,151.2228|-33.8642,151.2166|0":"bftmEou~y[@Vc@Tg@jAOr@B`@bBdApFnAjDlAhB|@dBxAv@nA`@dB\\tGv@rEx@_@ZC@N",
+"walk||-33.8604,151.2113|-33.8613,151.2107|0":"njtmEsm|y[Jb@v@LBLxBPCh@IA",
+"walk||-33.8614,151.2109|-33.8593,151.2085|0":"vptmEak|y[P@]bIu@Ag@f@_Af@AVG?GLa@EEf@wD_@I`@",
+"walk||-33.8642,151.2166|-33.8568,151.2153|0":"fbumEwn}y[AOo@JoBjAqBf@qIgBe@Y[k@w@Ja@G_C~AcApAmClB[?MK?SuBZgDo@k@pA",
+"walk||-33.8661,151.2131|-33.8688,151.2174|0":"bnumE{x|y[UCV}A`@o@b@KBa@bAkBv@_DR_@t@w@vAg@bCsDKK?Ux@y@",
+"walk||-33.8661,151.2131|-33.8743,151.2131|0":"bnumE{x|y[UCCf@D^Z\\~TdBTOTeAXc@~@}@n@[xQrAFGbBV?GXBLsA",
+"walk||-33.8712,151.2133|-33.8597,151.2228|0":"~mvmEcz|y[Cf@cBKFoAOAJWUMUFQKo@u@mBgDYDmD{H}B}B}F_FiDeByBuBmEaDsBgCw@c@W@mC{@mFkAkEa@wB?KW?W^eAY]Bs@",
+"walk||-33.8718,151.2067|-33.8661,151.2131|0":"vqvmE{p{y[sC?UGc@[]o@P?I_QEOFgAOGuAqCc@mBIKm@KBm@kUcB[]E_@Bg@TB",
+"walk||-33.8731,151.2068|-33.8718,151.2067|0":"xyvmEmq{y[CHKI@e@_@Bq@n@aDB",
+"walk||-33.8731,151.2111|-33.8712,151.2133|0":"zyvmEkl|y[n@JJaA}Ec@c@eBFmDaEWBq@",
+"walk||-33.8743,151.2131|-33.8786,151.2041|0":"nawmE{x|y[MrAYC?FfDREbALHdAtBVfAEj@P@DV`@V`@BrB|CRG\\PO\\PXEv@J@k@tH^HhEhJIv@ZH]~D@~BxDQ",
+"walk||-33.8764,151.2097|-33.8731,151.2111|0":"nnwmEsc|y[DJqIi@EMYOcDeGgAKK`Ao@K",
+"walk||-33.8786,151.2041|-33.8840,151.2063|0":"f|wmEm`{y[zCQJkA^DN}BxCt@H?Fe@nAXNGn@NpAuCjAkBNLVw@Wf@CVr@p@h@kA~DvCzAkD",
+"walk||-33.8877,151.1258|-33.8967,151.1218|0":"buymEgwky[?MZLFI?JTBDRzCbCdCuDrB|@DJlA^fa@nAzHrM\\pB}DlAEU",
+"walk||-33.8908,151.2743|-33.8906,151.2747|0":"nhzmEkwhz[RYw@{@",
+"walk||-33.8967,151.1218|-33.8877,151.1258|0":"jm{mEg~jy[DT|DmA]qB{HsMga@oAmA_@EKsB}@eCtD{CcCESUC?KGH[M?L",
+"walk||-33.8990,151.2710|-33.8908,151.2743|0":"v{{mEwbhz[aCYJuAwDc@@MOCEf@cBk@qBWRqCsCVDk@Ug@e@i@c@SmAUgDf@_@C{AZcCCq@Se@u@g@JqCaDY^_AeASX",
+"walk||-33.9036,151.2683|-33.8990,151.2710|0":"nx|mE{qgz[CpA[Ao@GeCaBiAkFk@gAg@SyEH[RwBvCoAr@{@SS[Be@KGhAoAN[ZoBBcAU_@_Fg@BLhBR",
+"walk||-33.9140,151.2680|-33.9036,151.2683|0":"ny~mE_pgz[^BZo@GGP]Ka@@QXs@ICAH?K_Bd@Dw@OQc@HeAc@cD_@eC}@oAGUa@a@Ma@D_DQg@tAq@fAy@[KwAIIkB`@iCZs@AEF]UMHEM]PgAIKJGS]Wm@@wDnA}AjD]d@YD_@SmAbAqA`@u@FO?BqA",
+"walk||-33.9205,151.2565|-33.9205,151.2577|0":"bb`nEchez[E`@l@HRaCL@HmAOWiAi@DK",
+"walk||-33.9205,151.2577|-33.9140,151.2680|0":"bb`nEsoez[EJi@[EH{DsCBGoL{ACRa\\mEE_@z@oJGi@SBEgAJuA^oBQCZ{AWwCBm@Pk@Z]hBw@fAy@MWgARYVK?k@]?g@?MdAaB\\gAt@aB`@_@CGl@c@?Oc@E",
+"walk||-33.9334,151.1810|-33.9331,151.1796|0":"vrbnEgpvy[H@CX[Cc@~F",
+"walk||-34.6693,150.8586|-34.6726,150.8545|0":"bjrrEgqww[qA~Ep@j@Rh@`@|DNh@`@f@F\\ELf@h@d@Fp@j@HTn@V~@}AjBX`DzCZ[b@TR_@QMEH",
+"walk||-34.6719,150.8632|-34.6693,150.8586|0":"jzrrE_nxw[Cf@[L]hA^|BPNBRB~GND@`HVdACjAEZGBJbCQZWQe@x@YG}@zAcDfCiBZo@I[[Oi@Y_DOs@}@_ApA_F",
+"walk||-34.6719,150.8632|-34.6726,150.8545|0":"jzrrE_nxw[Cf@[L]hA^|BPNBRB~GND@`HVdACjAEZGBJbCm@pANLGN~G~FYh@?Vu@pAA\\g@bAU]R_@QMEH",
+"walk||-34.6726,150.8545|-34.6719,150.8632|0":"p~rrE{wvw[DIPLS^T\\f@cA@]t@qA?WXi@_H_GFOOMl@qAKcCFCD[BkAWeAAaHOEC_HCSQO_@}B\\iAZMBg@",
+"walk||-34.6867,150.8592|-34.6719,150.8632|3":"zvurE_uww[r@r@CfB_@rFqAm@cD}@yGk@uCKbAzHoA^QZSa@g@WS_AOFAYIEm@h@_DzGmKpDIEAb@IMYCi@y@I]o@s@iBiAeAWQBUVGV?xAKdAoAzDBZEDISmAg@}BoBo@P_Ay@CDgAg@eAoAKYLQAg@Hq@\\aAl@oDI}Bw@uC]c@_B{@_@C[FeB`AgBD}AfAi@WmA{AQ}@AaHOEC_HCSQO_@}B\\iAZMBg@",
+"walk||-34.6978,150.8541|-34.6867,150.8592|2":"f|wrEcuvw[sFlBT~Aj@dBl@rCGd@l@|F?f@]n@g@NWCc@SGYwAcKa@eI]mAKM}@GWkEKi@a@c@o@MToDLYY[CQg@W_B@}AUg@@WNo@pBYzAi@xGBd@G\\Rn@a@z@Kn@B\\YFGLMKFu@EOmFpAoBEiBSmEaDKcC@aBFMg@w@uAKGkDgGkAh@oIk@K@W_Ac@i@m@",
+"walk||-34.7360,150.8341|-34.6978,150.8541|8":"~j_sEcxrw[]tByL{DuPqG}DqCcCeCaA_@Qa@y@ODe@WaA\\oBAkAUOq@\\m@I{@_Ac@u@Gi@}AyDiDcDYc@TkHKgB_BaAuC_@iAxAoAh@[@i@cAeAgAQoAq@wBOeCaCaBe@B}A^]CYi@WmCOOw@McCvCu@c@U?eCtA{A?_@Pi@p@_ANcCz@m@HmCAKcAUk@eAq@qAeBg@mDmAqCAoD{@aFqBoB_BUiAXkACsCp@i@B{@Zk@hA[TYFk@IkBj@gAO}AVoAjAyBxAeAC]Nc@h@e@F]AuB_AeAoAiAaDDcBGcCGWa@_@kA~AmApCm@z@aCjBcD`AUAiAu@IgAH{BeAmEWi@sCmDcCkG_A}@uA{BaAi@OLO^o@lDqBlHmA~@]n@K?U\\wBv@cAEm@VBs@k@iCk@eBU_BrFmB",
+"walk||-34.7360,150.8341|-34.7447,150.8177|0":"~j_sEcxrw[]tB|@l@nDdAdCd@d@\\x@FIl@SDMtACzBaBpWDVtBPKrAfCxFk@xHW|@XtA?ZKP~@nBCXDHhHz@?J^L|VzCc@rGz@xAIHGx@FVv@j@@\\MT?b@TZr@VAb@OUGHOO",
+"walk||-34.7447,150.8177|-34.7452,150.8360|0":"haasEqqow[NNFINT@c@s@WU[?c@LUA]w@k@GWFy@HIw@iAEYd@iGh@D?w@fBaW?OKA`AaNG?PwAm@Fo@mCfAu@IQDCgAgCIBCMZUa@yAJoCGw@Uq@_@a@mA[`@mFLBFe@CQTkDOk@JHJy@PCBKpCoBUmC",
+"walk||-34.7452,150.8360|-34.7360,150.8341|0":"ndasE_dsw[TlCqCnBCJQBKx@g@MaAzAc@z@Sv@iAtBk@f@gCrAgBd@yII}Fy@_Cm@u@Ek@_@wB_@aD{@sA{@\\uB",
+"walk||-37.7985,144.9668|-37.7985,144.9785|0":"roueFoyxsZxBqb@KCKcA}DqIJ_BKAlAaUL@",
+"walk||-37.7985,144.9785|-37.7985,144.9738|0":"roueF}b{sZMAmA`UJ@K~AtAxC",
+"walk||-37.8047,144.9717|-37.7985,144.9668|0":"jvveFcxysZ|ALYnFoAMAP[DWf@cCUEx@gISqAc@c@C{AP]TgKaAkAtU",
+"walk||-37.8076,144.9568|-37.8098,144.9652|0":"nhweF_{vsZYEW]V_FHQwAqHEBMm@Ac@}@oEMOVeFjBs@ZAdLgEKw@pE{Ay@gEoAd@",
+"walk||-37.8081,144.9616|-37.8120,144.9620|0":"rkweF_ywsZBJ[Jt@tDbRuGNr@xBw@",
+"walk||-37.8081,144.9616|-37.8200,144.9662|0":"rkweF_ywsZBJ[Jt@tDfbA}]\\HJz@d@IAHrANJRz@Sk@{E",
+"walk||-37.8098,144.9652|-37.8102,144.9628|0":"fvweFooxsZnAe@x@fE}ChANn@GH|@nE\\U",
+"walk||-37.8100,144.9646|-37.8120,144.9620|0":"pwweFskxsZJErAj@Lp@NCtCjNxBw@",
+"walk||-37.8102,144.9628|-37.8115,144.9686|0":"vxweFo`xsZ]T}@oEbDqACONOEW`@oAu@aEZK@Uu@mDlAc@Ow@pE_Bm@eD",
+"walk||-37.8109,144.9729|-37.8047,144.9717|0":"`}weFy_zsZ}Bx@FVJEEYiMdE]v@{AHAh@_J_AKWWMe@PK\\OABg@}AM",
+"walk||-37.8115,144.9686|-37.8144,144.9640|0":"z`xeFwdysZ|@|Et@fDJCj@xC|Ak@J`@l@RLn@z@[Ll@PIdBhIl@U",
+"walk||-37.8120,144.9620|-37.8076,144.9568|0":"~cxeFk{wsZiWdJl@bDoAd@f@rCEbAIp@YAWxEi@E",
+"walk||-37.8120,144.9620|-37.8100,144.9626|0":"~cxeFk{wsZyBv@Os@iEtA{@uE",
+"walk||-37.8136,144.9658|-37.8120,144.9620|0":"~mxeFgsxsZi@RJl@uDvAf@lCkBr@]r@ODDVk@RtAdHi@R",
+"walk||-37.8144,144.9640|-37.8159,144.9649|0":"|rxeFehxsZdC{@WuAnDqANt@",
+"walk||-37.8150,144.9667|-37.8169,144.9676|0":"vvxeF{xxsZLj@zJmDMq@",
+"walk||-37.8159,144.9649|-37.8150,144.9667|0":"j|xeFsmxsZOu@GBwAeHu@ZMk@",
+"walk||-37.8165,144.9692|-37.8179,144.9690|0":"f`yeFehysZhBg@Jh@r@Kv@]N@Lp@VN",
+"walk||-37.8169,144.9676|-37.8165,144.9692|0":"rbyeFo~xsZLp@r@WHOaB{Iu@Z",
+"walk||-37.8179,144.9690|-37.8183,144.9671|0":"~hyeFigysZ\\|AA^c@lBTnA]LARECCHXnA|Ao@Fl@G@Ou@",
+"walk||-37.8183,144.9671|-37.8176,144.9670|0":"jkyeFk{xsZNt@FAGm@aBl@UmACHk@KFp@",
+"walk||-37.8183,144.9671|-37.8226,144.9689|0":"jkyeFk{xsZNt@HCIk@}An@YoABIDB@S`DkA?QJGdGwBhBKdKsDH`@GBPbA",
+"walk||-37.8650,144.9730|-37.8680,144.9772|0":"fobfFg`zsZfHwLj@_BdAeEGCPq@`CqBN[?WXSt@xAm@j@",
+"walk||-37.8680,144.9772|-37.8685,144.9800|0":"~acfFozzsZl@k@u@yAJK{AwCzBuBGMh@g@CQp@m@OY",
+"walk||-37.8685,144.9800|-37.8650,144.9730|0":"becfF_l{sZNXq@l@BPi@f@FLwCnCOXi@nGWjAFBeAdEk@~AgHvL",
+"walk||-37.9077,145.3566|-37.9090,145.3553|0":"bzjfFw}dvZGJYQJSPHZGJ`@KPj@h@CTbAt@xA|APATR",
+"walk||-37.9090,145.3553|-37.9077,145.3566|0":"hbkfFuudvZUSQ@yA}AcAu@BUk@i@JQKa@[FQIKRXPFK"
+};/* @geo-end */
+
+/* ---------- 地点照片：tools/fetch-photos.mjs 从维基百科 / Wikimedia Commons 取来后写在这里，不要手改 ---------- */
+/* @photo-begin */var PHOTO = {
+"Apollo Bay":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/5/5a/Apollo_Bay_from_Mariners_Lookout.jpg/330px-Apollo_Bay_from_Mariners_Lookout.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Apollo Bay from Mariners Lookout.jpg","credit":"Marcus Wong Wongm · CC BY-SA 3.0"},
+"Art Gallery of New South Wales":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/e/ec/Art_Gallery_of_New_South_Wales%2C_2022%2C_09.jpg/330px-Art_Gallery_of_New_South_Wales%2C_2022%2C_09.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Art Gallery of New South Wales, 2022, 09.jpg","credit":"Chris Olszewski · CC BY-SA 4.0"},
+"Australian Museum":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f9/Australian_Museum%2C_Sydney-William_Street_view.jpg/330px-Australian_Museum%2C_Sydney-William_Street_view.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Australian Museum, Sydney-William Street view.jpg","credit":"Shkuru Afshar · CC BY-SA 4.0"},
+"Barangaroo Reserve":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/9/9d/Barangaroo_waterfront%2C_May_2023_-_IMG_6066_%282%29.jpg/330px-Barangaroo_waterfront%2C_May_2023_-_IMG_6066_%282%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Barangaroo waterfront, May 2023 - IMG 6066 (2).jpg","credit":"芳蘭 徐芳蘭 · CC BY 2.0"},
+"Bells Beach, Victoria":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/b/ba/Bells_Beach_2019.jpg/330px-Bells_Beach_2019.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Bells Beach 2019.jpg","credit":"Michael J Fromholtz · CC BY-SA 4.0"},
+"Block Arcade":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/f/fe/Melbourne_Block_Arcade_2014.jpg/330px-Melbourne_Block_Arcade_2014.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Melbourne Block Arcade 2014.jpg","credit":"a.canvas.of.light from Melbourne, Australia · CC BY 2.0"},
+"Bondi Beach":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/7/79/Bondi_from_above.jpg/330px-Bondi_from_above.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Bondi from above.jpg","credit":"Nick Ang · CC BY-SA 4.0"},
+"Brisbane Airport":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b9/Brisbane_Airport_%2831649590441%29.jpg/330px-Brisbane_Airport_%2831649590441%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Brisbane Airport (31649590441).jpg","credit":"Tony Hisgett from Birmingham, UK · CC BY 2.0"},
+"Bronte Beach":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/6/6a/AUS_Sydney%2C_Waverley%2C_Bronte_Beach_006.jpg/330px-AUS_Sydney%2C_Waverley%2C_Bronte_Beach_006.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:AUS Sydney, Waverley, Bronte Beach 006.jpg","credit":"-wuppertaler · CC BY 4.0"},
+"Brunswick Street, Melbourne":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/7/7a/Fitzroy_Melbourne.jpg/330px-Fitzroy_Melbourne.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Fitzroy Melbourne.jpg","credit":"Marcus Bichel Lindegaard · CC BY 2.0"},
+"Burleigh Head National Park":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/6/69/Burleigh_Heads_and_Tallebudgera_Creek.JPG/330px-Burleigh_Heads_and_Tallebudgera_Creek.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Burleigh Heads and Tallebudgera Creek.JPG","credit":"Shiftchange · Public domain"},
+"Camp Cove":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/9/9a/Watsons_Bay_-_Camp_Cove_Beach%2C_Sydney_2_-_Nov_2008.jpg/330px-Watsons_Bay_-_Camp_Cove_Beach%2C_Sydney_2_-_Nov_2008.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Watsons Bay - Camp Cove Beach, Sydney 2 - Nov 2008.jpg","credit":"Diliff · CC BY-SA 3.0"},
+"Carlton Gardens":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/2/27/Aerial_Photo_of_Royal_Exhibition_Building%2C_Melbourne.jpg/330px-Aerial_Photo_of_Royal_Exhibition_Building%2C_Melbourne.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Aerial Photo of Royal Exhibition Building, Melbourne.jpg","credit":"Andrew Lukaris · CC BY-SA 2.0"},
+"Chinatown, Melbourne":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/2/26/Little_bourke_st.jpg/330px-Little_bourke_st.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Little bourke st.jpg","credit":"User:Bmra73 · Public domain"},
+"Chinatown, Sydney":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/2/2b/The_Sydney_Chinatown_in_Dixon_Street.jpg/330px-The_Sydney_Chinatown_in_Dixon_Street.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:The Sydney Chinatown in Dixon Street.jpg","credit":"Chen Hualin · CC BY-SA 4.0"},
+"Circular Quay":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/e/ed/North_view_of_Sydney_Opera_House%2C_the_Rocks_and_Sydney_CBD_20230223_1.jpg/330px-North_view_of_Sydney_Opera_House%2C_the_Rocks_and_Sydney_CBD_20230223_1.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:North view of Sydney Opera House, the Rocks and Sydney CBD 20230223 1.jpg","credit":"DXR · CC BY-SA 4.0"},
+"CityCat":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8c/Kurilpa.jpg/330px-Kurilpa.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Kurilpa.jpg","credit":"EamonM25 · CC BY-SA 4.0"},
+"Clovelly Beach":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/0/07/Clovelly_Sydney_2025-03-05.jpg/330px-Clovelly_Sydney_2025-03-05.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Clovelly Sydney 2025-03-05.jpg","credit":"FlyingKoala · CC BY 4.0"},
+"Coogee Beach":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/d/df/%281%29Coogee_Beach_001.jpg/330px-%281%29Coogee_Beach_001.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:(1)Coogee Beach 001.jpg","credit":"Sardaka · CC BY-SA 4.0"},
+"Currumbin Wildlife Sanctuary":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/b/ba/Currumbin_Wildlife_Sanctuary.jpg/330px-Currumbin_Wildlife_Sanctuary.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Currumbin Wildlife Sanctuary.jpg","credit":"Lewi Hirvela · CC BY-SA 2.0"},
+"Currumbin, Queensland":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e2/Gold_Coast_skyline_from_Currumbin_Beach.jpg/330px-Gold_Coast_skyline_from_Currumbin_Beach.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Gold Coast skyline from Currumbin Beach.jpg","credit":"Rob Deutscher · CC BY 2.0"},
+"Federation Square":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/5/55/Fed_Square%2C_Melbourne%2C_west_view_20230219_1.jpg/330px-Fed_Square%2C_Melbourne%2C_west_view_20230219_1.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Fed Square, Melbourne, west view 20230219 1.jpg","credit":"DXR · CC BY-SA 4.0"},
+"Flinders Street railway station":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/9/99/Flinders_Station_and_trams.jpg/330px-Flinders_Station_and_trams.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Flinders Station and trams.jpg","credit":"Created by Philip Mallis in 2021; cropped by H… · CC BY-SA 3.0"},
+"Gallery of Modern Art, Brisbane":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/a/ae/Gallery_of_Modern_Art_Main_Entrance.JPG/330px-Gallery_of_Modern_Art_Main_Entrance.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Gallery of Modern Art Main Entrance.JPG","credit":"Fairfieldstation · Public domain"},
+"Helensvale railway station":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/b/bf/Helensvale_Station_Light_Rail_Entrance.jpg/330px-Helensvale_Station_Light_Rail_Entrance.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Helensvale Station Light Rail Entrance.jpg","credit":"Nottashaa432 · CC0"},
+"Hosier Lane":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/6/62/Hosier_Lane_from_Flinders_Street_Melbourne.jpg/330px-Hosier_Lane_from_Flinders_Street_Melbourne.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Hosier Lane from Flinders Street Melbourne.jpg","credit":"WANG.PC · CC BY 2.0"},
+"Howard Smith Wharves":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c1/Howard_Smith_Wharves_under_Story_Bridge_seen_from_Wilson_Outlook_Reserve%2C_Brisbane%2C_Queensland.jpg/330px-Howard_Smith_Wharves_under_Story_Bridge_seen_from_Wilson_Outlook_Reserve%2C_Brisbane%2C_Queensland.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Howard Smith Wharves under Story Bridge seen from Wilson Outlook Reserve, Brisbane, Queensland.jpg","credit":"Chris Olszewski · CC BY-SA 4.0"},
+"Hyde Park, Sydney":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a0/AUS_Sydney%2C_Central_Business_District%2C_Hyde_Park_020.jpg/330px-AUS_Sydney%2C_Central_Business_District%2C_Hyde_Park_020.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:AUS Sydney, Central Business District, Hyde Park 020.jpg","credit":"-wuppertaler · CC BY 4.0"},
+"Kangaroo Point Cliffs":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b9/Kangaroo_Point_Cliffs.jpg/330px-Kangaroo_Point_Cliffs.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Kangaroo Point Cliffs.jpg","credit":"Cassandra Black · Public domain"},
+"Loch Ard Gorge":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/e/ea/Loch_Ard_Gorge_Panorama_July_2005.jpg/330px-Loch_Ard_Gorge_Panorama_July_2005.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Loch Ard Gorge Panorama July 2005.jpg","credit":"Diliff · CC BY-SA 3.0"},
+"Lorne, Victoria":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/5/5b/LorneVictoriaDec122024_03.jpg/330px-LorneVictoriaDec122024_03.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:LorneVictoriaDec122024 03.jpg","credit":"Hagai Agmon-Snir حچاي اچمون-سنير חגי אגמון-שניר · CC BY-SA 4.0"},
+"Lygon Street":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/8/81/Lygon_Street%2C_Carlton.jpg/330px-Lygon_Street%2C_Carlton.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Lygon Street, Carlton.jpg","credit":"Tim J Keegan · CC BY-SA 2.0"},
+"Melbourne Central Shopping Centre":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d6/Melbourne_Central_Coop%27s_Shot_Tower.jpg/330px-Melbourne_Central_Coop%27s_Shot_Tower.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Melbourne Central Coop's Shot Tower.jpg","credit":"Jordan from Singapore · CC BY-SA 2.0"},
+"Melbourne Town Hall":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a4/Melbourne_Town_Hall_October_2023.jpg/330px-Melbourne_Town_Hall_October_2023.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Melbourne Town Hall October 2023.jpg","credit":"Argmae · CC BY-SA 4.0"},
+"Mrs Macquarie's Chair":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/4/4d/Mrs_Macquarie%27s_Chair_2013.jpg/330px-Mrs_Macquarie%27s_Chair_2013.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Mrs Macquarie's Chair 2013.jpg","credit":"Mitch Ames · CC BY-SA 3.0"},
+"National Gallery of Victoria":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/0/01/National_Gallery_of_Victoria_2024.jpg/330px-National_Gallery_of_Victoria_2024.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:National Gallery of Victoria 2024.jpg","credit":"Shkuru Afshar · CC BY-SA 4.0"},
+"Observatory Hill, Sydney":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d7/%281%29Observatory_Hill_Sydney.jpg/330px-%281%29Observatory_Hill_Sydney.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:(1)Observatory Hill Sydney.jpg","credit":"Sardaka · CC BY-SA 3.0"},
+"Pacific Fair Shopping Centre":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/1/11/PacificFairStage1.jpg/330px-PacificFairStage1.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:PacificFairStage1.jpg","credit":"AMP Capital Shopping Centres · CC BY 4.0"},
+"Port Campbell, Victoria":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b3/Port_Campbell.jpg/330px-Port_Campbell.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Port Campbell.jpg","credit":"Whinging Pom · CC BY-SA 2.0"},
+"Puffing Billy Railway":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b5/Puffing-Billy-Lok_6A_%282%29.jpg/330px-Puffing-Billy-Lok_6A_%282%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Puffing-Billy-Lok 6A (2).jpg","credit":"No machine-readable author provided. Ralf 69~c… · CC BY-SA 3.0"},
+"Purling Brook Falls":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/6/6f/Purlingbrook_Falls_edit.jpg/330px-Purlingbrook_Falls_edit.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Purlingbrook Falls edit.jpg","credit":"Mike Young , edited by Thegreenj · CC BY-SA 4.0"},
+"Q1 (building)":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/8/82/Q1_Tower%2C_Gold_Coast%2C_Queensland.jpg/330px-Q1_Tower%2C_Gold_Coast%2C_Queensland.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Q1 Tower, Gold Coast, Queensland.jpg","credit":"Jordan Gellie jordan_gellie · CC0"},
+"Queen Street Mall":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d1/Queen_Street_Mall%2C_Brisbane_in_Jan_2020.jpg/330px-Queen_Street_Mall%2C_Brisbane_in_Jan_2020.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Queen Street Mall, Brisbane in Jan 2020.jpg","credit":"Chris Olszewski · CC BY-SA 4.0"},
+"Queen Victoria Building":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d0/Sydney_%28AU%29%2C_Queen_Victoria_Building_--_2019_--_3580.jpg/330px-Sydney_%28AU%29%2C_Queen_Victoria_Building_--_2019_--_3580.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Sydney (AU), Queen Victoria Building -- 2019 -- 3580.jpg","credit":"Dietmar Rabich · CC BY-SA 4.0"},
+"Queen Victoria Market":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/9/93/Aerial_photograph_of_Queen_Victoria_Market.jpg/330px-Aerial_photograph_of_Queen_Victoria_Market.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Aerial photograph of Queen Victoria Market.jpg","credit":"Bob T · CC BY-SA 4.0"},
+"Roma Street railway station":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/3/3d/Roma_Street_station_aerial_2026.jpg/330px-Roma_Street_station_aerial_2026.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Roma Street station aerial 2026.jpg","credit":"Nottashaa432 · CC0"},
+"Royal Botanic Garden, Sydney":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/2/2a/Gates_at_Royal_Botanic_Gardens_viewed_from_Art_Gallery_Road.jpg/330px-Gates_at_Royal_Botanic_Gardens_viewed_from_Art_Gallery_Road.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Gates at Royal Botanic Gardens viewed from Art Gallery Road.jpg","credit":"Bidgee · CC BY-SA 3.0 au"},
+"Sea World (Australia)":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/7/7d/Sea_world_australia.jpg/330px-Sea_world_australia.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Sea world australia.jpg","credit":"Tristanb ( talk ). · CC BY-SA 3.0"},
+"South Bank Parklands":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/1/1d/Streets_Beach_at_South_Bank_Parklands%2C_Brisbane_03.jpg/330px-Streets_Beach_at_South_Bank_Parklands%2C_Brisbane_03.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Streets Beach at South Bank Parklands, Brisbane 03.jpg","credit":"Chris Olszewski · CC BY-SA 4.0"},
+"Southbank, Victoria":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b4/Southbank-Melbourne_skyscrapers_in_January_2021.jpg/330px-Southbank-Melbourne_skyscrapers_in_January_2021.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Southbank-Melbourne skyscrapers in January 2021.jpg","credit":"Andrew Ho · CC0"},
+"Split Point Lighthouse":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/b/bb/SplitPoint_0072.jpg/330px-SplitPoint_0072.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:SplitPoint 0072.jpg","credit":"Mike Lehmann, Mike Switzerland · CC BY-SA 3.0"},
+"Springbrook National Park":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c8/IMAG0310.jpg/330px-IMAG0310.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:IMAG0310.jpg","credit":"Knödelbaum · CC BY-SA 3.0"},
+"St Kilda Pier":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f4/St._Kilda_Pier_%26_Kiosk.jpg/330px-St._Kilda_Pier_%26_Kiosk.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:St. Kilda Pier & Kiosk.jpg","credit":"Donaldytong · CC BY-SA 3.0"},
+"St Mary's Cathedral, Sydney":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/3/30/St_Mary%27s_Cathedral%2C_Sydney_HDR_b.jpg/330px-St_Mary%27s_Cathedral%2C_Sydney_HDR_b.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:St Mary's Cathedral, Sydney HDR b.jpg","credit":"File:St Mary's Cathedral, Sydney HDR.jpg : Ada… · CC BY-SA 2.5"},
+"St Paul's Cathedral, Melbourne":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/c/cb/St._Paul%27s_Cathedral_Tower.jpg/330px-St._Paul%27s_Cathedral_Tower.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:St. Paul's Cathedral Tower.jpg","credit":"Donaldytong · CC BY-SA 3.0"},
+"State Library Victoria":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/7/78/State_Library_of_Victoria_-_right_side.jpg/330px-State_Library_of_Victoria_-_right_side.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:State Library of Victoria - right side.jpg","credit":"Diliff · CC BY 2.5"},
+"State Library of New South Wales":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/7/72/AUS_Sydney%2C_Central_Business_District%2C_State_Library_of_New_South_Wales_004.jpg/330px-AUS_Sydney%2C_Central_Business_District%2C_State_Library_of_New_South_Wales_004.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:AUS Sydney, Central Business District, State Library of New South Wales 004.jpg","credit":"-wuppertaler · CC BY 4.0"},
+"Surfers Paradise, Queensland":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/1/1f/Surfers_Paradise%2C_QLD_skyline.jpg/330px-Surfers_Paradise%2C_QLD_skyline.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Surfers Paradise, QLD skyline.jpg","credit":"chillmimi · CC BY 2.0"},
+"Sydney Airport":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/2/2d/Sydney_Airport_%28Kingsford_Smith%29_-_aerial_view_%28cropped%29.jpg/330px-Sydney_Airport_%28Kingsford_Smith%29_-_aerial_view_%28cropped%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Sydney Airport (Kingsford Smith) - aerial view (cropped).jpg","credit":"Andrew Harvey · CC BY 2.0"},
+"Sydney Opera House":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a0/Sydney_Australia._%2821339175489%29.jpg/330px-Sydney_Australia._%2821339175489%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Sydney Australia. (21339175489).jpg","credit":"Bernard Spragg. NZ from Christchurch, New Zeal… · CC0"},
+"Tamarama Beach":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/7/71/Bondi_to_Maroubra_-_15SEP2012_%2828%29_%288010852277%29.jpg/330px-Bondi_to_Maroubra_-_15SEP2012_%2828%29_%288010852277%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Bondi to Maroubra - 15SEP2012 (28) (8010852277).jpg","credit":"portengaround · CC BY-SA 2.0"},
+"The Rocks, Sydney":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f6/Sydney_%28AU%29%2C_The_Rocks_--_2019_--_2133.jpg/330px-Sydney_%28AU%29%2C_The_Rocks_--_2019_--_2133.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Sydney (AU), The Rocks -- 2019 -- 2133.jpg","credit":"Dietmar Rabich · CC BY-SA 4.0"},
+"The Twelve Apostles (Victoria)":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e4/The_Twelve_Apostles_2011.jpg/330px-The_Twelve_Apostles_2011.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:The Twelve Apostles 2011.jpg","credit":"Michael J Fromholtz · CC BY-SA 4.0"},
+"Warner Bros. Movie World":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/5/59/Warner_Bros_Movie_World_-_panoramio_%285%29.jpg/330px-Warner_Bros_Movie_World_-_panoramio_%285%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Warner Bros Movie World - panoramio (5).jpg","credit":"caoyadong · CC BY-SA 3.0"},
+"Watsons Bay":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/7/7f/Watsons_Bay_-_Camp_Cove_Beach%2C_Sydney_-_Nov_2008.jpg/330px-Watsons_Bay_-_Camp_Cove_Beach%2C_Sydney_-_Nov_2008.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Watsons Bay - Camp Cove Beach, Sydney - Nov 2008.jpg","credit":"Diliff · CC BY-SA 3.0"},
+"search:Gerringong headland Werri Beach":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f0/Gerringong_and_Werri_Beach.jpg/330px-Gerringong_and_Werri_Beach.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Gerringong and Werri Beach.jpg","credit":"Lzhou1 · CC BY-SA 4.0"},
+"search:Great Ocean Road arch":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/5/50/Great_Ocean_Road_Arch_2018_-_1.jpg/330px-Great_Ocean_Road_Arch_2018_-_1.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Great Ocean Road Arch 2018 - 1.jpg","credit":"Orderinchaos · CC BY-SA 4.0"},
+"search:Phillip Island penguin parade":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/6/6f/Phillip_Island_Penguin_Parade_exterior.jpg/330px-Phillip_Island_Penguin_Parade_exterior.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Phillip Island Penguin Parade exterior.jpg","credit":"Gambitek · CC BY-SA 4.0"},
+"search:Puffing Billy Lakeside":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/3/3a/Puffing_Billy_Railway_at_Lakeside_2014-10-04.jpg/330px-Puffing_Billy_Railway_at_Lakeside_2014-10-04.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Puffing Billy Railway at Lakeside 2014-10-04.jpg","credit":"ghatamos · CC BY 2.0"},
+"search:intitle:\"Acland Street\" cake":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/1/1b/Acland_Street_cake_shop_window.jpg/330px-Acland_Street_cake_shop_window.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Acland Street cake shop window.jpg","credit":"VirtualSteve at English Wikipedia · CC BY-SA 3.0"},
+"search:intitle:\"Kiama Blowhole\"":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/9/98/Kiama_Blowhole_%288763219752%29.jpg/330px-Kiama_Blowhole_%288763219752%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Kiama Blowhole (8763219752).jpg","credit":"portengaround · CC BY-SA 2.0"},
+"search:intitle:\"Kiama Coast Walk\"":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c3/The_Kiama_coastal_walk%2C_nearing_Kiama_-_panoramio.jpg/330px-The_Kiama_coastal_walk%2C_nearing_Kiama_-_panoramio.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:The Kiama coastal walk, nearing Kiama - panoramio.jpg","credit":"Maurice van Creij · CC BY 3.0"},
+"search:intitle:\"Kiama Harbour\"":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/6/6f/Kiama_harbour_1.JPG/330px-Kiama_harbour_1.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Kiama harbour 1.JPG","credit":"Poyt448 Peter Woodard · Public domain"},
+"search:intitle:\"Little Blowhole\" Kiama":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8a/Little_Blowhole_Kiama_New_South_Wales.jpg/330px-Little_Blowhole_Kiama_New_South_Wales.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Little Blowhole Kiama New South Wales.jpg","credit":"Bluedawe · CC BY-SA 3.0"},
+"search:intitle:\"Maits Rest\"":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/b/bc/Maits_Rest_Rainforest_Trail.jpg/330px-Maits_Rest_Rainforest_Trail.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Maits Rest Rainforest Trail.jpg","credit":"Michael John Sankey · CC BY-SA 4.0"},
+"search:intitle:\"Royal Arcade\" Melbourne":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/b/bc/Melbourne_Royal_Arcade_Passage_to_Elizabeth_Street.jpg/330px-Melbourne_Royal_Arcade_Passage_to_Elizabeth_Street.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Melbourne Royal Arcade Passage to Elizabeth Street.jpg","credit":"Ymblanter · CC BY-SA 4.0"},
+"search:intitle:\"The Gap\" Watsons Bay":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e1/The_Gap%2C_Watsons_Bay%2C_Sydney%2C_2021.jpg/330px-The_Gap%2C_Watsons_Bay%2C_Sydney%2C_2021.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:The Gap, Watsons Bay, Sydney, 2021.jpg","credit":"Leoxiong · CC BY-SA 4.0"},
+"search:intitle:\"Werri Beach\"":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f0/Gerringong_and_Werri_Beach.jpg/330px-Gerringong_and_Werri_Beach.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Gerringong and Werri Beach.jpg","credit":"Lzhou1 · CC BY-SA 4.0"},
+"search:intitle:Broadbeach beach":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/f/fb/Kurrawa_Beach%2C_Broadbeach%2C_Queensland_2019%2C_01.jpg/330px-Kurrawa_Beach%2C_Broadbeach%2C_Queensland_2019%2C_01.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Kurrawa Beach, Broadbeach, Queensland 2019, 01.jpg","credit":"Kgbo · CC BY-SA 4.0"},
+"search:koala Kennett River Great Otway":{"src":"https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f5/Koala_in_eucalyptus.jpg/330px-Koala_in_eucalyptus.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail","file":"File:Koala in eucalyptus.jpg","credit":"KobiWiki · CC BY-SA 4.0"}
+};/* @photo-end */
+function photoOf(s){ var k = s && s.img ? [].concat(s.img)[0] : null; return k && PHOTO[k] ? PHOTO[k] : null; }
+function commonsUrl(file){ return 'https://commons.wikimedia.org/wiki/'+encodeURIComponent(file.replace(/ /g,'_')).replace('%3A',':'); }
+var THUMB_ICON = {
+  stay:'<svg viewBox="-10 -10 20 20" aria-hidden="true"><path d="M-5.5 3.5V-3.5M-5.5 1.2H5.5V3.5M-5.5 1.2V-.6H-.6V1.2M.2 -.6H3.6A1.9 1.9 0 0 1 5.5 1.3"/></svg>',
+  air:'<svg class="fill" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5z"/></svg>',
+  def:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 19l6-8 4.5 5.5 3-3.5L21 19z"/><circle cx="16.5" cy="7.5" r="2"/></svg>'
+};
+// 列表里的方形小图；图片加载不了（比如网络限制）就只剩占位图标
+function thumbHtml(s, kind){
+  var p = photoOf(s);
+  return '<span class="thumb"><i>'+(THUMB_ICON[kind] || THUMB_ICON.def)+'</i>'+
+    (p ? '<img src="'+esc(p.src)+'" alt="" loading="lazy" decoding="async" title="'+esc('图片：'+p.credit+' · Wikimedia Commons')+'" onerror="this.remove()">' : '')+'</span>';
+}
+function decodePl(s){
+  var pts=[], i=0, lat=0, lng=0;
+  function next(){ var b, sh=0, r=0; do{ b=s.charCodeAt(i++)-63; r|=(b&31)<<sh; sh+=5; }while(b>=32); return (r&1) ? ~(r>>1) : (r>>1); }
+  while(i<s.length){ lat+=next(); lng+=next(); pts.push([lat/1e5, lng/1e5]); }
+  return pts;
+}
+var plCache = {};
+function geoLine(g){ var k=segKey(g); return GEO[k] ? (plCache[k] || (plCache[k]=decodePl(GEO[k]))) : null; }
+// 有取到的形状就用，没有就按途经点连直线
+function geoPts(g){ return geoLine(g) || [g.A].concat(g.via||[]).concat([g.B]); }
+/* 步行距离：有实际路线按路线算，没有就按直线 × 1.25 估；步行速度按 4.5 km/h，步数按每公里约 1,350 步 */
+var STEPS_PER_KM = 1350;
+function lineKm(pts){ var s=0; for(var i=1;i<pts.length;i++) s+=haversine(pts[i-1], pts[i]); return s; }
+function segKm(g){ var l=geoLine(g); return l ? lineKm(l) : lineKm([g.A].concat(g.via||[]).concat([g.B]))*1.25; }
+function fmtKm(km){ return km<1 ? Math.max(50, Math.round(km*20)*50)+' m' : km.toFixed(1)+' km'; }
+function walkText(km){ return '约 '+Math.max(1, Math.round(km/4.5*60))+' 分钟 · '+fmtKm(km); }
+// 一天要走多少：只算站与站之间的步行（不含可选的支线和景点里面逛）
+function walkKmOf(d, oi){ var km=0; legsFor(d, oi).forEach(function(l){ if(l.s.opt) return; legSegs(l).forEach(function(g){ if(g.mode==='walk') km+=segKm(g); }); }); return km; }
+function dayWalkKm(d){ return walkKmOf(d, S.opt[d.id]||0); }
+// 总览用：有几个方案的天写成「a–b km」
+function walkRange(d){
+  var ks = d.options ? d.options.map(function(o, i){ return walkKmOf(d, i); }) : [walkKmOf(d, 0)];
+  var lo = Math.min.apply(null, ks), hi = Math.max.apply(null, ks);
+  if(hi < 0.1) return '';
+  return ' · 步行约 '+(hi-lo < 0.5 ? hi.toFixed(1) : lo.toFixed(1)+'–'+hi.toFixed(1))+' km';
+}
+function fmtSteps(km){ return (Math.round(km*STEPS_PER_KM/100)*100).toLocaleString('zh-CN'); }
+
+/* ---------- 日出日落（简化天文算法，约 ±2 分钟） ---------- */
+function sunTimes(dateStr, lat, lon, tz){
+  var p = dateStr.split('-').map(Number);
+  var jd0 = Date.UTC(p[0],p[1]-1,p[2])/86400000 + 2440587.5;
+  var n = Math.ceil(jd0 - 2451545.0 + 0.0008);
+  var Js = n - lon/360;
+  var M = (357.5291 + 0.98560028*Js) % 360;
+  var C = 1.9148*Math.sin(M*D2R) + 0.02*Math.sin(2*M*D2R) + 0.0003*Math.sin(3*M*D2R);
+  var lam = (M + C + 180 + 102.9372) % 360;
+  var Jt = 2451545.0 + Js + 0.0053*Math.sin(M*D2R) - 0.0069*Math.sin(2*lam*D2R);
+  var dec = Math.asin(Math.sin(lam*D2R)*Math.sin(23.4397*D2R));
+  var cw = (Math.sin(-0.833*D2R) - Math.sin(lat*D2R)*Math.sin(dec))/(Math.cos(lat*D2R)*Math.cos(dec));
+  var w = Math.acos(Math.max(-1,Math.min(1,cw)))/D2R;
+  function fmt(J){ var ms=(J-2440587.5)*86400000 + tz*3600000; var d=new Date(ms); var h=d.getUTCHours(), m=d.getUTCMinutes()+(d.getUTCSeconds()>=30?1:0); if(m===60){m=0;h=(h+1)%24;} return (h<10?'0':'')+h+':'+(m<10?'0':'')+m; }
+  return {rise:fmt(Jt - w/360), set:fmt(Jt + w/360)};
+}
+
+/* ---------- 状态 ---------- */
+var S = {view:'overview', opt:{}, hotels:true, sel:null};
+function store(k,v){ try{ localStorage.setItem('aus4:'+k, JSON.stringify(v)); }catch(e){} }
+function load(k,d){ try{ var v=localStorage.getItem('aus4:'+k); return v==null?d:JSON.parse(v); }catch(e){ return d; } }
+S.hotels = load('hotels', true);
+S.opt = load('opt', {}) || {};
+var byId = {}; DAYS.forEach(function(d){ byId[d.id]=d; });
+function todayStr(){ var d=new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+var TODAY = todayStr();
+
+function dayStops(d){ return stopsFor(d, S.opt[d.id]||0); }
+function dayLegs(d){ return legsFor(d, S.opt[d.id]||0); }
+function dayGm(d){ return d.options ? d.options[Math.min(S.opt[d.id]||0, d.options.length-1)].gm : d.gm; }
+
+/* ---------- 链接 ---------- */
+function gmSearch(q){ return 'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(q); }
+function gmDir(pts, mode){
+  var o=pts[0], d=pts[pts.length-1], w=pts.slice(1,-1);
+  var u='https://www.google.com/maps/dir/?api=1&origin='+encodeURIComponent(o)+'&destination='+encodeURIComponent(d)+'&travelmode='+mode;
+  if(w.length) u+='&waypoints='+w.map(encodeURIComponent).join('%7C');
+  return u;
+}
+function booking(h, c){ return 'https://www.booking.com/searchresults.html?ss='+encodeURIComponent(h.q)+'&checkin='+c.cin+'&checkout='+c.cout+'&group_adults=2&no_rooms=1&group_children=0'; }
+function haversine(a,b){ var R=6371, dLat=(b[0]-a[0])*D2R, dLon=(b[1]-a[1])*D2R; var x=Math.sin(dLat/2)*Math.sin(dLat/2)+Math.cos(a[0]*D2R)*Math.cos(b[0]*D2R)*Math.sin(dLon/2)*Math.sin(dLon/2); return 2*R*Math.asin(Math.sqrt(x)); }
+
+/* ---------- 日期条 ---------- */
+var rail = document.getElementById('rail');
+function buildRail(){
+  var h = '<button class="chip ov" type="button" data-v="overview"><span class="md">总览</span></button>';
+  var prev=null;
+  DAYS.forEach(function(d){
+    var c=CITY[d.city], md=d.date.slice(5).replace('-','/');
+    var ct = d.night && d.night!==d.city ? c.name+' → '+CITY[d.night].name : (d.night? c.name : c.name+' → 回国');
+    h += '<button class="chip'+(prev && prev!==d.city?' sep':'')+'" type="button" data-v="'+d.id+'" style="--c:var(--'+d.city+')"><span class="md">'+md+'</span><span class="wd">'+d.wd.slice(1)+'</span><span class="ct">'+esc(ct)+'</span>'+(d.date===TODAY?'<span class="today" title="今天"></span>':'')+'</button>';
+    prev=d.city;
+  });
+  rail.innerHTML = h;
+  rail.addEventListener('click', function(e){ var b=e.target.closest('.chip'); if(b) setView(b.getAttribute('data-v')); });
+}
+function syncRail(){
+  var on=null;
+  rail.querySelectorAll('.chip').forEach(function(b){ var a=b.getAttribute('data-v')===S.view; b.setAttribute('aria-pressed', a?'true':'false'); if(a) on=b; });
+  if(on){ var r=rail.getBoundingClientRect(), br=on.getBoundingClientRect(); if(br.left<r.left+8 || br.right>r.right-8){ rail.scrollTo({left: rail.scrollLeft + (br.left - r.left) - (r.width-br.width)/2, behavior: reduce()?'auto':'smooth'}); } }
+}
+function reduce(){ return window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches; }
+
+/* ---------- 地图（Leaflet + OpenStreetMap 底图） ---------- */
+var mapBox=document.getElementById('map'), mapEl=document.getElementById('lmap'), mapnote=document.getElementById('mapnote'), mapmsg=document.getElementById('mapmsg'), btnHotels=document.getElementById('btnHotels');
+// Leaflet 固定 1.9.4。先试 unpkg，失败或超时换 cdnjs；integrity 保证文件没被改过
+var LEAFLET = {
+  sri:{css:'sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=', js:'sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo='},
+  src:[{css:'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css', js:'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js'},
+       {css:'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css', js:'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js'}]
+};
+// 底图默认用 OpenStreetMap 官方瓦片，不需要 key；深色模式用滤镜把瓦片调暗。
+// CARTO 从 2026 年 8 月起要求 key（不带 key 的瓦片会印上 API KEY REQUIRED）。想用 CARTO 的
+// Positron / Dark Matter 样式，到 https://carto.com/basemaps/apikey/ 免费申请，把 key 填进下面的引号。
+var CARTO_KEY = '';
+var OSM_ATTR = '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors';
+var TILE_ATTR = CARTO_KEY ? OSM_ATTR+' &copy; <a href="https://carto.com/attributions" target="_blank" rel="noopener">CARTO</a>' : OSM_ATTR;
+var LF=null, map=null, tiles=null, tileUrlNow='', tileStat={ok:0,err:0}, cssOk=false;
+var scene=null, FITB=null, FITZ=0, lastKey=null;
+var BED = 'M-5.5 3.5V-3.5M-5.5 1.2H5.5V3.5M-5.5 1.2V-.6H-.6V1.2M.2 -.6H3.6A1.9 1.9 0 0 1 5.5 1.3';
+var BED_SVG = '<svg viewBox="-10 -10 20 20" aria-hidden="true"><path d="'+BED+'"/></svg>';
+
+/* 底图跟随页面浅色 / 深色 */
+var darkMq = window.matchMedia ? window.matchMedia('(prefers-color-scheme: dark)') : null;
+function isDark(){ var t=document.documentElement.getAttribute('data-theme'); return t==='dark' || (t!=='light' && !!(darkMq && darkMq.matches)); }
+function tileUrl(){
+  return CARTO_KEY ? 'https://basemaps.cartocdn.com/rastertiles/'+(isDark()?'dark_all':'light_all')+'/{z}/{x}/{y}{r}.png?key='+encodeURIComponent(CARTO_KEY)
+                   : 'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
+}
+function syncTiles(){
+  mapEl.classList.toggle('tiles-osm', !CARTO_KEY);
+  mapEl.classList.toggle('tiles-dark', isDark());
+  if(!tiles) return; var u=tileUrl(); if(u===tileUrlNow) return; tileUrlNow=u; tileStat={ok:0,err:0}; setTileWarn(false); tiles.setUrl(u);
+}
+
+/* 加载：loading → ready；失败时地图区收成一行提示，列表照常可用 */
+function setMapState(st){
+  mapBox.classList.toggle('ready', st==='ready');
+  mapBox.classList.toggle('nomap', st==='failed');
+  document.querySelector('.legend').hidden = st==='failed';
+  if(st==='ready'){ mapmsg.hidden=true; return; }
+  mapmsg.hidden=false;
+  mapmsg.innerHTML = st==='failed'
+    ? '<p>地图没有加载出来，可能是网络限制。下面的行程、酒店和每站的「地图」链接照常可用。</p><button class="tbtn" type="button">重试</button>'
+    : '<p>地图加载中…</p>';
+  var b=mapmsg.querySelector('button'); if(b) b.addEventListener('click', function(){ loadLeaflet(0); });
+}
+function loadLeaflet(i){
+  var src=LEAFLET.src[i];
+  if(!src){ setMapState('failed'); return; }
+  setMapState('loading');
+  var done=false, timer=setTimeout(next, 10000);
+  function next(){ if(done) return; done=true; clearTimeout(timer); if(!tryInit()) loadLeaflet(i+1); }
+  function loaded(){ if(tryInit()){ done=true; clearTimeout(timer); } }
+  function add(tag, at, onload){
+    var e=document.createElement(tag); for(var k in at) e[k]=at[k]; e.crossOrigin='anonymous';
+    e.onload=onload; e.onerror=function(){ e.remove(); next(); };
+    // 样式表放在最前面，页面自己的样式才能覆盖 Leaflet 默认样式
+    if(tag==='link') document.head.insertBefore(e, document.head.firstChild); else document.head.appendChild(e);
+  }
+  if(!cssOk) add('link', {rel:'stylesheet', href:src.css, integrity:LEAFLET.sri.css}, function(){ cssOk=true; loaded(); });
+  if(!window.L) add('script', {src:src.js, integrity:LEAFLET.sri.js}, loaded);
+  loaded();
+}
+function tryInit(){ if(map) return true; if(!cssOk || !window.L || !window.L.map) return false; initMap(); return true; }
+
+function initMap(){
+  LF = window.L;
+  setMapState('ready');
+  var still = reduce();
+  map = LF.map(mapEl, {zoomControl:false, keyboard:false, trackResize:false, zoomSnap:.25, minZoom:3, maxZoom:19, zoomAnimation:!still, markerZoomAnimation:!still, fadeAnimation:!still});
+  map.attributionControl.setPrefix('<a href="https://leafletjs.com" target="_blank" rel="noopener">Leaflet</a>');
+  LF.control.scale({imperial:false, maxWidth:100}).addTo(map);
+  map.createPane('lbl').style.zIndex = 620;
+  map.setView([-30,147], 4);
+  tileUrlNow = tileUrl();
+  tiles = LF.tileLayer(tileUrlNow, {maxZoom:CARTO_KEY?20:19, attribution:TILE_ATTR}).addTo(map);
+  syncTiles();
+  // 瓦片加载失败：地图照常显示路线和景点，只在提示里说明一句
+  tiles.on('tileload', function(){ tileStat.ok++; setTileWarn(false); });
+  tiles.on('tileerror', function(){ tileStat.err++; if(!tileStat.ok && tileStat.err>=4) setTileWarn(true); });
+  map.on('zoomend moveend', placeLabels);
+  map.on('popupclose', clearSel);
+  if(darkMq){ if(darkMq.addEventListener) darkMq.addEventListener('change', syncTiles); else if(darkMq.addListener) darkMq.addListener(syncTiles); }
+  if(window.MutationObserver) new MutationObserver(syncTiles).observe(document.documentElement, {attributes:true, attributeFilter:['data-theme']});
+  if(window.ResizeObserver) new ResizeObserver(onResize).observe(mapBox); else window.addEventListener('resize', onResize);
+  if(document.fonts && document.fonts.ready) document.fonts.ready.then(placeLabels);
+  drawMap(false);
+}
+function onResize(){
+  if(!map) return;
+  var a=map.getSize(); map.invalidateSize({animate:false}); var b=map.getSize();
+  if(scene && (Math.abs(a.x-b.x)>1 || Math.abs(a.y-b.y)>1)) fitTo(false);
+}
+function setNote(t){ mapnote.innerHTML = esc(t)+'<span class="tw">底图没加载出来（网络受限时会这样），路线和景点照常显示。</span>'; }
+function setTileWarn(on){ if(mapnote.classList.contains('warn')!==on){ mapnote.classList.toggle('warn', on); placeLabels(); } }
+function mapNote(d){
+  if(!d) return REGION.au.note;
+  if(d.region==='gor') return REGION.gor.note;
+  return '灰色点线是步行，彩色实线是坐车（颜色和线路号一致）'+(Object.keys(GEO).length ? '' : '，按直线示意')+'；点线路号看怎么坐。';
+}
+
+/* 图层 */
+function addMarker(ll, cls, html, size, name, z, group){
+  var mk = LF.marker(ll, {icon:LF.divIcon({className:cls, html:html, iconSize:[size,size]}), zIndexOffset:z||0, riseOnHover:true});
+  mk.on('add', function(){ var el=mk.getElement(); if(el) el.setAttribute('aria-label', name); });
+  mk.addTo(group || scene.group);
+  return mk;
+}
+function onActivate(mk, fn){
+  mk.on('click', fn);
+  mk.on('keydown', function(e){ var k=e.originalEvent.key; if(k==='Enter'||k===' '){ e.originalEvent.preventDefault(); fn(); } });
+}
+function addRoute(pts, mode, extra){ LF.polyline(pts, {className:'rt '+MCLS[mode]+' md-'+mode+(extra?' '+extra:''), interactive:false}).addTo(scene.group); }
+// 线路号标签：放在这一小段路线的中点，点开看怎么坐；去程回程同一条线只放一个
+function midOf(pts){
+  var L=[0], i; for(i=1;i<pts.length;i++) L.push(L[i-1]+Math.hypot(pts[i][0]-pts[i-1][0], (pts[i][1]-pts[i-1][1])*Math.cos(pts[i][0]*D2R)));
+  var h=L[L.length-1]/2; for(i=1;i<pts.length;i++){ if(L[i]>=h){ var t=(h-L[i-1])/((L[i]-L[i-1])||1); return [pts[i-1][0]+(pts[i][0]-pts[i-1][0])*t, pts[i-1][1]+(pts[i][1]-pts[i-1][1])*t]; } }
+  return pts[0];
+}
+function addBadge(g, pts, dim){
+  var ll=midOf(pts), txt=g.line;
+  if(scene.marks.some(function(m){ return m.badge===txt && Math.abs(m.ll[0]-ll[0])<0.002 && Math.abs(m.ll[1]-ll[1])<0.002; })) return;
+  var w=Math.round(12+txt.length*7.2);
+  var mk=LF.marker(ll, {icon:LF.divIcon({className:'lnbm'+(dim?' opt':''), html:'<span class="ln '+g.mode+'">'+esc(txt)+'</span>', iconSize:[w,20]}), zIndexOffset:280, riseOnHover:true});
+  mk.on('add', function(){ var el=mk.getElement(); if(el) el.setAttribute('aria-label', txt+' '+TXMODE[g.mode]); });
+  mk.addTo(scene.group);
+  var m={mk:mk, ll:ll, r:w/2, badge:txt}; scene.marks.push(m);
+  onActivate(mk, function(){ openPop(segPop(g), ll, 10); markSel(m); S.sel={type:'t'}; });
+}
+function segPop(g){
+  return {n:(g.line?g.line+' ':'')+TXMODE[g.mode]+(g.dir?' · '+g.dir:''), en:(g.on||g.off)?(g.on||'')+' → '+(g.off||''):'',
+    note:[g.time, g.freq, g.note].filter(Boolean).join('；'), links:'<a class="lk" href="'+gmGo(g.A, g.B, g.mode)+'" target="_blank" rel="noopener">实时查询</a>'};
+}
+// 标签是挂在锚点上的零尺寸 marker，位置由 placeLabels 避让后再定
+function addLabel(text, cls, ll, r, prio, isHotel, dyn){
+  var m = LF.marker(ll, {icon:LF.divIcon({className:'lbm', html:'<span class="lb'+(cls?' '+cls:'')+'">'+esc(text)+'</span>', iconSize:[0,0]}), pane:'lbl', interactive:false, keyboard:false});
+  m.addTo(scene.group);
+  scene.labels.push({m:m, ll:ll, r:r, prio:prio, hotel:!!isHotel, dyn:dyn});
+}
+// 航线弧线：在墨卡托平面上取二次贝塞尔曲线，任何缩放下形状都一样
+function arcPts(a, b, bend){
+  var A=proj(a), B=proj(b), dx=B[0]-A[0], dy=B[1]-A[1], C=[(A[0]+B[0])/2 - dy*bend, (A[1]+B[1])/2 + dx*bend], out=[];
+  for(var i=0;i<=32;i++){ var t=i/32, u=1-t; out.push([unprojY(u*u*A[1]+2*u*t*C[1]+t*t*B[1]), u*u*A[0]+2*u*t*C[0]+t*t*B[0]]); }
+  return out;
+}
+
+function buildScene(){
+  if(scene){ map.removeLayer(scene.group); map.removeLayer(scene.hotelGroup); }
+  map.closePopup();
+  var sc = scene = {group:LF.layerGroup().addTo(map), hotelGroup:LF.layerGroup(), marks:[], labels:[], fit:[], fitHome:[], hasHotels:false};
+  var isOv = S.view==='overview', d = isOv?null:byId[S.view];
+  setNote(mapNote(d));
+
+  if(isOv){
+    OV_LEGS.forEach(function(g){
+      var pts=arcPts(g.a, g.b, g.bend);
+      addRoute(pts, g.mode);
+      addLabel(g.lb, 'f', pts[16], 2, 3);
+    });
+    [{a:JINAN, b:[-33.9366,151.1658], lb:'济南 → 悉尼 10/23–24'},{a:[-27.3842,153.1175], b:JINAN, lb:'布里斯班 → 济南 11/3–4'}].forEach(function(g,i){
+      addRoute([g.a, g.b], 'flight');
+      var cityEnd = i===0 ? g.b : g.a, far = i===0 ? g.a : g.b;
+      addLabel(g.lb, 'f', cityEnd, 2, 4, false, function(){
+        var p1=map.latLngToContainerPoint(cityEnd), p2=map.latLngToContainerPoint(far), dx=p2.x-p1.x, dy=p2.y-p1.y, l=Math.hypot(dx,dy)||1, dd=Math.min(l*.5, 95);
+        return map.containerPointToLatLng([p1.x+dx/l*dd, p1.y+dy/l*dd]);
+      });
+    });
+    OV_CITIES.forEach(function(oc){
+      var c=CITY[oc.c];
+      var mk=addMarker(oc.ll, 'mk city '+oc.c, '<span class="ring"></span><span class="dot">'+oc.o+'</span>', 26, c.name, 300);
+      sc.marks.push({mk:mk, ll:oc.ll, r:14}); sc.fit.push(oc.ll);
+      onActivate(mk, function(){ setView(oc.go); });
+      addLabel(c.name+' · '+c.nights+' 晚', 'c', oc.ll, 14, 1);
+    });
+    sc.fit.push([-38.9,146.4], [-26.9,153.7]);
+  } else {
+    var city=d.city, stops=dayStops(d), st=startPt(d), en=endPt(d), onMap = !d.region || d.region==='gc';
+    // 同城其他天的点（淡显）
+    if(onMap){
+      DAYS.forEach(function(o){ if(o===d || o.city!==city || (o.region && o.region!=='gc')) return;
+        var arr = o.options ? o.options.reduce(function(a,op){return a.concat(op.stops);}, (o.head||[]).slice()) : o.stops;
+        arr.forEach(function(s){ if(s.kind==='air'||s.kind==='stay') return; LF.circleMarker(s.ll, {radius:3.5, className:'ctx', interactive:false, stroke:false, fillOpacity:1}).addTo(sc.group); });
+      });
+    }
+    // 每段路拆成小段画：步行、坐车各用自己的线型；换乘点画小圆点；坐车的段加线路号标签
+    var badges=[];
+    dayLegs(d).forEach(function(leg){
+      var dim = !!leg.s.opt;
+      legSegs(leg).forEach(function(g){
+        var pts=geoPts(g);
+        addRoute(pts, g.mode, dim?'opt':'');
+        if(g.mode==='walk') return;
+        [g.A, g.B].forEach(function(p){ if(!nearLL(p, leg.from) && !nearLL(p, leg.to)) LF.circleMarker(p, {radius:3.5, className:'xdot', interactive:false}).addTo(sc.group); });
+        if(g.line) badges.push([g, pts, dim]);
+      });
+    });
+    // 住处（订了酒店时由下面的已订酒店标记代替）
+    if(st || en){
+      var same = st && en && st.ll[0]===en.ll[0] && st.ll[1]===en.ll[1];
+      var bset = [st]; if(en && !same) bset.push(en);
+      bset.forEach(function(b){ if(!b) return;
+        var isHome = b.booked || b.n==='住处出发' || b.n==='回住处';
+        if(b.booked){ if(!b.nofit) sc.fitHome.push(b.ll); return; }
+        var lab = b.n && b.n!=='住处出发' && b.n!=='回住处' ? b.n : '住处';
+        var mk = addMarker(b.ll, 'mk base', '<span class="ring"></span><span class="box">'+BED_SVG+'</span>', 18, lab, 100);
+        var m = {mk:mk, ll:b.ll, r:10}; sc.marks.push(m); if(!b.nofit) (isHome ? sc.fitHome : sc.fit).push(b.ll);
+        addLabel(lab, 'dim', b.ll, 10, 6);
+        onActivate(mk, function(){ openPop({n:lab, en:b.en||'', note:b.note||'每天从住处出发；具体位置看你们最后订的酒店。'}, b.ll, 10); markSel(m); S.sel={type:'b'}; });
+      });
+    }
+    var num=0;
+    stops.forEach(function(s,i){
+      var label = s.kind==='stay' ? '宿' : (s.kind==='air' ? '机' : String(++num));
+      var mk = addMarker(s.ll, 'mk '+city+(s.opt?' opt':'')+(s.kind?' '+s.kind:''), '<span class="ring"></span><span class="dot">'+label+'</span>', 22, s.n, 300);
+      sc.marks.push({mk:mk, ll:s.ll, r:12, i:i});
+      if(!s.nofit && !s.opt && s.kind!=='air') (s.kind==='stay' ? sc.fitHome : sc.fit).push(s.ll);
+      onActivate(mk, function(){ select(i, false); });
+      addLabel(s.n, s.opt?'dim':'', s.ll, 12, 2);
+    });
+    badges.forEach(function(b){ addBadge(b[0], b[1], b[2]); });
+    // 酒店：已订的始终显示、样式醒目；候选的跟随「酒店」开关
+    if(onMap){
+      (HOTELS[city]||[]).forEach(function(h,hi){
+        var bk = isBooked(h);
+        var mk = bk
+          ? addMarker(h.ll, 'mk htl booked '+city, '<span class="ring"></span><span class="box">'+BED_SVG+'</span><span class="ck">✓</span>', 28, '已订 · '+h.n, 250)
+          : addMarker(h.ll, 'mk htl'+(h.areaOnly?' area':''), '<span class="ring"></span><span class="box">'+BED_SVG+'</span>', 20, h.n, 0, sc.hotelGroup);
+        sc.marks.push({mk:mk, ll:h.ll, r:bk?16:11, hotel:hi, booked:bk});
+        if(bk) sc.fitHome.push(h.ll); else sc.hasHotels=true;
+        onActivate(mk, function(){ selectHotel(hi, false); });
+        addLabel(bk ? '已订 · '+(h.s||h.n) : (h.s||h.n), bk?'bk '+city:'h', h.ll, bk?16:11, bk?1.5:5, !bk);
+      });
+    }
+    // 已订的住处离当天的景点远（比如悉尼住 Ashbury），就不为了它把地图缩得很小；没订的城市照旧
+    var farOk = !bookedHotel(city);
+    sc.fitHome.forEach(function(p){ if(farOk || !sc.fit.length || sc.fit.some(function(q){ return haversine(p, q) < 4; })) sc.fit.push(p); });
+  }
+  if(S.hotels) sc.hotelGroup.addTo(map);
+  btnHotels.setAttribute('aria-pressed', S.hotels?'true':'false');
+}
+function isBooked(h){ return !!h.booked && !h.areaOnly; }
+function markVisible(m){ return m.hotel==null || m.booked || S.hotels; }
+
+/* 标签避让：按优先级依次找不和点、其他标签、地图按钮重叠的位置，放不下就隐藏 */
+function placeLabels(){
+  if(!map || !scene) return;
+  var sz=map.getSize(), W=sz.x, H=sz.y, boxes=[], base=mapEl.getBoundingClientRect();
+  scene.marks.forEach(function(m){ if(!markVisible(m)) return; var p=map.latLngToContainerPoint(m.ll); boxes.push([p.x-m.r, p.y-m.r, p.x+m.r, p.y+m.r]); });
+  [mapnote, document.querySelector('.tools'), mapEl.querySelector('.leaflet-control-scale'), mapEl.querySelector('.leaflet-control-attribution')].forEach(function(el){
+    if(!el || !el.offsetParent) return; var r=el.getBoundingClientRect();
+    boxes.push([r.left-base.left-4, r.top-base.top-4, r.right-base.left+4, r.bottom-base.top+4]);
+  });
+  var order = scene.labels.slice().sort(function(a,b){ return a.prio-b.prio; });
+  order.forEach(function(lb){ var el=lb.m.getElement(); lb.el = el && el.firstChild; if(lb.el){ lb.w=lb.el.offsetWidth; lb.h=lb.el.offsetHeight; } });
+  order.forEach(function(lb){
+    if(!lb.el) return;
+    if(lb.hotel && !S.hotels){ lb.el.style.visibility='hidden'; return; }
+    if(lb.dyn){ lb.ll=lb.dyn(); lb.m.setLatLng(lb.ll); }
+    var a=map.latLngToContainerPoint(lb.ll), w=lb.w, h=lb.h, r=lb.r+4;
+    var cands=[[a.x+r, a.y-h/2],[a.x-r-w, a.y-h/2],[a.x-w/2, a.y-r-h],[a.x-w/2, a.y+r],[a.x+r-2, a.y-h-2],[a.x+r-2, a.y+2],[a.x-r-w+2, a.y-h-2],[a.x-r-w+2, a.y+2]];
+    var ok=null;
+    for(var i=0;i<cands.length;i++){
+      var c=cands[i], bx=[c[0],c[1],c[0]+w,c[1]+h];
+      if(bx[0]<2||bx[1]<2||bx[2]>W-2||bx[3]>H-2) continue;
+      var hit=false; for(var j=0;j<boxes.length;j++){ var o=boxes[j]; if(bx[0]<o[2]&&bx[2]>o[0]&&bx[1]<o[3]&&bx[3]>o[1]){ hit=true; break; } }
+      if(!hit){ ok=bx; break; }
+    }
+    if(ok){ lb.el.style.left=(ok[0]-a.x).toFixed(1)+'px'; lb.el.style.top=(ok[1]-a.y).toFixed(1)+'px'; lb.el.style.visibility='visible'; boxes.push(ok); }
+    else lb.el.style.visibility='hidden';
+  });
+}
+function applyHotelVis(){
+  btnHotels.setAttribute('aria-pressed', S.hotels?'true':'false');
+  if(!map || !scene) return;
+  if(S.hotels) scene.hotelGroup.addTo(map);
+  else { map.removeLayer(scene.hotelGroup); if(S.sel && S.sel.type==='h' && !S.sel.booked) map.closePopup(); }
+  placeLabels();
+}
+
+/* 视图适配：上方留出提示条的位置，右侧留出按钮列 */
+function fitPad(){ var W=map.getSize().x, nb=mapnote.offsetTop+mapnote.offsetHeight; return {tl:[40, Math.max(W<520?82:60, nb+26)], br:[W<520?56:70, 58]}; }
+function fitTo(anim){
+  if(!scene || !scene.fit.length) return;
+  var p=fitPad(), o={paddingTopLeft:p.tl, paddingBottomRight:p.br, maxZoom:16};
+  FITB = LF.latLngBounds(scene.fit);
+  FITZ = Math.min(16, map.getBoundsZoom(FITB, false, LF.point(p.tl).add(p.br)));
+  if(anim && !reduce()) map.flyToBounds(FITB, Object.assign({duration:.5}, o));
+  else map.fitBounds(FITB, Object.assign({animate:false}, o));
+  placeLabels();
+}
+function drawMap(anim){
+  if(!map) return;
+  buildScene();
+  var dv = S.view==='overview' ? null : byId[S.view];
+  var key = dv ? dv.city+'|'+(dv.region||'') : 'ov';
+  fitTo(anim && lastKey!==null && key===lastKey);
+  lastKey = key;
+  btnHotels.hidden = !scene.hasHotels;
+}
+document.getElementById('btnIn').addEventListener('click', function(){ if(map) map.zoomIn(); });
+document.getElementById('btnOut').addEventListener('click', function(){ if(map) map.zoomOut(); });
+document.getElementById('btnFit').addEventListener('click', function(){ if(!map) return; map.closePopup(); fitTo(true); });
+btnHotels.addEventListener('click', function(){ S.hotels=!S.hotels; store('hotels',S.hotels); applyHotelVis(); });
+
+/* 弹出说明 */
+function popHtml(o){
+  var p=o.photo;
+  return '<div class="pop">'+(p ? '<div class="pim"><img src="'+esc(p.src)+'" alt="" onerror="var c=this.closest(\'.pop\').querySelector(\'.pcr\');if(c)c.remove();this.parentNode.remove()"></div>' : '')+
+    '<h4>'+esc(o.n)+'</h4>'+(o.en?'<div class="en">'+esc(o.en)+'</div>':'')+(o.note?'<p>'+esc(o.note)+'</p>':'')+(o.links?'<div class="links">'+o.links+'</div>':'')+
+    (p ? '<div class="pcr"><a href="'+commonsUrl(p.file)+'" target="_blank" rel="noopener">图片：'+esc(p.credit)+' · Wikimedia Commons</a></div>' : '')+'</div>';
+}
+// 按钮列和左上角提示条盖在地图上面，弹窗自动平移时避开它们
+function openPop(o, ll, r){
+  var W=map.getSize().x, tl=document.querySelector('.tools'), top=mapnote.offsetTop+mapnote.offsetHeight+8, right=tl.offsetWidth+18;
+  map.openPopup(LF.popup({maxWidth:Math.min(260, W-right-24), minWidth:Math.min(200, W-right-24), offset:[0, 5-r], autoPanPaddingTopLeft:[12, top], autoPanPaddingBottomRight:[right, 12]}).setLatLng(ll).setContent(popHtml(o)));
+}
+function markSel(sel){ if(scene) scene.marks.forEach(function(m){ var el=m.mk.getElement(); if(el) el.classList.toggle('sel', m===sel); }); }
+function setListOn(id, fromList){
+  document.querySelectorAll('.stop.on,.hotel.on').forEach(function(x){ x.classList.remove('on'); });
+  var el=document.getElementById(id); if(el){ el.classList.add('on'); if(!fromList && !isNarrow()) el.scrollIntoView({block:'nearest', behavior: reduce()?'auto':'smooth'}); }
+}
+function clearSel(){ markSel(null); document.querySelectorAll('.stop.on,.hotel.on').forEach(function(x){ x.classList.remove('on'); }); S.sel=null; }
+function hideCallout(){ if(map) map.closePopup(); clearSel(); }
+// 从列表点进来：点不在视野里就先移过去，再弹出说明
+function focusOn(ll, show){
+  var p=map.latLngToContainerPoint(ll), sz=map.getSize(), sc=scene;
+  if(p.x<50||p.x>sz.x-50||p.y<80||p.y>sz.y-60){
+    map.once('moveend', function(){ if(scene===sc) show(); });
+    map.setView(ll, Math.max(map.getZoom(), FITZ-.25), {animate:!reduce()});
+  } else show();
+}
+function gmGo(A, B, mode){
+  var tm = mode==='walk' ? 'walking' : (/^(taxi|car|tour)$/.test(mode) ? 'driving' : 'transit');
+  return 'https://www.google.com/maps/dir/?api=1&origin='+A[0]+','+A[1]+'&destination='+B[0]+','+B[1]+'&travelmode='+tm;
+}
+function stopLinks(s){ var l=''; if(s.q) l+='<a class="lk" href="'+gmSearch(s.q)+'" target="_blank" rel="noopener">地图</a>'; if(s.link) l+='<a class="lk" href="'+esc(s.link.u)+'" target="_blank" rel="noopener">'+esc(s.link.l)+'</a>'; return l; }
+function hotelLinks(h, c){ return '<a class="lk" href="'+gmSearch(h.q)+'" target="_blank" rel="noopener">地图</a>'+(h.areaOnly || isBooked(h) ?'':'<a class="lk" href="'+booking(h,c)+'" target="_blank" rel="noopener">Booking 按日期查价</a>'); }
+
+function isNarrow(){ return window.matchMedia && window.matchMedia('(max-width: 899px)').matches; }
+function findMark(f){ for(var i=0;i<scene.marks.length;i++){ if(f(scene.marks[i])) return scene.marks[i]; } return null; }
+function select(i, fromList){
+  var d=byId[S.view]; if(!d) return; var s=dayStops(d)[i];
+  if(!map || !scene){ setListOn('stop-'+i, true); return; }
+  var m=findMark(function(m){ return m.i===i; });
+  function show(){ openPop({n:s.n, en:s.en, note:s.note, links:stopLinks(s), photo:photoOf(s)}, s.ll, 12); markSel(m); setListOn('stop-'+i, fromList); S.sel={type:'s', i:i}; }
+  if(fromList){ focusOn(s.ll, show); if(isNarrow()) revealMap(); } else show();
+}
+function selectHotel(hi, fromList){
+  var d=byId[S.view]; if(!d) return; var h=(HOTELS[d.city]||[])[hi]; if(!h) return;
+  if(!map || !scene){ setListOn('hotel-'+hi, true); return; }
+  var bk=isBooked(h);
+  if(!S.hotels && !bk){ S.hotels=true; store('hotels',true); applyHotelVis(); }
+  var m=findMark(function(m){ return m.hotel===hi; });
+  function show(){ openPop({n:h.n, en:(bk?'已订 · ':'')+h.area, note:h.note, links:hotelLinks(h, CITY[d.city])}, h.ll, bk?16:11); markSel(m); setListOn('hotel-'+hi, fromList); S.sel={type:'h', i:hi, booked:bk}; }
+  if(fromList){ focusOn(h.ll, show); if(isNarrow()) revealMap(); } else show();
+}
+function revealMap(){ var r=mapBox.getBoundingClientRect(); if(r.bottom<120 || r.top<0){ mapBox.scrollIntoView({block:'start', behavior: reduce()?'auto':'smooth'}); } }
+
+/* ---------- 面板 ---------- */
+var panel=document.getElementById('panel');
+function xferHtml(list){
+  return '<div class="xfers">'+list.map(function(x){
+    return '<div class="xfer"><div class="who"><b>'+esc(x.code)+'</b>'+(x.who?'<span>'+esc(x.who)+'</span>':'')+'</div><div class="end">'+esc(x.dep)+'</div><div class="arrow">→</div><div class="end r">'+esc(x.arr)+'</div>'+(x.note?'<div class="nt">'+esc(x.note)+'</div>':'')+'</div>';
+  }).join('')+'</div>';
+}
+// 一段路怎么坐：每小段一行（线路号、方向、上下车站、时间），最后是 Google 地图实时查询
+function walkRow(g){
+  var km=segKm(g), txt=(g.time||'').replace(/^步行\s*/, '');
+  return '<div class="txr walk"><span class="ln walk">步行</span><span class="tn">'+esc([txt, g.time ? fmtKm(km) : walkText(km), g.note].filter(Boolean).join(' · '))+'</span></div>';
+}
+// 没写 tx 的一段：步行写时间和距离；旅行团 / 自驾写距离
+function plainLeg(leg){
+  var segs=legSegs(leg), g=segs[0];
+  if(segs.every(function(x){ return x.mode==='walk'; })){ var km=segs.reduce(function(a,x){ return a+segKm(x); }, 0); return '<div class="txw"><span class="ln walk">步行</span><span>'+walkText(km)+'</span></div>'; }
+  var kmAll=segs.reduce(function(a,x){ return a+segKm(x); }, 0);
+  return '<div class="txw"><span class="ln '+g.mode+'">'+esc(MODE[g.mode]||TXMODE[g.mode])+'</span><span>约 '+fmtKm(kmAll)+'</span></div>';
+}
+function txHtml(leg){
+  // 步行接驳太短（200 米以内）就不单列
+  var segs=legSegs(leg).filter(function(g){ return !g.auto || segKm(g)>=0.2; }), drive=segs.every(function(g){ return /^(walk|taxi|car)$/.test(g.mode); });
+  return '<div class="tx">'+segs.map(function(g){
+    if(g.mode==='walk') return walkRow(g);
+    var info=[g.time, g.freq].filter(Boolean).join(' · ');
+    return '<div class="txr"><span class="ln '+g.mode+'">'+esc(g.line||TXMODE[g.mode])+'</span>'+
+      '<span class="tk">'+esc(TXMODE[g.mode]+(g.dir?' · '+g.dir:''))+'</span>'+
+      (g.on||g.off ? '<span class="tw">'+esc((g.on||'')+' → '+(g.off||''))+'</span>' : '')+
+      (info ? '<span class="tm">'+esc(info)+'</span>' : '')+
+      (g.note ? '<span class="tn">'+esc(g.note)+'</span>' : '')+'</div>';
+  }).join('')+'<a class="lk txl" href="'+gmGo(leg.from, leg.to, drive?'car':'bus')+'" target="_blank" rel="noopener">'+(drive?'导航':'实时查询')+'</a></div>';
+}
+function renderDay(d){
+  var c=CITY[d.city], idx=DAYS.indexOf(d), stops=dayStops(d), st=startPt(d), en=endPt(d), legs=dayLegs(d), legAt={};
+  legs.forEach(function(l){ legAt[l.i]=l; });
+  var sunLL = c.sun, sun=sunTimes(d.date, sunLL[0], sunLL[1], c.tz);
+  var md=d.date.slice(5).replace('-','/');
+  var h='<div class="dayhead" style="--c:var(--'+d.city+')">'+
+    '<div class="bigdate">'+md+'<small>'+d.wd+'</small></div>'+
+    '<div class="tagline"><span class="ctag">'+esc(d.tag)+'</span></div>'+
+    '<h2>'+esc(d.title)+'</h2></div>';
+  h+='<p class="lede">'+esc(d.lede)+'</p>';
+  h+='<div class="meta"><span>'+c.name+'日出 <span class="mono">'+sun.rise+'</span></span><span>日落 <span class="mono">'+sun.set+'</span></span><span>'+(c.tz===11?'夏令时 UTC+11':'UTC+10，不用夏令时')+'</span></div>';
+  var seen={}, chips=[], wkm=dayWalkKm(d);
+  legs.forEach(function(l){ legSegs(l).forEach(function(g){ if(!g.line || g.mode==='walk' || seen[g.mode+g.line]) return; seen[g.mode+g.line]=1; chips.push('<span class="ln '+g.mode+'">'+esc(g.line)+'</span>'); }); });
+  h+='<div class="daysum"><div class="ds"><span class="lab">今天步行</span>'+(wkm<0.1 ? '<b>很少</b><span class="sub">坐车为主，景点里走的不算</span>' : '<b>'+wkm.toFixed(1)+'</b><span class="unit">km</span><span class="sub">约 '+fmtSteps(wkm)+' 步</span>')+'</div>'+
+    (chips.length ? '<div class="ds"><span class="lab">今天坐</span><span class="chips">'+chips.join('')+'</span></div>' : '')+'</div>';
+  h+='<div class="pager"><button class="pbtn" type="button" data-go="'+(idx>0?DAYS[idx-1].id:'overview')+'">‹ '+(idx>0?DAYS[idx-1].date.slice(5).replace('-','/'):'总览')+'</button><button class="pbtn" type="button" data-go="'+(idx<DAYS.length-1?DAYS[idx+1].id:'')+'"'+(idx<DAYS.length-1?'':' disabled')+'>'+(idx<DAYS.length-1?DAYS[idx+1].date.slice(5).replace('-','/'):'行程结束')+' ›</button></div>';
+  if(d.options){
+    var cur=Math.min(S.opt[d.id]||0, d.options.length-1);
+    h+='<div class="opts" style="--c:var(--'+d.city+')"><span class="lab">'+esc(d.optLabel||'白天选一个方向：')+'</span>'+d.options.map(function(o,i){ return '<button class="obtn" type="button" data-opt="'+i+'" aria-pressed="'+(i===cur)+'">'+esc(o.label)+'</button>'; }).join('')+'</div>';
+  }
+  if(d.before){ h+='<h3 class="sec">抵达</h3>'+xferHtml(d.before); }
+  h+='<h3 class="sec">路线</h3><ol class="stops" style="--c:var(--'+d.city+')">';
+  if(st && st.n!=='住处出发'){ h+='<li class="stop stay"><div class="n" style="background:var(--muted)">起</div><div class="body"><div class="hd">'+thumbHtml(st)+'<div class="hdt"><div class="ttl"><span class="nm">'+esc(st.n)+'</span>'+(st.t?'<span class="t">'+esc(st.t)+'</span>':'')+'</div><div class="en">'+esc(st.en||'')+'</div></div></div>'+(st.note?'<p class="note">'+esc(st.note)+'</p>':'')+'</div></li>'; }
+  var num=0;
+  stops.forEach(function(s,i){
+    var lab = s.kind==='stay' ? '宿' : (s.kind==='air' ? '机' : String(++num));
+    var tx = legAt[i] ? (s.tx ? txHtml(legAt[i]) : plainLeg(legAt[i])) : '';
+    h+='<li class="stop'+(s.opt?' opt':'')+(s.kind?' '+s.kind:'')+'" id="stop-'+i+'" data-i="'+i+'"><div class="n">'+lab+'</div><div class="body">'+
+      '<div class="hd">'+thumbHtml(s, s.kind)+'<div class="hdt"><div class="ttl"><span class="nm">'+esc(s.n)+'</span>'+(s.t?'<span class="t">'+esc(s.t)+'</span>':'')+(s.sunset?'<span class="t">日落 '+sun.set+'</span>':'')+'</div>'+
+      '<div class="en">'+esc(s.en||'')+'</div></div></div>'+tx+(s.note?'<p class="note">'+esc(s.note)+'</p>':'')+
+      '<div class="links">'+stopLinks(s)+'</div></div></li>';
+  });
+  if(en && legAt.end){
+    var etx = en.tx ? txHtml(legAt.end) : plainLeg(legAt.end);
+    h+='<li class="stop stay"><div class="n" style="background:var(--muted)">'+(en.n==='回住处'?'回':'终')+'</div><div class="body"><div class="hd">'+thumbHtml(en, en.n==='回住处'?'stay':'')+'<div class="hdt"><div class="ttl"><span class="nm">'+esc(en.n)+'</span>'+(en.t?'<span class="t">'+esc(en.t)+'</span>':'')+'</div><div class="en">'+esc(en.en||'')+'</div></div></div>'+etx+'</div></li>';
+  }
+  h+='</ol>';
+  var gm=dayGm(d);
+  if(gm){
+    var pts=gm.list.map(function(k){ var s = k==='start'?st:(k==='end'?en:stops[k]); return s.q || (s.en+' '+c.en); });
+    h+='<a class="routebtn" href="'+gmDir(pts, gm.mode)+'" target="_blank" rel="noopener">在 Google 地图打开今天的路线</a>';
+  }
+  if(d.after){ h+='<h3 class="sec">之后</h3>'+xferHtml(d.after); }
+  if(d.tips && d.tips.length){ h+='<h3 class="sec">提醒</h3><ul class="tips">'+d.tips.map(function(t){return '<li>'+esc(t)+'</li>';}).join('')+'</ul>'; }
+  // 住宿
+  var nightCity = d.night ? CITY[d.night] : null;
+  if(nightCity){
+    var hs=HOTELS[d.night], onMap = d.night===d.city && (!d.region || d.region==='gc'), bkh=bookedHotel(d.night);
+    h+='<h3 class="sec">今晚住宿 · '+nightCity.name+'</h3>';
+    h+='<p class="hstay"><b>'+nightCity.cin.slice(5).replace('-','/')+'</b> 入住 → <b>'+nightCity.cout.slice(5).replace('-','/')+'</b> 退房，共 '+nightCity.nights+' 晚。'+(nightCity.stayNote ? esc(nightCity.stayNote) : '')+(bkh ? '已订 <span class="bkn">'+esc(bkh.n)+'</span>，其余是候选。' : '全部是候选，还没有预订。')+(onMap || !firstDayOf(d.night) ?'':' 酒店位置在 '+firstDayOf(d.night)+' 的地图上看。')+'</p>';
+    // 已订的排在最前；id / data-h 仍用 HOTELS 里的原序号，和地图标记对应
+    var order = hs.map(function(ho,hi){ return {ho:ho, hi:hi}; }).sort(function(a,b){ return isBooked(b.ho) - isBooked(a.ho); });
+    h+='<div class="hotels" style="--c:var(--'+d.night+')">'+order.map(function(x){
+      var ho=x.ho, hi=x.hi, bk=isBooked(ho), dist = haversine(ho.ll, nightCity.anchor.ll);
+      return '<div class="hotel'+(bk?' booked':'')+'"'+(onMap?' id="hotel-'+hi+'"':'')+' data-h="'+(onMap?hi:'')+'"><div class="hn">'+(bk?'<span class="bk">已订</span>':'')+'<b>'+esc(ho.n)+'</b><span>'+esc(ho.area)+'</span></div>'+
+        '<div class="tags">'+ho.tags.map(function(t){return '<span class="tag'+(/A\$/.test(t)?' d':'')+'">'+esc(t)+'</span>';}).join('')+'<span class="tag d">距 '+esc(nightCity.anchor.n)+' '+dist.toFixed(1)+' km</span></div>'+
+        '<p>'+esc(ho.note)+'</p><div class="links">'+hotelLinks(ho, nightCity)+'</div></div>';
+    }).join('')+'</div>';
+  } else {
+    h+='<h3 class="sec">今晚</h3><p class="hstay">在飞机上。我回自己的住处。</p>';
+  }
+  h+='<p class="fine">距离是直线距离；价格是估价或之前查到的参考价，营业时间和交通时刻出发前再核对一遍。线路号和班次是 2026 年 10 月查的，坐车前点「实时查询」确认。步行距离只算站与站之间（不含景点里面逛和可选支线），步数按每公里约 1,350 步估。</p>';
+  panel.innerHTML=h;
+  panel.querySelectorAll('.pbtn').forEach(function(b){ b.addEventListener('click', function(){ var g=b.getAttribute('data-go'); if(g){ setView(g); window.scrollTo({top: isNarrow()? 0 : window.scrollY, behavior:'auto'}); } }); });
+  panel.querySelectorAll('.obtn').forEach(function(b){ b.addEventListener('click', function(){ S.opt[d.id]=+b.getAttribute('data-opt'); store('opt',S.opt); render(); }); });
+  panel.querySelectorAll('.stop[data-i]').forEach(function(li){ li.addEventListener('click', function(e){ if(e.target.closest('a')) return; select(+li.getAttribute('data-i'), true); }); });
+  panel.querySelectorAll('.hotel').forEach(function(el){ var hi=el.getAttribute('data-h'); if(hi==='') { el.style.cursor='default'; return; } el.addEventListener('click', function(e){ if(e.target.closest('a')) return; selectHotel(+hi, true); }); });
+}
+function firstDayOf(city){ for(var i=0;i<DAYS.length;i++){ var d=DAYS[i]; if(d.city===city && d.region!=='gor') return d.date.slice(5).replace('-','/'); } return ''; }
+function renderOverview(){
+  var h='<div class="dayhead" style="--c:var(--syd)"><div class="bigdate">13<small>天 · 10 晚酒店</small></div><div class="tagline"><span class="ctag" style="--c:var(--ink)">2026.10.23 – 11.04</span></div><h2>全程总览</h2></div>';
+  h+='<p class="lede">点下面任意一天、顶部日期，或者地图上的城市，查看当天路线和候选酒店。</p>';
+  h+='<h3 class="sec">每天安排</h3><ol class="dlist">';
+  h+='<li><div class="drow static"><span class="md">10/23</span><span class="wd">五</span><span class="tt"><b>朋友济南出发</b><span>13:05 东航，武汉转机</span></span><span class="nt">飞机上</span></div></li>';
+  DAYS.forEach(function(d){
+    var c=CITY[d.city], night = d.night ? CITY[d.night].name : '飞机上';
+    h+='<li><button class="drow" type="button" data-go="'+d.id+'" style="--c:var(--'+d.city+')"><span class="md">'+d.date.slice(5).replace('-','/')+'</span><span class="wd">'+d.wd.slice(1)+'</span><span class="tt"><b><i class="dot-c"></i>'+esc(d.title)+'</b><span>'+esc(d.tag)+walkRange(d)+'</span></span><span class="nt">住 '+night+'</span></button></li>';
+  });
+  h+='<li><div class="drow static"><span class="md">11/04</span><span class="wd">三</span><span class="tt"><b>11:30 到济南</b><span>11/5 上班</span></span><span class="nt">到家</span></div></li></ol>';
+  h+='<h3 class="sec">交通</h3><div class="tblwrap"><table class="ftable"><tbody>'+FLIGHTS.map(function(f){ return '<tr><td>'+f.d+'</td><td><b>'+esc(f.code)+'</b> <span class="r">'+esc(f.r)+'</span><span class="sub">'+esc(f.who)+(f.sub?' · '+esc(f.sub):'')+'</span></td><td class="r" style="text-align:right;white-space:nowrap">'+esc(f.p)+'</td></tr>'; }).join('')+'</tbody></table></div>';
+  h+='<h3 class="sec">当地交通怎么付钱</h3><ul class="tips pay">'+PAY.map(function(p){ return '<li>'+(p.c?'<i class="dot-c" style="--c:var(--'+p.c+')"></i>':'')+esc(p.t)+'</li>'; }).join('')+'</ul>';
+  h+='<h3 class="sec">住宿</h3><div class="stays">'+Object.keys(CITY).map(function(k){ var c=CITY[k]; return '<div style="border-top:3px solid var(--'+k+')"><b>'+c.name+'</b><span class="n">'+c.nights+'</span> <span>晚</span><br><span>'+c.cin.slice(5).replace('-','/')+' → '+c.cout.slice(5).replace('-','/')+'</span>'+(bookedHotel(k)?'<span class="bkd">已订 · '+esc(bookedHotel(k).s||bookedHotel(k).n)+'</span>':'')+'</div>'; }).join('')+'</div>';
+  h+='<h3 class="sec" id="versions">版本记录</h3><ol class="vlist">'+(SNAP ? '<li><div class="vh"><b>最新版</b><span class="tt">现在的计划</span><a href="'+VROOT+'">去看 →</a></div></li>' : '')+VERSIONS.map(function(x){
+    return '<li><div class="vh"><b>v'+x.v+'</b><span class="d">'+x.date+'</span><span class="tt">'+esc(x.title)+'</span>'+(x.v===CURV ? '<span class="cur">正在看</span>' : '<a href="'+verHref(x.v)+'">看这一版 →</a>')+'</div>'+
+      (x.notes && x.notes.length ? '<ul>'+x.notes.map(function(n){ return '<li>'+esc(n)+'</li>'; }).join('')+'</ul>' : '')+'</li>';
+  }).join('')+'</ol>';
+  h+='<p class="fine">底图和路线数据来自 OpenStreetMap，地点照片来自维基百科 / Wikimedia Commons（作者和授权写在地图弹窗的照片下面），景点和酒店按真实坐标放置；线路走向仅供参考，坐车以站牌和实时查询为准。实际导航请点每一站的「地图」，在 Google 地图里打开。机票价格是之前查到的参考价，购买前重新查。</p>';
+  panel.innerHTML=h;
+  panel.querySelectorAll('[data-go]').forEach(function(b){ b.addEventListener('click', function(){ setView(b.getAttribute('data-go')); if(isNarrow()) window.scrollTo({top:0}); }); });
+}
+
+/* ---------- 版本 ---------- */
+// 旧版本副本的 html 标签带 data-snapshot（版本号），链接要回到上两级
+var SNAP = +(document.documentElement.getAttribute('data-snapshot')||0), VROOT = SNAP ? '../../' : '', CURV = SNAP || VERSIONS[0].v;
+function verHref(v){ return v===VERSIONS[0].v && !SNAP ? './' : VROOT+'v/'+v+'/'; }
+function md(date){ return +date.slice(5,7)+'/'+(+date.slice(8,10)); }
+(function(){
+  var el=document.getElementById('ver'), cur=VERSIONS.filter(function(x){ return x.v===CURV; })[0] || VERSIONS[0];
+  el.innerHTML='<summary aria-label="版本记录">'+(SNAP ? '<b>旧版本 v'+SNAP+'</b>' : '<b>v'+cur.v+'</b><span>'+md(cur.date)+' 更新</span>')+'</summary>'+
+    '<div class="vpop"><h4>行程版本</h4><ol>'+(SNAP ? '<li><span class="vn">最新</span><span class="vt">现在的计划</span><span class="va"><a href="'+VROOT+'">去看 →</a></span></li>' : '')+
+    VERSIONS.map(function(x){ return '<li><span class="vn">v'+x.v+'</span><span class="vt">'+esc(x.title)+'<small>'+x.date+'</small></span><span class="va">'+(x.v===CURV ? '<span class="cur">正在看</span>' : '<a href="'+verHref(x.v)+'">看 →</a>')+'</span></li>'; }).join('')+
+    '</ol><p>每一版改了什么，写在总览页最下面的「版本记录」。旧版本只用来对照，不再更新。</p></div>';
+  if(SNAP) el.classList.add('old');
+  el.hidden=false;
+  document.addEventListener('click', function(e){ if(el.open && !el.contains(e.target)) el.open=false; });
+  document.addEventListener('keydown', function(e){ if(e.key==='Escape' && el.open){ el.open=false; el.querySelector('summary').focus(); } });
+})();
+
+/* ---------- 切换 ---------- */
+function render(){
+  if(S.view==='overview') renderOverview(); else renderDay(byId[S.view]);
+  syncRail();
+  drawMap(true);
+}
+function setView(v){
+  if(v!=='overview' && !byId[v]) v='overview';
+  S.view=v; store('view',v);
+  try{ history.replaceState(null,'','#'+v); }catch(e){}
+  render();
+}
+document.addEventListener('keydown', function(e){
+  if(e.target && (e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA')) return;
+  if(e.key==='ArrowRight'||e.key==='ArrowLeft'){
+    var ids=['overview'].concat(DAYS.map(function(d){return d.id;})); var i=ids.indexOf(S.view);
+    var j = e.key==='ArrowRight'? Math.min(ids.length-1,i+1) : Math.max(0,i-1);
+    if(j!==i){ e.preventDefault(); setView(ids[j]); }
+  } else if(e.key==='Escape'){ hideCallout(); }
+});
+
+buildRail();
+var initial = (location.hash||'').replace('#','');
+if(!byId[initial] && initial!=='overview'){ initial = byId['d'+TODAY.slice(5).replace('-','')] ? 'd'+TODAY.slice(5).replace('-','') : load('view','overview'); }
+S.view = (initial==='overview'||byId[initial]) ? initial : 'overview';
+render();
+loadLeaflet(0);
+})();
+</script>
+
+</body></html>
