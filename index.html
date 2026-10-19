@@ -14,7 +14,7 @@
 :root{
   --bg:#EDF1F3; --surface:#FFFFFF; --ink:#16232B; --muted:#5B6B75; --line:#D3DDE2; --soft:#E4EBEF;
   --land:#F7F6F2; --sea:#CADCE4; --coast:#9AB5C1; --sea-ink:#477A8E; --grid:rgba(22,35,43,.075); --halo:rgba(247,246,242,.92);
-  --syd:#1E5EA8; --mel:#2E7A52; --gc:#B06F08; --bne:#7347AE; --air:#3B4A53; --apb:var(--mel); --mel1:var(--mel);
+  --syd:#1E5EA8; --mel:#2E7A52; --gc:#B06F08; --bne:#7347AE; --air:#3B4A53; --apb:var(--mel); --mel1:var(--mel); --bne2:var(--bne);
   --walk:#46535B; --l-train:#C2571A; --l-metro:#0B7A78; --l-tram:#2F8A3A; --l-lrt:#C0263B; --l-bus:#1D63A6; --l-ferry:#0A7EA3; --l-car:#7A6450;
   --warn-bg:#FFF1CC; --warn-line:#E3BE5C;
   --f-display:"Noto Serif SC","Songti SC","STSong",serif;
@@ -398,8 +398,9 @@ var CITY = {
   mel1:{name:'墨尔本', en:'Melbourne', baseQ:'228 La Trobe St, Melbourne VIC 3000', tz:11, sun:[-37.8136,144.9631], base:[-37.8098,144.9625], anchor:{n:'Southern Cross 站', ll:[-37.8183,144.9526]}, cin:'2026-10-27', cout:'2026-10-28', nights:1},
   apb:{name:'Apollo Bay', en:'Apollo Bay', baseQ:'38 Thomson St, Apollo Bay VIC 3233', tz:11, sun:[-38.7547,143.6692], base:[-38.7521,143.6635], anchor:{n:'Apollo Bay 海边', ll:[-38.7520,143.6730]}, cin:'2026-10-28', cout:'2026-10-29', nights:1},
   mel:{name:'墨尔本', en:'Melbourne', baseQ:'620 Collins St, Melbourne VIC 3000', tz:11, sun:[-37.8136,144.9631], base:[-37.8187,144.9543], anchor:{n:'Southern Cross 站', ll:[-37.8183,144.9526]}, cin:'2026-10-29', cout:'2026-10-31', nights:2, stayNote:'10/31 退房后行李要寄存到下午，先问房东；不行就放 Southern Cross 站的寄存柜。'},
-  bne:{name:'布里斯班', en:'Brisbane', baseQ:'Roma Street Station Brisbane', tz:10, sun:[-27.4698,153.0251], base:[-27.4690,153.0215], anchor:{n:'Roma St 站', ll:[-27.4659,153.0193]}, cin:'2026-10-31', cout:'2026-11-01', nights:1},
-  gc:{name:'黄金海岸', en:'Gold Coast', baseQ:'62 Queen St, Southport QLD 4215', tz:10, sun:[-28.0167,153.4000], base:[-27.9733,153.4138], anchor:{n:'G:link Southport South 站', ll:[-27.9726,153.4156]}, cin:'2026-11-01', cout:'2026-11-03', nights:2}
+  bne:{name:'布里斯班', en:'Brisbane', baseQ:'Roma Street Station Brisbane', tz:10, sun:[-27.4698,153.0251], base:[-27.4690,153.0215], anchor:{n:'Roma St 站', ll:[-27.4659,153.0193]}, cin:'2026-10-31', cout:'2026-11-01', nights:1, stayNote:'11/1 退房后行李寄存在前台，晚上回来取了再去黄金海岸；订的时候确认能寄存。'},
+  gc:{name:'黄金海岸', en:'Gold Coast', baseQ:'62 Queen St, Southport QLD 4215', tz:10, sun:[-28.0167,153.4000], base:[-27.9733,153.4138], anchor:{n:'G:link Southport South 站', ll:[-27.9726,153.4156]}, cin:'2026-11-01', cout:'2026-11-03', nights:2, stayNote:'11/1 晚上大约 21:00 才到，晚到入住提前跟房东说好。'},
+  bne2:{name:'布里斯班', en:'Brisbane', baseQ:'Roma Street Station Brisbane', tz:10, sun:[-27.4698,153.0251], base:[-27.4690,153.0215], anchor:{n:'Roma St 站', ll:[-27.4659,153.0193]}, cin:'2026-11-03', cout:'2026-11-04', nights:1}
 };
 var MODE = { walk:'步行', train:'火车', metro:'地铁', tram:'电车 / 轻轨', lrt:'轻轨', bus:'巴士', taxi:'打车', ferry:'渡轮', tour:'旅行团', car:'自驾', flight:'飞机' };
 var MCLS = { walk:'m-walk', train:'m-transit', metro:'m-transit', tram:'m-transit', lrt:'m-transit', bus:'m-transit', taxi:'m-transit', ferry:'m-ferry', tour:'m-tour', car:'m-tour', flight:'m-flight' };
@@ -437,6 +438,9 @@ var HOTELS = {
   ]
 };
 
+// 11/3 晚上也住 Roma St 一带：先用同一组候选，订好以后各自标 booked
+HOTELS.bne2 = HOTELS.bne.map(function(h){ return Object.assign({}, h); });
+
 /* ---------- 渡轮 / 旅行团途经点（示意） ---------- */
 var FERRY_WATSONS = [[-33.8555,151.2140],[-33.8550,151.2255],[-33.8545,151.2520],[-33.8500,151.2700],[-33.8455,151.2790]];
 var CITYCAT = [[-27.4745,153.0185],[-27.4785,153.0225],[-27.4800,153.0285],[-27.4745,153.0325],[-27.4680,153.0315],[-27.4640,153.0345]];
@@ -450,8 +454,8 @@ var STN = {
   southernCross:[-37.8183,144.9526], spencerCollins:[-37.8188,144.9540], acland96:[-37.8690,144.9801],
   rentalSC:[-37.8158,144.9524], skybusSC:[-37.8163,144.9520], melT1:[-37.6679,144.8509],
   belgrave:[-37.9090,145.3553], belgravePB:[-37.9077,145.3566], lakeside:[-37.9304,145.4597],
-  homeGL:[-27.9726,153.4156], southportBus:[-27.9668,153.4136], seaworldBus:[-27.9619,153.4267], cavill:[-28.0010,153.4285], burleighLR:[-28.0921,153.4521], cwsBus:[-28.1365,153.4860], currumbinN:[-28.1345,153.4872],
-  bbNorth:[-28.0275,153.4310], bbSouth:[-28.0347,153.4292], helensvale:[-27.9217,153.3337],
+  homeGL:[-27.9726,153.4156], whaleMarina:[-27.9682,153.4252], mcBus:[-27.9687,153.4272], surfers705:[-28.0040,153.4270], naturalBridge:[-28.2307,153.2435], cavill:[-28.0010,153.4285], burleighLR:[-28.0921,153.4521], cwsBus:[-28.1365,153.4860], currumbinN:[-28.1345,153.4872],
+  helensvale:[-27.9217,153.3337],
   romaSt:[-27.4659,153.0193]
 };
 
@@ -511,19 +515,12 @@ var TX = {
   burleighHome:[
     {mode:'walk', time:'从国家公园走回车站约 5 分钟'},
     {mode:'lrt', line:'G:link', dir:'往 Helensvale', on:'Burleigh Heads 站', off:'Southport South 站', a:STN.burleighLR, b:STN.homeGL, time:'约 45 分钟', osm:{route:'light_rail|tram'}}],
-  toSurfers:{mode:'lrt', line:'G:link', dir:'往 Burleigh Heads', on:'Southport South 站', off:'Cavill Avenue 站', a:STN.homeGL, b:STN.cavill, time:'约 15 分钟', osm:{route:'light_rail|tram'}},
-  broadbeach:[
-    {mode:'walk', time:'步行约 5 分钟到 Cavill Avenue 站'},
-    {mode:'lrt', line:'G:link', dir:'往 Burleigh Heads', on:'Cavill Avenue 站', off:'Broadbeach North 站', a:STN.cavill, b:STN.bbNorth, time:'约 10 分钟', osm:{route:'light_rail|tram'}}],
-  pacificFairHome:{mode:'lrt', line:'G:link', dir:'往 Helensvale', on:'Broadbeach South 站', off:'Southport South 站', a:STN.bbSouth, b:STN.homeGL, time:'约 30 分钟', osm:{route:'light_rail|tram'}},
-  seaworld:{mode:'bus', line:'704', dir:'往 Main Beach / Sea World', on:'Southport 公交总站（B 站台）', off:'Sea World', a:STN.southportBus, b:STN.seaworldBus, time:'约 20 分钟', note:'公交总站离住处步行约 10 分钟；下车就是门口。打车约 10 分钟。', osm:{route:'bus', ref:'704'}},
-  seaworldHome:{mode:'bus', line:'704', dir:'往 Helensvale', on:'Sea World', off:'Southport 公交总站', a:STN.seaworldBus, b:STN.southportBus, time:'约 20 分钟', osm:{route:'bus', ref:'704'}},
-  movieworld:[
-    {mode:'lrt', line:'G:link', dir:'往 Helensvale', on:'Southport South 站', off:'Helensvale 站（终点）', a:STN.homeGL, b:STN.helensvale, time:'约 25 分钟', osm:{route:'light_rail|tram'}},
-    {mode:'bus', line:'TX7', dir:'往 Coomera', on:'Helensvale 站', off:'Movie World', a:STN.helensvale, time:'约 10 分钟', freq:'约每 30 分钟', note:'主题公园专线。', osm:{route:'bus', ref:'TX7'}}],
-  movieworldHome:[
-    {mode:'bus', line:'TX7', dir:'往 Helensvale', on:'Movie World', off:'Helensvale 站', b:STN.helensvale, time:'约 10 分钟', freq:'约每 30 分钟', osm:{route:'bus', ref:'TX7'}},
-    {mode:'lrt', line:'G:link', dir:'往 Broadbeach', on:'Helensvale 站', off:'Southport South 站', a:STN.helensvale, b:STN.homeGL, time:'约 25 分钟', osm:{route:'light_rail|tram'}}],
+  toMarina:{mode:'taxi', line:'打车', on:'Southport 住处', off:'Main Beach 码头', time:'约 10 分钟', note:'也可以在 Southport 公交总站坐 704 路往 Sea World 方向。'},
+  marinaSurfers:{mode:'bus', line:'705', dir:'往 Broadbeach', on:'Seaworld Dr at Mariners Cove', off:'Remembrance Dr（Bruce Bishop 停车场）', a:STN.mcBus, b:STN.surfers705, time:'约 15 分钟', note:'下车走几分钟到 SkyPoint。', osm:{route:'bus', ref:'705'}},
+  surfersHome:{mode:'lrt', line:'G:link', dir:'往 Helensvale', on:'Cavill Avenue 站', off:'Southport South 站', a:STN.cavill, b:STN.homeGL, time:'约 15 分钟', osm:{route:'light_rail|tram'}},
+  toHelensvale:[
+    {mode:'walk', time:'拖行李步行约 3 分钟到 Southport South 站'},
+    {mode:'lrt', line:'G:link', dir:'往 Helensvale', on:'Southport South 站', off:'Helensvale 站（终点）', a:STN.homeGL, b:STN.helensvale, time:'约 25 分钟', osm:{route:'light_rail|tram'}}],
   citycat:{mode:'ferry', line:'CityCat', dir:'往 Northshore Hamilton', on:'North Quay', off:'Howard Smith Wharves', time:'约 15–20 分钟', note:'一程 50 分，刷 go card 或银行卡。', osm:{route:'ferry'}},
   kpTaxi:{mode:'taxi', line:'打车', on:'Kangaroo Point', off:'Roma St 一带的寄存点', time:'约 10 分钟', note:'取了行李走到车站；也可以叫 Uber。'},
   airtrain:{mode:'train', line:'Airtrain', dir:'往机场', on:'Roma St 站', off:'International 站', a:STN.romaSt, time:'约 25 分钟', freq:'约每 15–30 分钟', note:'私营机场快线，单程约 A$23，不在 50 分票价内；末班约 22:00。', osm:{route:'train', name:'Airport|Airtrain'}}
@@ -679,59 +676,59 @@ var DAYS = [
   gm:{mode:'walking', list:[0,1,2,3,4,5,6,7,8,9,10]},
   tips:['退房后行李要寄存到下午，先问房东能不能放；不行就放 Southern Cross 站长途车站一带的寄存柜。','国内线起飞前 1 小时左右到机场；SkyBus 单独买票，官网或车站售票机都能买。','市中心免费电车区内坐电车不用刷卡。']},
 
- {id:'d1101', date:'2026-11-01', wd:'周日', city:'gc', region:'gc', night:'gc', tag:'布里斯班 → 黄金海岸', title:'Currumbin 看考拉',
-  lede:'早上从布里斯班坐火车到黄金海岸，在 Southport 放下行李；中午去野生动物保护区，下午沿海往北，傍晚在 Burleigh Heads 看海。',
-  before:[{who:'两人', code:'火车 + G:link', dep:'Roma St / Central', arr:'Southport', note:'Gold Coast 线坐到 Helensvale（约 1 小时），换 G:link 轻轨往 Broadbeach 方向坐到 Southport South（约 25 分钟）；9 点前上车。入住前能不能先放行李，提前问房东'}],
-  start:true, end:{mode:'lrt', tx:TX.burleighHome},
-  stops:[
-    {n:'Currumbin 野生动物保护区', en:'Currumbin Wildlife Sanctuary', ll:[-28.1360,153.4870], t:'约 11:30', mode:'bus', tx:TX.currumbin, note:'考拉合影可选树上合影或抱考拉；抱考拉要求身高 140cm 以上、能托住考拉。门票和合影分开买，出发前在官网确认价格和时段。', q:'Currumbin Wildlife Sanctuary', img:'Currumbin Wildlife Sanctuary', link:{l:'合影官网', u:'https://book.currumbinsanctuary.com.au/location/currumbin-sanctuary/book/encounters/tree-kangaroo-encounter'}},
-    {n:'象岩 · Currumbin 海滩', en:'Elephant Rock', ll:[-28.1327,153.4906], q:'Elephant Rock Currumbin', img:['Currumbin, Queensland', 'Currumbin Beach']},
-    {n:'伯利角', en:'Burleigh Heads', ll:[-28.0890,153.4555], mode:'bus', tx:TX.burleigh, sunset:true, note:'国家公园海岬步道，看冲浪和 Surfers 天际线。', q:'Burleigh Head National Park', img:['Burleigh Head National Park', 'Burleigh Heads, Queensland']}
-  ],
-  gm:{mode:'driving', list:['start',0,1,2,'end']},
-  tips:['从 Southport South 坐 G:link 轻轨到 Burleigh Heads（约 45 分钟），再换 700 路到 Currumbin；打车约 30 分钟。','11 月阳光很强，带帽子和防晒。']},
-
- {id:'d1102', date:'2026-11-02', wd:'周一', city:'gc', region:'gc', night:'gc', tag:'黄金海岸 · 第 2 天', title:'黄金海岸一日（四选一）',
-  lede:'在黄金海岸玩一整天，下面四个方向选一个，晚上回 Southport。',
+ {id:'d1101', date:'2026-11-01', wd:'周日', city:'bne', night:'gc', tag:'布里斯班 → 黄金海岸', title:'布里斯班一日，晚上去黄金海岸',
+  lede:'早上退房，行李寄存在酒店前台。白天沿河玩一圈，傍晚在袋鼠角看天际线，晚饭后取行李，坐火车去黄金海岸。',
   start:true,
-  options:[
-    {label:'海岸城市', stops:[
-      {n:'SkyPoint 观景台', en:'SkyPoint · Q1', ll:[-28.0063,153.4296], t:'上午', mode:'lrt', tx:TX.toSurfers, q:'SkyPoint Observation Deck', img:'Q1 (building)'},
-      {n:'Surfers Paradise 海滩', en:'Surfers Paradise Beach', ll:[-28.0024,153.4315], q:'Surfers Paradise Beach', img:'Surfers Paradise, Queensland'},
-      {n:'Broadbeach', en:'Broadbeach · Kurrawa', ll:[-28.0310,153.4325], mode:'tram', tx:TX.broadbeach, q:'Kurrawa Beach Broadbeach', img:['search:intitle:Broadbeach beach', 'Broadbeach, Queensland']},
-      {n:'Pacific Fair', en:'Pacific Fair', ll:[-28.0355,153.4268], note:'大型商场，午饭和购物。', q:'Pacific Fair Shopping Centre', img:['Pacific Fair Shopping Centre', 'Pacific Fair']}],
-     gm:{mode:'walking', list:[0,1,2,3]}, back:{tx:TX.pacificFairHome}},
-    {label:'Springbrook 自然', stops:[
-      {n:'Purling Brook 瀑布', en:'Purling Brook Falls', ll:[-28.1690,153.2715], t:'上午', mode:'car', note:'没有公共交通，需要自驾或参团；单程约 1 小时。', q:'Purling Brook Falls', img:'Purling Brook Falls'},
-      {n:'Best of All 观景台', en:'Best of All Lookout', ll:[-28.2400,153.2650], mode:'car', q:'Best of All Lookout Springbrook', img:'Springbrook National Park'}],
-     gm:{mode:'driving', list:['start',0,1]}, back:{mode:'car'}},
-    {label:'Sea World', stops:[
-      {n:'Sea World', en:'Sea World', ll:[-27.9570,153.4252], t:'全天', mode:'bus', tx:TX.seaworld, q:'Sea World Gold Coast', img:['Sea World (Australia)', 'Sea World (Gold Coast)']}], back:{tx:TX.seaworldHome}},
-    {label:'Movie World', stops:[
-      {n:'Movie World', en:'Warner Bros. Movie World', ll:[-27.9077,153.3122], t:'全天', mode:'bus', tx:TX.movieworld, note:'旁边就是 Wet\'n\'Wild，一天只选一个园区。', q:'Warner Bros. Movie World', img:'Warner Bros. Movie World'}], back:{tx:TX.movieworldHome}}
-  ],
-  tail:[
-    {n:'回住处', en:'Hotel', ll:[-27.9733,153.4138], t:'晚上', kind:'stay', mode:'lrt', q:'62 Queen St, Southport QLD 4215'}
-  ],
-  tips:['G:link 轻轨从 Southport 往南经过 Surfers、Broadbeach 到 Burleigh Heads，往北到 Helensvale。']},
-
- {id:'d1103', date:'2026-11-03', wd:'周二', city:'bne', night:null, tag:'黄金海岸 → 布里斯班 · 回国日', title:'布里斯班半日 + 夜航回国',
-  lede:'上午在黄金海岸退房，坐轻轨和火车回布里斯班，寄存行李后沿河玩一圈；傍晚在袋鼠角看天际线，晚饭后坐 Airtrain 去机场。',
-  before:[{who:'两人', code:'G:link + 火车', dep:'Southport', arr:'Roma St', note:'约 1.5 小时：在 Southport South 坐 G:link 到终点 Helensvale，换 Gold Coast 线火车，10 点左右出发'}],
-  start:{n:'Roma St 站', en:'Roma Street Station', ll:STN.romaSt, t:'约 11:30', note:'从黄金海岸来的火车到这里。附近找个寄存点放行李，晚上回来取。', q:'Roma Street Station Brisbane', img:'Roma Street railway station'},
   stops:[
-    {n:'南岸公园', en:'South Bank Parklands', ll:[-27.4780,153.0230], t:'约 12:00', note:'Streets Beach 人造沙滩和花廊步道，午饭在这边吃。', q:'South Bank Parklands Brisbane', img:'South Bank Parklands'},
+    {n:'南岸公园', en:'South Bank Parklands', ll:[-27.4780,153.0230], t:'约 09:30', note:'Streets Beach 人造沙滩和花廊步道。', q:'South Bank Parklands Brisbane', img:'South Bank Parklands'},
     {n:'昆士兰美术馆 · 现代美术馆', en:'QAGOMA', ll:[-27.4703,153.0170], note:'常设展免费，控制在 1–1.5 小时。', q:'Gallery of Modern Art Brisbane', img:['Gallery of Modern Art, Brisbane', 'Queensland Art Gallery']},
-    {n:'Queen St Mall', en:'Queen Street Mall', ll:[-27.4688,153.0255], t:'约 15:00', note:'过 Victoria Bridge 进市中心逛逛。', q:'Queen Street Mall Brisbane', img:'Queen Street Mall'},
+    {n:'Queen St Mall', en:'Queen Street Mall', ll:[-27.4688,153.0255], t:'约 12:30', note:'过 Victoria Bridge 进市中心，午饭。', q:'Queen Street Mall Brisbane', img:'Queen Street Mall'},
     {n:'CityCat 码头', en:'North Quay ferry terminal', ll:[-27.4712,153.0196], q:'North Quay ferry terminal Brisbane', img:'CityCat'},
     {n:'Howard Smith Wharves', en:'Howard Smith Wharves', ll:[-27.4616,153.0358], mode:'ferry', tx:TX.citycat, via:CITYCAT, note:'Story Bridge 下的餐厅酒吧区，坐 CityCat 沿河过来。', q:'Howard Smith Wharves', img:'Howard Smith Wharves'},
     {n:'袋鼠角悬崖', en:'Kangaroo Point Cliffs', ll:[-27.4785,153.0350], sunset:true, note:'步行过 Story Bridge 约 25–30 分钟。傍晚看城市天际线，18:00 左右吃晚饭。', q:'Kangaroo Point Cliffs', img:['Kangaroo Point Cliffs', 'Kangaroo Point, Queensland']},
-    {n:'Roma St 站 · 取行李', en:'Roma Street · Airtrain', ll:STN.romaSt, t:'约 19:00', mode:'taxi', tx:TX.kpTaxi, note:'取了行李从这里坐 Airtrain。Airtrain 也停 Central 站。', q:'Roma Street Station Brisbane', img:'Roma Street railway station'},
-    {n:'布里斯班机场国际', en:'BNE International', ll:[-27.3842,153.1175], t:'19:30–20:00', kind:'air', mode:'train', tx:TX.airtrain, nofit:true, note:'Airtrain 约 20–25 分钟。国际航班建议提前 3 小时到。', q:'Brisbane International Airport', img:'Brisbane Airport'}
+    {n:'住处取行李', en:'Hotel', ll:[-27.4690,153.0215], t:'约 19:00', kind:'stay', mode:'taxi', tx:TX.kpTaxi, q:'Roma Street Station Brisbane'},
+    {n:'Roma St 站', en:'Roma Street Station', ll:STN.romaSt, t:'约 19:30', note:'Gold Coast 线也停 Central 站，哪个近去哪个。', q:'Roma Street Station Brisbane', img:'Roma Street railway station'}
   ],
-  after:[{who:'朋友', code:'南航', dep:'BNE 23:00', arr:'TNA 11/4 11:30', note:'广州转机 2h45m'}],
+  after:[{who:'两人', code:'火车 + G:link', dep:'Roma St', arr:'Southport South', note:'Gold Coast 线坐到 Helensvale 约 1 小时，换 G:link 往 Broadbeach 方向约 25 分钟；大约 21:00 到住处'}],
   gm:{mode:'walking', list:[0,1,2]},
-  tips:['行李寄存：Roma St 或 Central 附近找寄存点，Bounce、Stasher 这类 App 能提前订。','11/4 中午到济南，11/5 上班。']}
+  tips:['退房时把行李寄存在酒店前台，晚上回来取；订酒店时确认能寄存。','到黄金海岸大约 21:00，晚到入住提前跟房东说好。','周日火车班次少一些，出发前查好时刻。']},
+
+ {id:'d1102', date:'2026-11-02', wd:'周一', city:'gc', region:'gc', night:'gc', tag:'黄金海岸 · 第 1 天', title:'Currumbin 看考拉 + 萤火虫',
+  lede:'上午坐轻轨转巴士去 Currumbin 看考拉，回程在 Burleigh Heads 下车走岬角步道；傍晚回住处歇一会，晚上去看萤火虫。',
+  start:true, end:{mode:'tour', t:'约 22:00'},
+  stops:[
+    {n:'Currumbin 野生动物保护区', en:'Currumbin Wildlife Sanctuary', ll:[-28.1360,153.4870], t:'约 10:00', mode:'bus', tx:TX.currumbin, note:'考拉合影可选树上合影或抱考拉；抱考拉要求身高 140cm 以上、能托住考拉。门票和合影都在官网订。', q:'Currumbin Wildlife Sanctuary', img:'Currumbin Wildlife Sanctuary'},
+    {n:'象岩 · Currumbin 海滩', en:'Elephant Rock', ll:[-28.1327,153.4906], q:'Elephant Rock Currumbin', img:['Currumbin, Queensland', 'Currumbin Beach']},
+    {n:'伯利角', en:'Burleigh Heads', ll:[-28.0890,153.4555], t:'下午', mode:'bus', tx:TX.burleigh, note:'国家公园岬角步道，走一圈约 1 小时，看冲浪和 Surfers 天际线。', q:'Burleigh Head National Park', img:['Burleigh Head National Park', 'Burleigh Heads, Queensland']},
+    {n:'回住处歇一会', en:'Hotel', ll:[-27.9733,153.4138], t:'约 16:30', kind:'stay', mode:'lrt', tx:TX.burleighHome, q:'62 Queen St, Southport QLD 4215'},
+    {n:'萤火虫夜游（待订）', en:'Glow worms · Natural Bridge', ll:STN.naturalBridge, t:'约 17:30 接人', mode:'tour', nofit:true, note:'常见的是去 Springbrook 国家公园 Natural Bridge 的夜游团，到住处接人，22:00 前后送回。订好以后按团的时间改。', q:'Natural Bridge Springbrook National Park', img:['search:Natural Bridge Springbrook glow worms', 'Springbrook National Park']}
+  ],
+  gm:{mode:'driving', list:['start',0,1,2]},
+  tips:['G:link 轻轨坐到终点 Burleigh Heads，换 700 路到 Currumbin；回程在 Burleigh Heads 下车，走完步道再坐轻轨回去。打车约 30 分钟。','11 月阳光很强，带帽子和防晒。','看萤火虫别开闪光灯，手机屏幕调暗；穿长裤和不怕湿的鞋，带件外套。']},
+
+ {id:'d1103', date:'2026-11-03', wd:'周二', city:'gc', region:'gc', night:'bne2', tag:'黄金海岸 → 布里斯班', title:'观鲸 + Surfers，傍晚回布里斯班',
+  lede:'上午退房，11:00 坐观鲸船。下午坐巴士到 Surfers Paradise，上 SkyPoint、逛海滩；傍晚回住处取行李，坐轻轨转火车回布里斯班住一晚。',
+  start:true,
+  stops:[
+    {n:'观鲸（待订）', en:'Whale watching · Main Beach', ll:STN.whaleMarina, t:'11:00', mode:'taxi', tx:TX.toMarina, note:'船程 2.5–3 小时，出发前 30 分钟到码头签到。码头以订单为准，Main Beach 的 Marina Mirage、Mariners Cove 和 Sea World 都有船。', q:'Marina Mirage Main Beach', img:['search:humpback whale Gold Coast', 'Humpback whale']},
+    {n:'SkyPoint 观景台', en:'SkyPoint · Q1', ll:[-28.0063,153.4296], t:'约 14:30', mode:'bus', tx:TX.marinaSurfers, q:'SkyPoint Observation Deck', img:'Q1 (building)'},
+    {n:'Surfers Paradise 海滩', en:'Surfers Paradise Beach', ll:[-28.0024,153.4315], q:'Surfers Paradise Beach', img:'Surfers Paradise, Queensland'},
+    {n:'住处取行李', en:'Hotel', ll:[-27.9733,153.4138], t:'约 17:00', kind:'stay', mode:'lrt', tx:TX.surfersHome, q:'62 Queen St, Southport QLD 4215'},
+    {n:'Helensvale 站', en:'Helensvale Station', ll:STN.helensvale, t:'约 17:45', mode:'lrt', tx:TX.toHelensvale, note:'G:link 坐到终点，换 Gold Coast 线火车去布里斯班。', q:'Helensvale Station', img:'Helensvale railway station'}
+  ],
+  after:[{who:'两人', code:'火车', dep:'Helensvale', arr:'Roma St / Central', note:'约 1 小时，到布里斯班后入住（还没订）'}],
+  gm:{mode:'walking', list:[1,2]},
+  tips:['退房后的行李先问房东能不能放到下午；不行就带着走。','容易晕船的提前吃晕船药。11 月初是观鲸季的尾声，以订的团为准。']},
+
+ {id:'d1104', date:'2026-11-04', wd:'周三', city:'bne2', night:null, nightTag:'回国', nightNote:'朋友回国，我回自己的住处。', tag:'布里斯班 · 回国日', title:'早上去机场，朋友回国',
+  lede:'早上退房，坐 Airtrain 去国际航站楼，8:00 前到，朋友 11:00 起飞。',
+  start:true,
+  stops:[
+    {n:'Roma St 站', en:'Roma Street · Airtrain', ll:STN.romaSt, t:'约 07:15', note:'Airtrain 也停 Central 站。', q:'Roma Street Station Brisbane', img:'Roma Street railway station'},
+    {n:'布里斯班机场国际', en:'BNE International', ll:[-27.4027,153.1087], t:'08:00 前', kind:'air', mode:'train', tx:TX.airtrain, nofit:true, note:'Airtrain 约 20–25 分钟。国际航班建议提前 3 小时到。', q:'Brisbane International Airport', img:'Brisbane Airport'}
+  ],
+  after:[{who:'朋友', code:'航班待补', dep:'BNE 11/4 11:00', arr:'济南', note:'改签后的航班，航班号和到达时间待补'}],
+  tips:['Airtrain 不在 50 分票价内，单程约 A$23。']}
 ];
 
 var FLIGHTS = [
@@ -739,14 +736,14 @@ var FLIGHTS = [
   {d:'10/27', code:'JQ525', r:'SYD T2 16:25 → MEL 18:05', who:'两人', sub:'已出票', p:''},
   {d:'10/28', code:'租车', r:'Southern Cross 站 ⇄ 大洋路', who:'两人', sub:'Budget / Sixt，还没订；10/28 08:00 取车，10/29 傍晚还车', p:''},
   {d:'10/31', code:'QF1272', r:'MEL T1 17:45 → BNE 19:00', who:'两人', sub:'已出票', p:''},
-  {d:'11/01', code:'陆路', r:'Brisbane → Southport', who:'两人', sub:'火车 + G:link 轻轨，约 1.5 小时', p:''},
-  {d:'11/03', code:'陆路', r:'Southport → Brisbane', who:'两人', sub:'G:link 轻轨 + 火车，约 1.5 小时', p:''},
-  {d:'11/03', code:'南航', r:'BNE 23:00 → TNA 11:30⁺¹', who:'朋友', sub:'广州转机 2h45m', p:'¥2652（学生价 ¥2502）'}
+  {d:'11/01', code:'陆路', r:'Brisbane → Southport', who:'两人', sub:'晚上走，火车 + G:link 轻轨，约 1.5 小时', p:''},
+  {d:'11/03', code:'陆路', r:'Southport → Brisbane', who:'两人', sub:'傍晚走，G:link 轻轨 + 火车，约 1.5 小时', p:''},
+  {d:'11/04', code:'待补', r:'BNE 11:00 → 济南', who:'朋友', sub:'改签后的航班，航班号和到达时间待补', p:''}
 ];
-// n：地图上写的晚数（墨尔本两处住处加起来，不算 Apollo Bay）
+// n：地图上写的晚数（墨尔本两处住处加起来，不算 Apollo Bay；布里斯班 10/31、11/3 各一晚）
 var OV_CITIES = [
   {c:'syd', o:1, ll:[-33.8688,151.2093], go:'d1024'}, {c:'mel', o:2, ll:[-37.8136,144.9631], go:'d1028', n:3},
-  {c:'bne', o:3, ll:[-27.4698,153.0251], go:'d1103'}, {c:'gc', o:4, ll:[-28.0024,153.4315], go:'d1101'}
+  {c:'bne', o:3, ll:[-27.4698,153.0251], go:'d1101', n:2}, {c:'gc', o:4, ll:[-28.0024,153.4315], go:'d1101'}
 ];
 var OV_LEGS = [
   {a:[-33.9366,151.1658], b:[-37.6698,144.8422], mode:'flight', lb:'10/27', bend:.22},
@@ -771,9 +768,11 @@ var VERSIONS = [
     '墨尔本住处订好：10/27 住 La Trobe St 的 BayView 公寓，10/28 住 Apollo Bay 的 Apollo Stay，10/29–30 住 Collins St 的 SkyLink Haven（就在 Southern Cross 站旁边）。',
     '10/28：退房后行李全部放车上，在 Southern Cross 站取车（Budget / Sixt）；10/29 回城先到住处卸行李再还车。',
     '10/30：Puffing Billy 小火车，下午回住处歇一会，傍晚去 St Kilda 看日落和企鹅；备选：小火车 + 菲利普岛一日游。',
-    '10/31：上午 City Walk，下午取行李坐 SkyBus 去机场，17:45 坐 QF1272 飞布里斯班，住一晚（还没订）。',
-    '11/1–2 住黄金海岸 Southport（已订）：11/1 从布里斯班坐火车过去看考拉，11/2 黄金海岸玩一整天。',
-    '11/3：退房回布里斯班，玩半天后晚上去机场。']},
+    '10/31：上午 City Walk，下午取行李坐 SkyBus 去机场，17:45 坐 QF1272 飞布里斯班。10/31 和 11/3 晚上都住布里斯班（还没订）。',
+    '11/1：白天在布里斯班沿河玩一圈，晚上坐火车去黄金海岸，11/1–2 住 Southport（已订）。',
+    '11/2：Currumbin 看考拉，回程走 Burleigh Heads 岬角步道，晚上看萤火虫（待订）。',
+    '11/3：11:00 观鲸（待订），下午 SkyPoint 和 Surfers 海滩，傍晚回布里斯班。',
+    '11/4：朋友改成 11:00 从布里斯班起飞，早上坐 Airtrain 去机场。']},
   {v:3, date:'2026-10-14', title:'墨尔本改成大洋路自驾两天 + 市区一天 + 小火车', notes:[
     '10/28–29：大洋路自驾两天，10/28 住 Apollo Bay；第 2 天看十二门徒石，走内陆回墨尔本还车（原来是 10/30 跟团一日游）。',
     '10/30：女王市场和市中心 City Walk，傍晚坐 16 路电车去 St Kilda 看日落和小企鹅。',
@@ -1313,7 +1312,7 @@ function buildScene(){
       addRoute(pts, g.mode);
       addLabel(g.lb, 'f', pts[16], 2, 3);
     });
-    [{a:JINAN, b:[-33.9366,151.1658], lb:'济南 → 悉尼 10/23–24'},{a:[-27.3842,153.1175], b:JINAN, lb:'布里斯班 → 济南 11/3–4'}].forEach(function(g,i){
+    [{a:JINAN, b:[-33.9366,151.1658], lb:'济南 → 悉尼 10/23–24'},{a:[-27.4027,153.1087], b:JINAN, lb:'布里斯班 → 济南 11/4'}].forEach(function(g,i){
       addRoute([g.a, g.b], 'flight');
       var cityEnd = i===0 ? g.b : g.a, far = i===0 ? g.a : g.b;
       addLabel(g.lb, 'f', cityEnd, 2, 4, false, function(){
@@ -1603,7 +1602,7 @@ function renderDay(d){
         '<p>'+esc(ho.note)+'</p><div class="links">'+hotelLinks(ho, nightCity)+'</div></div>';
     }).join('')+'</div>';
   } else {
-    h+='<h3 class="sec">今晚</h3><p class="hstay">在飞机上。我回自己的住处。</p>';
+    h+='<h3 class="sec">今晚</h3><p class="hstay">'+esc(d.nightNote || '在飞机上。我回自己的住处。')+'</p>';
   }
   h+='<p class="fine">距离是直线距离；价格是估价或之前查到的参考价，营业时间和交通时刻出发前再核对一遍。线路号和班次是 2026 年 10 月查的，坐车前点「实时查询」确认。步行距离只算站与站之间（不含景点里面逛和可选支线），步数按每公里约 1,350 步估。</p>';
   panel.innerHTML=h;
@@ -1614,15 +1613,15 @@ function renderDay(d){
 }
 function firstDayOf(city){ for(var i=0;i<DAYS.length;i++){ var d=DAYS[i]; if(d.city===city && d.region!=='gor') return d.date.slice(5).replace('-','/'); } return ''; }
 function renderOverview(){
-  var h='<div class="dayhead" style="--c:var(--syd)"><div class="bigdate">13<small>天 · 10 晚酒店</small></div><div class="tagline"><span class="ctag" style="--c:var(--ink)">2026.10.23 – 11.04</span></div><h2>全程总览</h2></div>';
+  var h='<div class="dayhead" style="--c:var(--syd)"><div class="bigdate">13<small>天 · '+Object.keys(CITY).reduce(function(n,k){ return n+CITY[k].nights; }, 0)+' 晚酒店</small></div><div class="tagline"><span class="ctag" style="--c:var(--ink)">2026.10.23 – 11.04</span></div><h2>全程总览</h2></div>';
   h+='<p class="lede">点下面任意一天、顶部日期，或者地图上的城市，查看当天路线和候选酒店。</p>';
   h+='<h3 class="sec">每天安排</h3><ol class="dlist">';
   h+='<li><div class="drow static"><span class="md">10/23</span><span class="wd">五</span><span class="tt"><b>朋友济南出发</b><span>13:05 东航，武汉转机</span></span><span class="nt">飞机上</span></div></li>';
   DAYS.forEach(function(d){
-    var c=CITY[d.city], night = d.night ? CITY[d.night].name : '飞机上';
-    h+='<li><button class="drow" type="button" data-go="'+d.id+'" style="--c:var(--'+d.city+')"><span class="md">'+d.date.slice(5).replace('-','/')+'</span><span class="wd">'+d.wd.slice(1)+'</span><span class="tt"><b><i class="dot-c"></i>'+esc(d.title)+'</b><span>'+esc(d.tag)+walkRange(d)+'</span></span><span class="nt">住 '+night+'</span></button></li>';
+    var c=CITY[d.city], night = d.night ? '住 '+CITY[d.night].name : (d.nightTag || '住 飞机上');
+    h+='<li><button class="drow" type="button" data-go="'+d.id+'" style="--c:var(--'+d.city+')"><span class="md">'+d.date.slice(5).replace('-','/')+'</span><span class="wd">'+d.wd.slice(1)+'</span><span class="tt"><b><i class="dot-c"></i>'+esc(d.title)+'</b><span>'+esc(d.tag)+walkRange(d)+'</span></span><span class="nt">'+esc(night)+'</span></button></li>';
   });
-  h+='<li><div class="drow static"><span class="md">11/04</span><span class="wd">三</span><span class="tt"><b>11:30 到济南</b><span>11/5 上班</span></span><span class="nt">到家</span></div></li></ol>';
+  h+='</ol>';
   h+='<h3 class="sec">交通</h3><div class="tblwrap"><table class="ftable"><tbody>'+FLIGHTS.map(function(f){ return '<tr><td>'+f.d+'</td><td><b>'+esc(f.code)+'</b> <span class="r">'+esc(f.r)+'</span><span class="sub">'+esc(f.who)+(f.sub?' · '+esc(f.sub):'')+'</span></td><td class="r" style="text-align:right;white-space:nowrap">'+esc(f.p)+'</td></tr>'; }).join('')+'</tbody></table></div>';
   h+='<h3 class="sec">当地交通怎么付钱</h3><ul class="tips pay">'+PAY.map(function(p){ return '<li>'+(p.c?'<i class="dot-c" style="--c:var(--'+p.c+')"></i>':'')+esc(p.t)+'</li>'; }).join('')+'</ul>';
   h+='<h3 class="sec">住宿</h3><div class="stays">'+Object.keys(CITY).map(function(k){ var c=CITY[k]; return '<div style="border-top:3px solid var(--'+k+')"><b>'+c.name+'</b><span class="n">'+c.nights+'</span> <span>晚</span><br><span>'+c.cin.slice(5).replace('-','/')+' → '+c.cout.slice(5).replace('-','/')+'</span>'+(bookedHotel(k)?'<span class="bkd">已订 · '+esc(bookedHotel(k).s||bookedHotel(k).n)+'</span>':'')+'</div>'; }).join('')+'</div>';
