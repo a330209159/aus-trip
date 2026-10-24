@@ -481,14 +481,12 @@ var TX = {
   homeCoogee:[ASHFIELD_WALK, t2In('Museum 站', STN.museum, '约 20–25 分钟'), BUS373],
   wynyardHome:[{mode:'walk', b:STN.wynyard, time:'步行约 10 分钟到 Wynyard 站'}, t2Out('Wynyard 站', STN.wynyard, '约 25 分钟'), HOME_WALK],
   centralHome:[{mode:'walk', b:STN.central, time:'步行约 10 分钟到 Central 站'}, t2Out('Central 站', STN.central, '约 16 分钟'), HOME_WALK],
-  homeGerringong:[ASHFIELD_WALK, t2In('Central 站', STN.central, '约 16 分钟'), SCO_KIAMA,
-    {mode:'train', line:'SCO', dir:'往 Bomaderry', on:'Kiama 站', off:'Gerringong 站', a:STN.kiama, b:STN.gerringong, time:'约 10 分钟（1 站）', freq:'周末约 2 小时一班', note:'Kiama 往南是柴油小火车，一般和悉尼来的车在 Kiama 对接；接不上就打车，约 15 分钟。', osm:{route:'train', ref:'SCO'}},
-    {mode:'walk', time:'步行约 25 分钟到岬角', note:'穿过 Gerringong 镇上，顺路买午饭。'}],
-  gerringongKiama:[{mode:'walk', b:STN.gerringong, time:'步行约 30 分钟回 Gerringong 站'},
-    {mode:'train', line:'SCO', dir:'往 Kiama', on:'Gerringong 站', off:'Kiama 站', a:STN.gerringong, b:STN.kiama, time:'约 10 分钟（1 站）', freq:'周末约 2 小时一班', note:'先查好时间；不想等就打车，约 15 分钟。', osm:{route:'train', ref:'SCO'}},
-    {mode:'walk', time:'步行约 15 分钟到喷水洞'}],
-  kiamaHome:[{mode:'walk', b:STN.kiama, time:'步行约 15 分钟到 Kiama 站'},
-    {mode:'train', line:'SCO', dir:'往 Sydney', on:'Kiama 站', off:'Central 站', a:STN.kiama, b:STN.central, time:'约 2 小时–2 小时 20 分', freq:'周末约每小时一班', note:'悉尼方向的车从 Kiama 发车，上车就有座。', osm:{route:'train', ref:'SCO'}},
+  homeKiama:[ASHFIELD_WALK, t2In('Central 站', STN.central, '约 16 分钟'), SCO_KIAMA],
+  kiamaGerringong:[{mode:'walk', b:STN.kiama, time:'步行约 10 分钟回 Kiama 站'},
+    {mode:'train', line:'SCO', dir:'往 Bomaderry', on:'Kiama 站', off:'Gerringong 站', a:STN.kiama, b:STN.gerringong, time:'13:48 → 13:56（1 站）', freq:'周日 Kiama 发车：11:53、13:48、15:48、17:48、19:55', note:'柴油小火车，一般在 1 号站台，以站内显示为准。错过了下一班要等两小时，打车约 15 分钟。', osm:{route:'train', ref:'SCO'}},
+    {mode:'walk', time:'步行约 25–30 分钟到岬角', note:'穿过 Gerringong 镇上，顺路买点吃的喝的。'}],
+  gerringongHome:[{mode:'train', line:'SCO', dir:'往 Kiama', on:'Gerringong 站', off:'Kiama 站', a:STN.gerringong, b:STN.kiama, time:'约 9 分钟（1 站）', freq:'周日 Gerringong 发车：12:48、14:47、16:48、18:44、20:51', osm:{route:'train', ref:'SCO'}},
+    {mode:'train', line:'SCO', dir:'往 Sydney', on:'Kiama 站', off:'Central 站', a:STN.kiama, b:STN.central, time:'约 2 小时–2 小时 20 分', note:'在 Kiama 换车，回悉尼的车一般和小火车衔接，到时在 App 里看下一班。悉尼方向的车从 Kiama 发车，上车就有座。', osm:{route:'train', ref:'SCO'}},
     t2Out('Central 站', STN.central, '约 16 分钟'), HOME_WALK],
   bondiGap:{mode:'bus', line:'380', dir:'往 Watsons Bay', on:'Bondi Beach（Campbell Pde，C 站台）', off:'Gap Park（Old South Head Rd）', a:STN.bondi380, b:STN.gap380, time:'约 20 分钟', note:'沿海边开，坐右边看海。上下车都要刷卡。', osm:{route:'bus', ref:'380'}},
   watsonsHome:[{mode:'ferry', line:'F9', dir:'往 Circular Quay', on:'Watsons Bay', off:'Circular Quay 2 号码头', b:STN.cqW2, via:FERRY_WATSONS.slice().reverse(), time:'约 25 分钟', note:'部分班次经停 Rose Bay、Double Bay。晚上班次少，先查好末班；赶不上就在 Trip Planner 查巴士回城。', osm:{route:'ferry', ref:'F9'}},
@@ -549,26 +547,26 @@ var DAYS = [
   end:{mode:'train', tx:TX.wynyardHome},
   gm:{mode:'walking', list:[2,3,4,5,6,7,8,9]},
   tips:['悉尼的火车、渡轮、巴士都可以直接刷信用卡或手机进出站，不用专门买卡。','第一天别暴走，晚饭后早点回去倒时差。','从 Ashfield 站走回住处约 20 分钟；不想走就坐 491 路，或者叫 Uber。']},
- {id:'d1025', date:'2026-10-25', wd:'周日', city:'syd', region:'kiama', night:'syd', tag:'悉尼 · 南海岸一日', title:'Gerringong 和 Kiama',
-  lede:'坐火车去南海岸：上午在 Gerringong 岬角的草坡上看 Werri Beach，下午回到 Kiama 看喷水洞。下午走步道还是坐车，到时候看天气和体力。',
-  optLabel:'下午怎么回 Kiama：',
-  start:true, end:{mode:'train', tx:TX.kiamaHome},
+ {id:'d1025', date:'2026-10-25', wd:'周日', city:'syd', region:'kiama', night:'syd', tag:'悉尼 · 南海岸一日', title:'Kiama 和 Gerringong',
+  lede:'坐火车去南海岸：先在 Kiama 看喷水洞、逛港口、吃午饭，13:48 坐小火车去 Gerringong，在岬角的草坡上看 Werri Beach。回程有两个时间，下面二选一。',
+  optLabel:'回程（二选一）：',
+  start:true, end:{mode:'train', tx:TX.gerringongHome},
   head:[
-    {n:'Gerringong 岬角', en:'Gerringong Headland', ll:[-34.7452,150.8360], t:'约 11:00', mode:'train', tx:TX.homeGerringong, note:'就是那张躺在草坡上看海的照片的位置，往北看是 Werri Beach。午饭在车站和岬角之间的镇上买，带到草坡上吃。', q:'Gerringong Headland', img:['search:Gerringong headland Werri Beach', 'Gerringong, New South Wales']},
+    {n:'Kiama 喷水洞 · 灯塔', en:'Kiama Blowhole · Lighthouse', ll:[-34.6719,150.8632], t:'约 11:50', mode:'train', tx:TX.homeKiama, note:'Kiama 站下车走约 10 分钟。喷水要看浪，等几分钟一般能看到。', q:'Kiama Blowhole', img:['search:intitle:"Kiama Blowhole"', 'Kiama, New South Wales']},
+    {n:'Kiama 港口', en:'Kiama Harbour', ll:[-34.6693,150.8586], t:'约 12:30', note:'港口边走走，午饭在 Terralong St 一带吃。13:30 往车站走。', q:'Kiama Harbour', img:['search:intitle:"Kiama Harbour"', 'Kiama, New South Wales']},
+    {n:'Gerringong 岬角', en:'Gerringong Headland', ll:[-34.7452,150.8360], t:'约 14:30', mode:'train', tx:TX.kiamaGerringong, note:'就是那张躺在草坡上看海的照片的位置，往北看是 Werri Beach。', q:'Gerringong Headland', img:['search:Gerringong headland Werri Beach', 'Gerringong, New South Wales']},
     {n:'Werri Beach', en:'Werri Beach', ll:[-34.7360,150.8341], note:'沿沙滩往北走，北头是 Werri Lagoon 的出海口。', q:'Werri Beach', img:['search:intitle:"Werri Beach"', 'Werri Beach']}
   ],
   options:[
-    {label:'徒步版', stops:[
-      {n:'Loves Bay', en:'Kiama Coast Walk', ll:[-34.6978,150.8541], t:'约 14:00', via:[[-34.72856,150.83889],[-34.72601,150.84236],[-34.72207,150.84648],[-34.71798,150.84598],[-34.71398,150.85113],[-34.70997,150.85011],[-34.70603,150.85167],[-34.70170,150.85282]], note:'Kiama Coast Walk 南段：从 Werri Lagoon 出海口往北，一路是海边悬崖和牧场草坡，约 2 小时。下过大雨潟湖口可能过不去，就改走轻松版。', q:'Loves Bay Kiama Heights', img:['search:intitle:"Kiama Coast Walk"', 'search:Kiama coast walk', 'search:Loves Bay Kiama']},
-      {n:'小喷水洞', en:'Little Blowhole', ll:[-34.6867,150.8592], via:[[-34.69399,150.85705],[-34.68985,150.85363]], note:'比 Kiama 喷水洞小，但浪大时更常喷。走到这里累了就叫车去 Kiama，约 10 分钟。', q:'Little Blowhole Kiama', img:['search:intitle:"Little Blowhole" Kiama', 'Kiama, New South Wales']},
-      {n:'Kiama 喷水洞 · 灯塔', en:'Kiama Blowhole · Lighthouse', ll:[-34.6719,150.8632], t:'约 16:00', via:[[-34.68167,150.85523],[-34.67797,150.85546],[-34.67398,150.85856]], note:'这段经过 Kendalls Beach，后半段走镇上的路。喷水要看浪，等几分钟一般能看到。', q:'Kiama Blowhole', img:['search:intitle:"Kiama Blowhole"', 'Kiama, New South Wales']}],
-     gm:{mode:'walking', list:[0,1,2,3,4]}},
-    {label:'轻松版', stops:[
-      {n:'Kiama 喷水洞 · 灯塔', en:'Kiama Blowhole · Lighthouse', ll:[-34.6719,150.8632], t:'约 14:00', mode:'train', tx:TX.gerringongKiama, note:'喷水要看浪，等几分钟一般能看到。', q:'Kiama Blowhole', img:['search:intitle:"Kiama Blowhole"', 'Kiama, New South Wales']},
-      {n:'Kiama 港口', en:'Kiama Harbour', ll:[-34.6693,150.8586], note:'港口边走走，在 Terralong St 一带喝咖啡，再去车站。', q:'Kiama Harbour', img:['search:intitle:"Kiama Harbour"', 'Kiama, New South Wales']}],
-     gm:{mode:'walking', list:[2,3]}}
+    {label:'16:48 回', stops:[
+      {n:'Gerringong 站', en:'Gerringong Station', ll:STN.gerringong, t:'16:48 发车', note:'16:15 左右往回走，步行约 30 分钟。16:57 到 Kiama，换回悉尼的车。', q:'Gerringong Station', img:['Gerringong railway station', 'Gerringong, New South Wales']}],
+     gm:{mode:'walking', list:[2,3,4]}},
+    {label:'18:44 回', stops:[
+      {n:'Gerringong 站', en:'Gerringong Station', ll:STN.gerringong, t:'18:44 发车', note:'能在岬角多待两小时，18:10 左右往回走，日落约 19:30。18:53 到 Kiama，换回悉尼的车。', q:'Gerringong Station', img:['Gerringong railway station', 'Gerringong, New South Wales']}],
+     gm:{mode:'walking', list:[2,3,4]}}
   ],
-  tips:['周日一天公交最多扣约 A$9.65（2025 年 7 月起的价格），这一天怎么坐都不会超。','周末悉尼火车常有维修停运。出发前几天在 Transport for NSW 的 Trip Planner 查 10/25 的 South Coast Line，停运就和 10/26 对调。','悉尼开来的火车到 Kiama 为止，往南去 Gerringong 要换柴油小火车，周末大约 2 小时一班，赶不上就打车。','徒步版全天走路约 20 km（含进出 Ashfield 站），轻松版约 12 km。南风大或下雨就走轻松版。','带水、防晒和外套，海边风大。']},
+  tips:['周日 Kiama ⇄ Gerringong 小火车（1 站，8–10 分钟）：Kiama 发 11:53、13:48、15:48、17:48、19:55；Gerringong 发 12:48、14:47、16:48、18:44、20:51。这是 Transport for NSW 的周日时刻表，出发前在 App 里再看一眼有没有变动。','错过小火车下一班要等两小时，Kiama 和 Gerringong 之间打车约 15 分钟。','周日一天公交最多扣约 A$9.65（2025 年 7 月起的价格），这一天怎么坐都不会超。','带水、防晒和外套，海边风大。']},
+
  {id:'d1026', date:'2026-10-26', wd:'周一', city:'syd', night:'syd', tag:'悉尼 · 第 3 天', title:'Bondi 海岸步道 + Watsons Bay',
   lede:'上午走 Coogee 到 Bondi 的悬崖步道，下午坐 380 路沿海去 Watsons Bay，傍晚坐渡轮回城。',
   start:true, end:{mode:'ferry', tx:TX.watsonsHome},
@@ -762,6 +760,10 @@ var PAY = [
 
 /* ---------- 版本记录：最新的写在最前。旧版本是 v/<号>/index.html 里冻结的整页副本（tools/snapshot.mjs 生成） ---------- */
 var VERSIONS = [
+  {v:5, date:'2026-10-25', title:'10/25 改成先 Kiama 后 Gerringong，按小火车时刻走', notes:[
+    '10/25：先在 Kiama 看喷水洞、逛港口、吃午饭，13:48 坐小火车去 Gerringong 看岬角和 Werri Beach；去掉徒步版（不去小喷水洞和 Loves Bay）。',
+    '回程二选一：16:48 或 18:44 从 Gerringong 坐小火车回 Kiama，再换车回悉尼。',
+    '其他日子和 v4 一样。']},
   {v:4, date:'2026-10-19', title:'机票和住处订好：10/31 傍晚飞布里斯班，小火车挪到 10/30', notes:[
     '10/24：只留朋友的航班，在 T1 国际到达厅会合后直接去住处。',
     '10/27：改坐 JQ525（16:25 起飞），CBD 半日提前约 1 小时，14:00 回住处取行李。',
