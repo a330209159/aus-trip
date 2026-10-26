@@ -1565,7 +1565,8 @@ function renderDay(d){
   h+='</ol>';
   var gm=dayGm(d);
   if(gm){
-    var pts=gm.list.map(function(k){ var s = k==='start'?st:(k==='end'?en:stops[k]); return s.q || (s.en+' '+c.en); });
+    // 用坐标而不是地名：手机上的 Google 地图有时认不出途经点的名字，整条路线就打不开
+    var pts=gm.list.map(function(k){ var s = k==='start'?st:(k==='end'?en:stops[k]); return s.ll[0]+','+s.ll[1]; });
     h+='<a class="routebtn" href="'+gmDir(pts, gm.mode)+'" target="_blank" rel="noopener">在 Google 地图打开今天的路线</a>';
   }
   if(d.after){ h+='<h3 class="sec">之后</h3>'+xferHtml(d.after); }

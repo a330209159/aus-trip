@@ -82,7 +82,7 @@ var CARTO_KEY = '你的 key';
 | `optLabel` | 切换按钮前面的字，默认「白天选一个方向：」，10/25 写的是「回程（二选一）：」 |
 | `head` | 不管选哪个方案都先去的几站（10/25 的 Kiama 和 Gerringong），排在方案的站前面 |
 | `tail` | 不管选哪个方案都要走的最后几站，比如回酒店取行李、去机场 |
-| `gm` | 「在 Google 地图打开今天的路线」按钮：`{mode:'walking' 或 'driving', list:[...]}`，`list` 里是景点序号（从 0 开始，有 `head` 的话从 `head` 数起），也可以写 `'start'` / `'end'` |
+| `gm` | 「在 Google 地图打开今天的路线」按钮：`{mode:'walking' 或 'driving', list:[...]}`，`list` 里是景点序号（从 0 开始，有 `head` 的话从 `head` 数起），也可以写 `'start'` / `'end'`。链接里用的是每站的坐标，不靠地名，手机上的 Google 地图不会因为认不出某个途经点而打不开；移动端最多 9 个途经点 |
 | `tips` | 提醒，字符串数组 |
 
 **景点（`stops` / `tail` 里的每一项）**
