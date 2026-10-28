@@ -452,7 +452,7 @@ var STN = {
   museumBus:[-33.8762,151.2099], coogeeBus:[-33.9205,151.2565], bondi380:[-33.8906,151.2747], gap380:[-33.8473,151.2861],
   kiama:[-34.6726,150.8545], gerringong:[-34.7447,150.8177],
   southernCross:[-37.8183,144.9526], spencerCollins:[-37.8188,144.9540], acland96:[-37.8690,144.9801],
-  rentalSC:[-37.8158,144.9524], marinersLookout:[-38.7368,143.6677], apbHarbour:[-38.7585,143.6770], skybusSC:[-37.8163,144.9520], melT1:[-37.6679,144.8509],
+  rentalSC:[-37.8158,144.9524], marinersLookout:[-38.7368,143.6677], lighthouseRd:[-38.8066,143.5357], skybusSC:[-37.8163,144.9520], melT1:[-37.6679,144.8509],
   belgrave:[-37.9090,145.3553], belgravePB:[-37.9077,145.3566], lakeside:[-37.9304,145.4597],
   homeGL:[-27.9726,153.4156], whaleMarina:[-27.9682,153.4252], mcBus:[-27.9687,153.4272], surfers705:[-28.0040,153.4270], naturalBridge:[-28.2307,153.2435], cavill:[-28.0010,153.4285], burleighLR:[-28.0921,153.4521], cwsBus:[-28.1365,153.4860], currumbinN:[-28.1345,153.4872],
   helensvale:[-27.9217,153.3337],
@@ -614,31 +614,22 @@ var DAYS = [
   gm:{mode:'driving', list:['start',0,1,2,3,4,'end']},
   tips:['走沿海大洋路约 190 km，纯开车约 3 小时；弯道多，看风景用路边的停车湾。','租的是 Sixt（Spencer St，Southern Cross 站旁边），可以下班后还车。','中文驾照要随身带英文翻译件，租车前确认租车公司的要求。','跟 Apollo Stay 确认最晚几点能入住。','行李全部放后备箱；停车看景点时，车里别留贵重东西。']},
 
- {id:'d1029', date:'2026-10-29', wd:'周四', city:'mel', region:'gor', night:'mel', tag:'大洋路自驾 · 第 2 天', title:'十二门徒石，回程上 Mariners Lookout',
-  lede:'早上走 Maits Rest 雨林步道，11:00 到十二门徒石（已预约），再看洛克阿德峡谷。预报上午阴、11 点后转晴，所以下午默认沿大洋路开回 Apollo Bay，在港口吃饭、上 Mariners Lookout 看晴天的海湾，再走内陆回墨尔本；也可以从 Port Campbell 直接回去，早一点到。',
-  optLabel:'下午怎么回墨尔本：',
-  start:{n:'Apollo Stay 出发', en:'Apollo Bay · 38 Thomson St', ll:CITY.apb.base, t:'约 08:45', q:'38 Thomson St, Apollo Bay VIC 3233', img:'Apollo Bay'},
-  head:[
-    {n:'Mariners Lookout（早上晴才去）', en:'Marriners Lookout · Apollo Bay', ll:STN.marinersLookout, opt:true, mode:'car', note:'预报上午阴。早上 8 点天已经晴了就先上来看，再选「直接回墨尔本」；还阴着就别等，下午回来看。', q:'Marriners Lookout Apollo Bay', img:['File:Apollo Bay from Mariners Lookout.jpg', 'Apollo Bay']},
-    {n:'Maits Rest 雨林步道', en:'Maits Rest Rainforest Walk', ll:[-38.7559,143.5545], t:'约 09:05', mode:'car', note:'约 30 分钟的环形步道，大树蕨雨林。出发前在 Parks Victoria 查步道开不开。9:35 前出发。', q:'Maits Rest Rainforest Walk', img:['search:intitle:"Maits Rest"', 'Great Otway National Park']},
-    {n:'十二门徒石', en:'Twelve Apostles · Keerray Woorroong Visitor Centre', ll:[-38.6656,143.1044], t:'11:00 预约', mode:'car', note:'已预约 11:00，到 Keerray Woorroong 游客中心出示二维码，含停车位，时长 150 分钟。从游客中心走地下通道到观景台约 10 分钟。从 Maits Rest 开过来约 1 小时。', q:'Keerray Woorroong Visitor Centre Princetown', img:['The Twelve Apostles (Victoria)', 'Twelve Apostles (Victoria)']},
-    {n:'洛克阿德峡谷', en:'Loch Ard Gorge', ll:[-38.6464,143.0703], t:'约 12:40', mode:'car', note:'只能在观景台看。13:10 左右出发。', q:'Loch Ard Gorge', img:'Loch Ard Gorge'}
-  ],
-  options:[
-    {label:'回 Apollo Bay 看晴天', stops:[
-      {n:'Apollo Bay 港口 · 午饭', en:'Apollo Bay Harbour', ll:STN.apbHarbour, t:'约 14:35', mode:'car', note:'沿大洋路往回开约 89 km、1 小时 25 分。港口边吃 fish & chips，或者回镇上主街吃。', q:'Apollo Bay Boat Harbour', img:['search:intitle:"Apollo Bay" harbour', 'Apollo Bay']},
-      {n:'Mariners Lookout', en:'Marriners Lookout · Apollo Bay', ll:STN.marinersLookout, t:'约 15:30', mode:'car', note:'从镇上开 5 分钟上山，停车后走几分钟到顶。下午太阳在背后，看海湾和小镇是顺光。16:00 左右下山出发。', q:'Marriners Lookout Apollo Bay', img:['File:Apollo Bay from Mariners Lookout.jpg', 'Apollo Bay']},
-      {n:'住处卸行李', en:'Hotel', ll:[-37.8187,144.9543], t:'约 19:00', kind:'stay', mode:'car', via:[[-38.5186,143.7165],[-38.3378,143.7843],[-38.15,144.36]], nofit:true, note:'从 Skenes Creek 往内陆，经 Forrest、Birregurra、Geelong，约 197 km、2 小时 45 分（不含停车）。中途在 Winchelsea 或 Geelong 一带加油休息，最后在 Todd Road 出口加满。住处有免费车位：先停下卸行李、办入住。', q:'620 Collins St, Melbourne VIC 3000'},
-      {n:'Sixt 还车', en:'Sixt · Spencer St', ll:STN.rentalSC, t:'约 19:20', mode:'car', nofit:true, note:'可以下班后还车，按 Sixt 给的还车说明操作。还完走回住处几分钟。', q:'SIXT Car Hire Melbourne City Spencer Street'}],
-     gm:{mode:'driving', list:['start',1,2,3,4,5,6]}},
-    {label:'直接回墨尔本', stops:[
-      {n:'Port Campbell · 午饭', en:'Port Campbell', ll:[-38.6196,142.9954], t:'约 13:20', mode:'car', note:'午饭。镇上的 BP（32 Lord St）24 小时；油够的话这里不加，到 Colac 再加。14:00 前出发。', q:'Port Campbell Victoria', img:['Port Campbell, Victoria', 'search:intitle:"Port Campbell"']},
-      {n:'住处卸行李', en:'Hotel', ll:[-37.8187,144.9543], t:'约 17:30', kind:'stay', mode:'car', via:[[-38.3400,143.5859],[-38.15,144.36]], nofit:true, note:'走内陆经 Cobden、Colac、Geelong，约 237 km、3 小时 15–25 分（不含停车）。开出约 1 小时 10 分钟到 Colac，加油休息；最后在 Todd Road 出口加满。住处有免费车位：先停下卸行李、办入住。', q:'620 Collins St, Melbourne VIC 3000'},
-      {n:'Sixt 还车', en:'Sixt · Spencer St', ll:STN.rentalSC, t:'约 17:50', mode:'car', nofit:true, note:'可以下班后还车，按 Sixt 给的还车说明操作。还完走回住处几分钟。', q:'SIXT Car Hire Melbourne City Spencer Street'}],
-     gm:{mode:'driving', list:['start',1,2,3,4,5]}}
+ {id:'d1029', date:'2026-10-29', wd:'周四', city:'mel', region:'gor', night:'mel', tag:'大洋路自驾 · 第 2 天', title:'Mariners Lookout、十二门徒石，走内陆回墨尔本',
+  lede:'一早先上 Mariners Lookout 看 Apollo Bay，然后往西：Maits Rest 雨林步道，拐进 Lighthouse Rd 找野生考拉，11:00 到十二门徒石（已预约），看洛克阿德峡谷，Port Campbell 午饭后走内陆回墨尔本，先到住处卸行李再还车。',
+  start:{n:'Apollo Stay 出发', en:'Apollo Bay · 38 Thomson St', ll:CITY.apb.base, t:'08:00', q:'38 Thomson St, Apollo Bay VIC 3233', img:'Apollo Bay'},
+  stops:[
+    {n:'Mariners Lookout', en:'Marriners Lookout · Apollo Bay', ll:STN.marinersLookout, t:'约 08:05', mode:'car', note:'从住处开 5 分钟上山，停车后走几分钟到顶，俯瞰 Apollo Bay 小镇和海湾。预报上午阴，晴不晴碰运气。8:25 下山，穿过镇上往西开，下午不回来。', q:'Marriners Lookout Apollo Bay', img:['File:Apollo Bay from Mariners Lookout.jpg', 'Apollo Bay']},
+    {n:'Maits Rest 雨林步道', en:'Maits Rest Rainforest Walk', ll:[-38.7559,143.5545], t:'约 08:45', mode:'car', note:'800 m 的环形木栈道，平缓，走一圈约 30 分钟，大树蕨和山毛榉雨林。我查过没看到关闭通知，10 月的游客评价也说能走；到了看入口的告示牌。这里是雨林，基本看不到考拉。9:15 出发。', q:'Maits Rest Rainforest Walk', img:['search:intitle:"Maits Rest"', 'Great Otway National Park']},
+    {n:'Lighthouse Rd · 找考拉', en:'Cape Otway Lighthouse Rd', ll:STN.lighthouseRd, t:'约 09:20', mode:'car', note:'Maits Rest 往西几分钟就是路口，拐进去慢慢开前 3 km 左右，抬头看路边桉树的树杈，考拉一般在 8–15 m 高。只在能安全停车的路边停，别停弯道上；看到考拉别靠近。早上比中午好找。9:40 前掉头回大洋路。', q:'Lighthouse Road Cape Otway', img:['search:koala Cape Otway', 'Cape Otway']},
+    {n:'十二门徒石', en:'Twelve Apostles · Keerray Woorroong Visitor Centre', ll:[-38.6656,143.1044], t:'11:00 预约', mode:'car', note:'已预约 11:00，到 Keerray Woorroong 游客中心出示二维码，含停车位，时长 150 分钟。从 Lighthouse Rd 路口开过来约 1 小时。从游客中心走地下通道到观景台约 10 分钟。', q:'Keerray Woorroong Visitor Centre Princetown', img:['The Twelve Apostles (Victoria)', 'Twelve Apostles (Victoria)']},
+    {n:'洛克阿德峡谷', en:'Loch Ard Gorge', ll:[-38.6464,143.0703], t:'约 12:40', mode:'car', note:'只能在观景台看。', q:'Loch Ard Gorge', img:'Loch Ard Gorge'},
+    {n:'Port Campbell · 午饭', en:'Port Campbell', ll:[-38.6196,142.9954], t:'约 13:20', mode:'car', note:'午饭。镇上的 BP（32 Lord St）24 小时；油够的话这里不加，到 Colac 再加。14:00 前出发。', q:'Port Campbell Victoria', img:['Port Campbell, Victoria', 'search:intitle:"Port Campbell"']},
+    {n:'住处卸行李', en:'Hotel', ll:[-37.8187,144.9543], t:'约 17:30', kind:'stay', mode:'car', via:[[-38.3400,143.5859],[-38.15,144.36]], nofit:true, note:'走内陆经 Cobden、Colac、Geelong，约 237 km、3 小时 15–25 分（不含停车）。开出约 1 小时 10 分钟到 Colac，加油休息；最后在 Todd Road 出口加满。住处有免费车位：先停下卸行李、办入住。', q:'620 Collins St, Melbourne VIC 3000'},
+    {n:'Sixt 还车', en:'Sixt · Spencer St', ll:STN.rentalSC, t:'约 17:50', mode:'car', nofit:true, note:'可以下班后还车，按 Sixt 给的还车说明操作。还完走回住处几分钟。', q:'SIXT Car Hire Melbourne City Spencer Street'}
   ],
   end:{mode:'walk', nofit:true},
-  tips:['十二门徒石已预约 11:00（Keerray Woorroong 游客中心，含停车位），到了出示二维码；从 Apollo Bay 经 Maits Rest 过去约 86 km、1 小时 20 分，最晚 9:35 从 Maits Rest 出发。','回 Apollo Bay 这条全天开车约 380 km、5 个半小时，约 19:00 到墨尔本；直接回去约 340 km、4 小时 45 分，约 17:30 到。司机累了就多歇会，不赶时间。','加油：直接回去在 Colac 加（7-Eleven 24 小时，还有 BP、Shell）；回 Apollo Bay 这条在 Winchelsea 的 BP（24 小时）或 Geelong 一带加。还车前在 Port Melbourne 的 Todd Road 出口（下了 West Gate 桥）补满，United 和 Shell 都是 24 小时。','Sixt 在 Spencer St，可以下班后还车。','出发前查 Maits Rest 步道开不开。']},
+  gm:{mode:'driving', list:['start',0,1,2,3,4,5,6]},
+  tips:['十二门徒石已预约 11:00（Keerray Woorroong 游客中心，含停车位），到了出示二维码。从 Lighthouse Rd 路口过去约 1 小时，最晚 9:50 离开 Lighthouse Rd。','想看野生考拉：Maits Rest 是雨林，基本没有；Lighthouse Rd 前几公里的桉树林常能看到。时间不够就跳过，直接去十二门徒石。','加油：在 Colac 加（7-Eleven 24 小时，还有 BP、Shell）；还车前在 Port Melbourne 的 Todd Road 出口（下了 West Gate 桥）补满，United、Shell 都是 24 小时。','全天开车约 350 km、4 小时 50 分左右。Sixt 在 Spencer St，可以下班后还车。']},
 
  {id:'d1030', date:'2026-10-30', wd:'周五', city:'mel', night:'mel', tag:'墨尔本 · 周边', title:'Puffing Billy 小火车 + St Kilda 日落',
   lede:'上午坐 Metro 火车去 Belgrave 坐蒸汽小火车，下午回住处歇一会；傍晚坐 96 路电车去 St Kilda，Acland St 吃晚饭，看日落和栈桥的小企鹅。备选：小火车 + 菲利普岛企鹅一日游。',
@@ -770,10 +761,9 @@ var PAY = [
 
 /* ---------- 版本记录：最新的写在最前。旧版本是 v/<号>/index.html 里冻结的整页副本（tools/snapshot.mjs 生成） ---------- */
 var VERSIONS = [
-  {v:6, date:'2026-10-28', title:'10/29 回程上 Mariners Lookout，Sixt 下班后还车', notes:[
-    '10/29：十二门徒石按预约 11:00。预报上午阴、11 点后转晴，下午默认沿大洋路开回 Apollo Bay，在港口吃饭、上 Mariners Lookout 看晴天的海湾，再经 Forrest 走内陆回墨尔本，约 19:00 到；也可以从 Port Campbell 直接回，约 17:30 到。',
-    '早上天已经晴了的话，可以先上 Mariners Lookout，再选直接回墨尔本。',
-    '租车写明是 Sixt（Spencer St），可以下班后还车；加了沿途加油站：Colac、Winchelsea，还车前在 Todd Road 出口加满。',
+  {v:6, date:'2026-10-28', title:'10/29 一早上 Mariners Lookout，Sixt 下班后还车', notes:[
+    '10/29：08:00 出发，先上 Mariners Lookout 看 Apollo Bay，往西经 Maits Rest、Lighthouse Rd（找野生考拉），11:00 到十二门徒石（已预约），Port Campbell 午饭后走内陆回墨尔本，约 17:30 到。',
+    '租车写明是 Sixt（Spencer St），可以下班后还车；加了沿途加油站：Colac，还车前在 Todd Road 出口加满。',
     '其他日子和 v5 一样。']},
   {v:5, date:'2026-10-25', title:'10/25 改成先 Kiama 后 Gerringong，按小火车时刻走', notes:[
     '10/25：先在 Kiama 看喷水洞、逛港口、吃午饭，13:48 坐小火车去 Gerringong 看岬角和 Werri Beach；去掉徒步版（不去小喷水洞和 Loves Bay）。',
