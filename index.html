@@ -165,7 +165,7 @@ button{font:inherit;color:inherit}
 .mk.sel .ring{opacity:1}
 .mk .dot{display:flex;align-items:center;justify-content:center;width:100%;height:100%;border-radius:50%;background:var(--c);border:2px solid var(--surface);color:var(--surface);font:600 11px/1 var(--f-mono);box-shadow:0 1px 3px rgba(0,0,0,.3)}
 .mk.opt .dot{background:var(--surface);color:var(--c);border-color:var(--c)}
-.mk.stay .dot,.mk.air .dot{font:700 11.5px/1 var(--f-body)}
+.mk.stay .dot,.mk.air .dot,.mk.fuel .dot{font:700 11.5px/1 var(--f-body)}
 .mk.city .dot{border-width:3px;font-size:12px}
 .mk .box{display:block;width:100%;height:100%;border-radius:5px;background:var(--ink);border:2px solid var(--surface);box-shadow:0 1px 3px rgba(0,0,0,.3)}
 .mk .box svg{display:block;width:100%;height:100%;fill:none;stroke:var(--surface);stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
@@ -244,7 +244,7 @@ h3.sec::after{content:"";flex:1;height:1px;background:var(--line)}
 .stop:last-child::before{display:none}
 .stop .n{width:28px;height:28px;border-radius:50%;background:var(--c);color:var(--surface);font-family:var(--f-mono);font-weight:600;font-size:12.5px;display:flex;align-items:center;justify-content:center;margin-top:1px;position:relative;z-index:1}
 .stop.opt .n{background:var(--surface);color:var(--c);border:2px solid var(--c)}
-.stop.stay .n,.stop.air .n{font-size:14px}
+.stop.stay .n,.stop.air .n,.stop.fuel .n{font-size:14px}
 .stop .body{min-width:0;padding:2px 8px 6px;margin-left:-8px;border-radius:10px;transition:background .2s}
 .stop.on .body{background:var(--soft)}
 .stop .ttl{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 8px}
@@ -452,7 +452,7 @@ var STN = {
   museumBus:[-33.8762,151.2099], coogeeBus:[-33.9205,151.2565], bondi380:[-33.8906,151.2747], gap380:[-33.8473,151.2861],
   kiama:[-34.6726,150.8545], gerringong:[-34.7447,150.8177],
   southernCross:[-37.8183,144.9526], spencerCollins:[-37.8188,144.9540], acland96:[-37.8690,144.9801],
-  rentalSC:[-37.8158,144.9524], marinersLookout:[-38.7368,143.6677], lighthouseRd:[-38.8066,143.5357], skybusSC:[-37.8163,144.9520], melT1:[-37.6679,144.8509],
+  rentalSC:[-37.8158,144.9524], marinersLookout:[-38.7368,143.6677], lighthouseRd:[-38.8066,143.5357], fuelColac:[-38.3384,143.5787], fuelTodd:[-37.8292,144.9190], skybusSC:[-37.8163,144.9520], melT1:[-37.6679,144.8509],
   belgrave:[-37.9090,145.3553], belgravePB:[-37.9077,145.3566], lakeside:[-37.9304,145.4597],
   homeGL:[-27.9726,153.4156], whaleMarina:[-27.9682,153.4252], mcBus:[-27.9687,153.4272], surfers705:[-28.0040,153.4270], naturalBridge:[-28.2307,153.2435], cavill:[-28.0010,153.4285], burleighLR:[-28.0921,153.4521], cwsBus:[-28.1365,153.4860], currumbinN:[-28.1345,153.4872],
   helensvale:[-27.9217,153.3337],
@@ -615,7 +615,7 @@ var DAYS = [
   tips:['走沿海大洋路约 190 km，纯开车约 3 小时；弯道多，看风景用路边的停车湾。','租的是 Sixt（Spencer St，Southern Cross 站旁边），可以下班后还车。','中文驾照要随身带英文翻译件，租车前确认租车公司的要求。','跟 Apollo Stay 确认最晚几点能入住。','行李全部放后备箱；停车看景点时，车里别留贵重东西。']},
 
  {id:'d1029', date:'2026-10-29', wd:'周四', city:'mel', region:'gor', night:'mel', tag:'大洋路自驾 · 第 2 天', title:'Mariners Lookout、十二门徒石，走内陆回墨尔本',
-  lede:'一早先上 Mariners Lookout 看 Apollo Bay，然后往西：Maits Rest 雨林步道，拐进 Lighthouse Rd 找野生考拉，11:00 到十二门徒石（已预约），看洛克阿德峡谷，Port Campbell 午饭后走内陆回墨尔本，先到住处卸行李再还车。',
+  lede:'一早先上 Mariners Lookout 看 Apollo Bay，然后往西：Maits Rest 雨林步道，拐进 Lighthouse Rd 找野生考拉，11:00 到十二门徒石（已预约），看洛克阿德峡谷，Port Campbell 午饭后走内陆回墨尔本，路上在 Colac 和 Todd Road 加油，先到住处卸行李再还车。',
   start:{n:'Apollo Stay 出发', en:'Apollo Bay · 38 Thomson St', ll:CITY.apb.base, t:'08:00', q:'38 Thomson St, Apollo Bay VIC 3233', img:'Apollo Bay'},
   stops:[
     {n:'Mariners Lookout', en:'Marriners Lookout · Apollo Bay', ll:STN.marinersLookout, t:'约 08:05', mode:'car', note:'从住处开 5 分钟上山，停车后走几分钟到顶，俯瞰 Apollo Bay 小镇和海湾。预报上午阴，晴不晴碰运气。8:25 下山，穿过镇上往西开，下午不回来。', q:'Marriners Lookout Apollo Bay', img:['File:Apollo Bay from Mariners Lookout.jpg', 'Apollo Bay']},
@@ -624,12 +624,14 @@ var DAYS = [
     {n:'十二门徒石', en:'Twelve Apostles · Keerray Woorroong Visitor Centre', ll:[-38.6656,143.1044], t:'11:00 预约', mode:'car', note:'已预约 11:00，到 Keerray Woorroong 游客中心出示二维码，含停车位，时长 150 分钟。从 Lighthouse Rd 路口开过来约 1 小时。从游客中心走地下通道到观景台约 10 分钟。', q:'Keerray Woorroong Visitor Centre Princetown', img:['The Twelve Apostles (Victoria)', 'Twelve Apostles (Victoria)']},
     {n:'洛克阿德峡谷', en:'Loch Ard Gorge', ll:[-38.6464,143.0703], t:'约 12:40', mode:'car', note:'只能在观景台看。', q:'Loch Ard Gorge', img:'Loch Ard Gorge'},
     {n:'Port Campbell · 午饭', en:'Port Campbell', ll:[-38.6196,142.9954], t:'约 13:20', mode:'car', note:'午饭。镇上的 BP（32 Lord St）24 小时；油够的话这里不加，到 Colac 再加。14:00 前出发。', q:'Port Campbell Victoria', img:['Port Campbell, Victoria', 'search:intitle:"Port Campbell"']},
-    {n:'住处卸行李', en:'Hotel', ll:[-37.8187,144.9543], t:'约 17:30', kind:'stay', mode:'car', via:[[-38.3400,143.5859],[-38.15,144.36]], nofit:true, note:'走内陆经 Cobden、Colac、Geelong，约 237 km、3 小时 15–25 分（不含停车）。开出约 1 小时 10 分钟到 Colac，加油休息；最后在 Todd Road 出口加满。住处有免费车位：先停下卸行李、办入住。', q:'620 Collins St, Melbourne VIC 3000'},
-    {n:'Sixt 还车', en:'Sixt · Spencer St', ll:STN.rentalSC, t:'约 17:50', mode:'car', nofit:true, note:'可以下班后还车，按 Sixt 给的还车说明操作。还完走回住处几分钟。', q:'SIXT Car Hire Melbourne City Spencer Street'}
+    {n:'加油 · Colac', en:'7-Eleven · Murray St, Colac', ll:STN.fuelColac, t:'约 15:15', kind:'fuel', mode:'car', note:'从 Port Campbell 走内陆经 Cobden 过来约 87 km、1 小时 10 分钟。7-Eleven 在穿城的 Murray St（就是 Princes Hwy）路边，24 小时，不用绕路；同一条街往东还有 BP、Shell。加油、上厕所、歇一会，15:30 前出发。', q:'-38.3384,143.5787'},
+    {n:'加满油 · Todd Road', en:'United West Gate North · Port Melbourne', ll:STN.fuelTodd, t:'约 17:30', kind:'fuel', mode:'car', nofit:true, note:'从 Colac 过来约 146 km、2 小时：Princes Hwy → Geelong 环城路 → Princes Fwy → 过 West Gate 桥。下桥后走 Todd Road / Port Melbourne 出口（牌子上还写着 Spirit of Tasmania），顺着匝道拐进 Cook St 旁边这家 United，几乎不绕路；加满后从旁边的匝道回 West Gate Fwy 进城。高速对面也有一家 United，那是出城方向的，别去那边。', q:'-37.8292,144.9190'},
+    {n:'住处卸行李', en:'Hotel', ll:[-37.8187,144.9543], t:'约 17:45', kind:'stay', mode:'car', nofit:true, note:'从 Todd Road 过来约 6 km、10 分钟。住处有免费车位：先停下卸行李、办入住。', q:'620 Collins St, Melbourne VIC 3000'},
+    {n:'Sixt 还车', en:'Sixt · Spencer St', ll:STN.rentalSC, t:'约 18:05', mode:'car', nofit:true, note:'可以下班后还车，按 Sixt 给的还车说明操作。还完走回住处几分钟。', q:'SIXT Car Hire Melbourne City Spencer Street'}
   ],
   end:{mode:'walk', nofit:true},
-  gm:{mode:'driving', list:['start',0,1,2,3,4,5,6]},
-  tips:['十二门徒石已预约 11:00（Keerray Woorroong 游客中心，含停车位），到了出示二维码。从 Lighthouse Rd 路口过去约 1 小时，最晚 9:50 离开 Lighthouse Rd。','想看野生考拉：Maits Rest 是雨林，基本没有；Lighthouse Rd 前几公里的桉树林常能看到。时间不够就跳过，直接去十二门徒石。','加油：在 Colac 加（7-Eleven 24 小时，还有 BP、Shell）；还车前在 Port Melbourne 的 Todd Road 出口（下了 West Gate 桥）补满，United、Shell 都是 24 小时。','全天开车约 350 km、4 小时 50 分左右。Sixt 在 Spencer St，可以下班后还车。']},
+  gm:{mode:'driving', list:['start',0,1,2,3,4,5,6,7,8]},
+  tips:['十二门徒石已预约 11:00（Keerray Woorroong 游客中心，含停车位），到了出示二维码。从 Lighthouse Rd 路口过去约 1 小时，最晚 9:50 离开 Lighthouse Rd。','想看野生考拉：Maits Rest 是雨林，基本没有；Lighthouse Rd 前几公里的桉树林常能看到。时间不够就跳过，直接去十二门徒石。','加油（地图上标「油」的两处）：先在 Colac 的 7-Eleven 加（24 小时，就在路边）；还车前在 Port Melbourne 的 Todd Road 出口加满（进城方向的 United，下了 West Gate 桥就是）。','全天开车约 350 km、4 小时 50 分左右。Sixt 在 Spencer St，可以下班后还车。']},
 
  {id:'d1030', date:'2026-10-30', wd:'周五', city:'mel', night:'mel', tag:'墨尔本 · 周边', title:'Puffing Billy 小火车 + St Kilda 日落',
   lede:'上午坐 Metro 火车去 Belgrave 坐蒸汽小火车，下午回住处歇一会；傍晚坐 96 路电车去 St Kilda，Acland St 吃晚饭，看日落和栈桥的小企鹅。备选：小火车 + 菲利普岛企鹅一日游。',
@@ -762,8 +764,8 @@ var PAY = [
 /* ---------- 版本记录：最新的写在最前。旧版本是 v/<号>/index.html 里冻结的整页副本（tools/snapshot.mjs 生成） ---------- */
 var VERSIONS = [
   {v:6, date:'2026-10-28', title:'10/29 一早上 Mariners Lookout，Sixt 下班后还车', notes:[
-    '10/29：08:00 出发，先上 Mariners Lookout 看 Apollo Bay，往西经 Maits Rest、Lighthouse Rd（找野生考拉），11:00 到十二门徒石（已预约），Port Campbell 午饭后走内陆回墨尔本，约 17:30 到。',
-    '租车写明是 Sixt（Spencer St），可以下班后还车；加了沿途加油站：Colac，还车前在 Todd Road 出口加满。',
+    '10/29：08:00 出发，先上 Mariners Lookout 看 Apollo Bay，往西经 Maits Rest、Lighthouse Rd（找野生考拉），11:00 到十二门徒石（已预约），Port Campbell 午饭后走内陆回墨尔本，约 17:45 到住处，18:05 前后还车。',
+    '租车写明是 Sixt（Spencer St），可以下班后还车。两个加油站作为途经点画在地图上（标「油」）：Colac 的 7-Eleven，还车前在 Todd Road 出口进城方向的 United 加满。',
     '其他日子和 v5 一样。']},
   {v:5, date:'2026-10-25', title:'10/25 改成先 Kiama 后 Gerringong，按小火车时刻走', notes:[
     '10/25：先在 Kiama 看喷水洞、逛港口、吃午饭，13:48 坐小火车去 Gerringong 看岬角和 Werri Beach；去掉徒步版（不去小喷水洞和 Loves Bay）。',
@@ -1043,9 +1045,12 @@ function segKey(g){ function r(p){ return p[0].toFixed(4)+','+p[1].toFixed(4); }
 };/* @photo-end */
 function photoOf(s){ var k = s && s.img ? [].concat(s.img)[0] : null; return k && PHOTO[k] ? PHOTO[k] : null; }
 function commonsUrl(file){ return 'https://commons.wikimedia.org/wiki/'+encodeURIComponent(file.replace(/ /g,'_')).replace('%3A',':'); }
+// 特殊站点在地图和列表上显示一个字，不占景点序号
+var KIND_LAB = {stay:'宿', air:'机', fuel:'油'};
 var THUMB_ICON = {
   stay:'<svg viewBox="-10 -10 20 20" aria-hidden="true"><path d="M-5.5 3.5V-3.5M-5.5 1.2H5.5V3.5M-5.5 1.2V-.6H-.6V1.2M.2 -.6H3.6A1.9 1.9 0 0 1 5.5 1.3"/></svg>',
   air:'<svg class="fill" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5z"/></svg>',
+  fuel:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 20V5a1 1 0 0 1 1-1h7a1 1 0 0 1 1 1v15M3.5 20h12M5 10h9M14 8.5h1.5a1.5 1.5 0 0 1 1.5 1.5v5.5a1.5 1.5 0 0 0 3 0V8l-2.5-3"/></svg>',
   def:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 19l6-8 4.5 5.5 3-3.5L21 19z"/><circle cx="16.5" cy="7.5" r="2"/></svg>'
 };
 // 列表里的方形小图；图片加载不了（比如网络限制）就只剩占位图标
@@ -1324,7 +1329,7 @@ function buildScene(){
     if(onMap){
       DAYS.forEach(function(o){ if(o===d || o.city!==city || (o.region && o.region!=='gc')) return;
         var arr = o.options ? o.options.reduce(function(a,op){return a.concat(op.stops);}, (o.head||[]).slice()) : o.stops;
-        arr.forEach(function(s){ if(s.kind==='air'||s.kind==='stay') return; LF.circleMarker(s.ll, {radius:3.5, className:'ctx', interactive:false, stroke:false, fillOpacity:1}).addTo(sc.group); });
+        arr.forEach(function(s){ if(s.kind) return; LF.circleMarker(s.ll, {radius:3.5, className:'ctx', interactive:false, stroke:false, fillOpacity:1}).addTo(sc.group); });
       });
     }
     // 每段路拆成小段画：步行、坐车各用自己的线型；换乘点画小圆点；坐车的段加线路号标签
@@ -1355,7 +1360,7 @@ function buildScene(){
     }
     var num=0;
     stops.forEach(function(s,i){
-      var label = s.kind==='stay' ? '宿' : (s.kind==='air' ? '机' : String(++num));
+      var label = KIND_LAB[s.kind] || String(++num);
       var mk = addMarker(s.ll, 'mk '+city+(s.opt?' opt':'')+(s.kind?' '+s.kind:''), '<span class="ring"></span><span class="dot">'+label+'</span>', 22, s.n, 300);
       sc.marks.push({mk:mk, ll:s.ll, r:12, i:i});
       if(!s.nofit && !s.opt && s.kind!=='air') (s.kind==='stay' ? sc.fitHome : sc.fit).push(s.ll);
@@ -1558,7 +1563,7 @@ function renderDay(d){
   if(st && st.n!=='住处出发'){ h+='<li class="stop stay"><div class="n" style="background:var(--muted)">起</div><div class="body"><div class="hd">'+thumbHtml(st)+'<div class="hdt"><div class="ttl"><span class="nm">'+esc(st.n)+'</span>'+(st.t?'<span class="t">'+esc(st.t)+'</span>':'')+'</div><div class="en">'+esc(st.en||'')+'</div></div></div>'+(st.note?'<p class="note">'+esc(st.note)+'</p>':'')+'</div></li>'; }
   var num=0;
   stops.forEach(function(s,i){
-    var lab = s.kind==='stay' ? '宿' : (s.kind==='air' ? '机' : String(++num));
+    var lab = KIND_LAB[s.kind] || String(++num);
     var tx = legAt[i] ? (s.tx ? txHtml(legAt[i]) : plainLeg(legAt[i])) : '';
     h+='<li class="stop'+(s.opt?' opt':'')+(s.kind?' '+s.kind:'')+'" id="stop-'+i+'" data-i="'+i+'"><div class="n">'+lab+'</div><div class="body">'+
       '<div class="hd">'+thumbHtml(s, s.kind)+'<div class="hdt"><div class="ttl"><span class="nm">'+esc(s.n)+'</span>'+(s.t?'<span class="t">'+esc(s.t)+'</span>':'')+(s.sunset?'<span class="t">日落 '+sun.set+'</span>':'')+'</div>'+
