@@ -1,0 +1,12 @@
+name: lookup-tmp
+on:
+  push:
+    branches: ['claude/**']
+    paths: ['tools/lookup-tmp.mjs', '.github/workflows/lookup-tmp.yml']
+jobs:
+  lookup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+      - run: node tools/lookup-tmp.mjs
